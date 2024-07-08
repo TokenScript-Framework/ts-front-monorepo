@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "lint": "prettier --check . && eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "explorer": "pnpm --filter smart-token-explorer"
+
   },
   "dependencies": {
     "@t3-oss/env-core": "^0.10.1",
