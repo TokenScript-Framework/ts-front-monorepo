@@ -1,3 +1,3 @@
 export default function Logo() {
-  return <div className="font-bold text-4xl uppercase">STE</div>;
+  return <><a href="/" className="font-bold text-4xl uppercase">STE</a></>;
 }

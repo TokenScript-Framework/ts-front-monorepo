@@ -12,6 +12,7 @@ const inter = Inter({ subsets: ["latin"] });
 const globalColors = colors;
 const style: string[] = [];
 
+
 Object.keys(globalColors).map((variant) => {
   return Object.keys(globalColors[variant]).map((color) => {
     const value = colors[variant][color];

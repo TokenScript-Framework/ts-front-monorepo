@@ -92,7 +92,7 @@ export const LandingPrimaryImageCtaSection = ({
   children?: React.ReactNode;
   className?: string;
   innerClassName?: string;
-  title: string | React.ReactNode;
+  title?: string | React.ReactNode;
   titleComponent?: React.ReactNode;
   description: string | React.ReactNode;
   descriptionComponent?: React.ReactNode;
