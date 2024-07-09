@@ -28,25 +28,25 @@ export default function MyTokenList({ type }: TokenProps) {
             balance: 2.001
         }, {
             address: "0xf1731D81BC7be92DBD9b759a63ECAFaA569C7D0a",
-            avatar: "/images/tokens/eth.png",
+            avatar: "/images/tokens/ETH.svg",
             image: "https://resources.smartlayer.network/smartcat/reources/images/e5fd0c706c4eb3cc7f4295797f91e02e.png",
             tokenId: '#234567',
             balance: 2.001
         }, {
             address: "0xf1731D81BC7be92DBD9b759a63ECAFaA569C7D0a",
-            avatar: "/images/tokens/eth.png",
+            avatar: "/images/tokens/ETH.svg",
             image: "https://resources.smartlayer.network/smartcat/reources/images/e5fd0c706c4eb3cc7f4295797f91e02e.png",
             tokenId: '#234567',
             balance: 2.001
         }, {
             address: "0xf1731D81BC7be92DBD9b759a63ECAFaA569C7D0a",
-            avatar: "/images/tokens/eth.png",
+            avatar: "/images/tokens/ETH.svg",
             image: "https://resources.smartlayer.network/smartcat/reources/images/e5fd0c706c4eb3cc7f4295797f91e02e.png",
             tokenId: '#234567',
             balance: 2.001
         }, {
             address: "0xf1731D81BC7be92DBD9b759a63ECAFaA569C7D0a",
-            avatar: "/images/tokens/eth.png",
+            avatar: "/images/tokens/ETH.svg",
             image: "https://resources.smartlayer.network/smartcat/reources/images/e5fd0c706c4eb3cc7f4295797f91e02e.png",
             tokenId: '#234567',
             balance: 2.001
@@ -57,9 +57,9 @@ export default function MyTokenList({ type }: TokenProps) {
         <section className="min-h-screen fancy-overlay pt-4">
             <div className="container-wide mx-auto grid grid-cols-3 gap-8">
 
-                {TokenList.map((token,index) => (
+                {TokenList.map((token, index) => (
                     <>
-                        <Card className="text-center p-8 dark:bg-gray-900" onClick={loadNFTHandler}>
+                        <Card className="text-center p-8 dark:bg-gray-900" onClick={loadNFTHandler} key={index}>
                             <CardTitle className="flex justify-center gap-2 items-center">
                                 <Avatar>
                                     <AvatarImage src={token.avatar} alt="token" />
@@ -69,7 +69,7 @@ export default function MyTokenList({ type }: TokenProps) {
                             <CardHeader>
                                 {type === 'ERC20' ? (
                                     <>
-                                        <div className="flex justify-between opacity-7 text-gray-500 dark:text-[#B3B3B3]">
+                                        <div className="flex justify-between opacity-7 text-gray-500 dark:text-[#B3B3B3]" key={index}>
 
                                             <div>Balance</div>
                                             <div>Symbol</div>
