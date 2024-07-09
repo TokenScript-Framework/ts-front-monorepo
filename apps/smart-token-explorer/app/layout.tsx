@@ -3,8 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProviders } from "@/components/theme-providers";
 import { colors, colorsRgb } from "@/data/config/colors";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
 import { Providers } from "@/components/providers";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -23,7 +23,7 @@ Object.keys(globalColors).map((variant) => {
 });
 
 export const metadata: Metadata = {
-  title: "STE",
+  title: "Smart Toke Explorer",
   description: "Token explorer",
 };
 

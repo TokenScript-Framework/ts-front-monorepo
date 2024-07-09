@@ -1,6 +1,6 @@
 import { clsx } from "clsx";
 import { LandingFeature } from "@/components/page-ui/feature/LandingFeature";
-import { GlowBg } from "@/components/shared/ui/glow-bg";
+import { GlowBg } from "@/components/shadcn/ui/glow-bg";
 
 export interface FeatureListItem {
   title: string;

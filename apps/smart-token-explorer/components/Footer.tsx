@@ -24,7 +24,7 @@ export default function Footer() {
                     src="/images/tokens/ENS.png"
                   />
                   <div className="hidden text-2xl font-semibold sm:flex h-full">
-                    STE
+                    Smart Toke Explorer
                   </div>
                 </div>
               </a>
@@ -33,10 +33,10 @@ export default function Footer() {
                 paste
               </div>
               <p className="text-sm opacity-70">
-                STE is a ..... Built
+                Smart Toke Explorer is a ..... Built
                 on top of Shadcn UI and TailwindCSS.
               </p>
-              <p className="text-xs">Copyright © STE</p>
+              <p className="text-xs">Copyright © Smart Toke Explorer</p>
             </div>
             <div className="grid gap-12 items-start mt-6 md:mt-0 md:grid-cols-3">
               <ul className="flex flex-col flex-wrap gap-4 justify-center w-full text-xs">
@@ -179,7 +179,7 @@ export default function Footer() {
             <div className="w-full text-center lg:flex lg:justify-center p-4 mb-2 space-x-2 text-sm text-gray-500 dark:text-gray-400">
               <span>© 2024</span>
               <span> • </span>
-              <a href="/">STE</a>
+              <a href="/">Smart Toke Explorer</a>
               <span> • </span>
               <a
                 target="_blank"

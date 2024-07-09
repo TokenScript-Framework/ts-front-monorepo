@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import { Button } from "@/components/shared/ui/button";
-import { GlowBg } from "@/components/shared/ui/glow-bg";
+import { Button } from "@/components/shadcn/ui/button";
+import { GlowBg } from "@/components/shadcn/ui/glow-bg";
 
 /**
  * A component meant to be used in the landing page.

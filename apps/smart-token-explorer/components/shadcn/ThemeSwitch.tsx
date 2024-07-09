@@ -17,7 +17,6 @@ const ThemeSwitch = () => {
     window.matchMedia("(prefers-color-scheme: dark)").matches;
 
   const currentTheme = isSystem ? (isDark ? "dark" : "light") : theme;
-  console.log("currentTheme", currentTheme, isSystem);
 
   const updateTheme = () => {
     if (isSystem) {
@@ -34,7 +33,6 @@ const ThemeSwitch = () => {
       }
     }
 
-    console.log("theme", theme);
   };
 
   // When mounted on client, now we can show the UI

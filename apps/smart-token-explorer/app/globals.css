@@ -6,6 +6,13 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  
+}
+
+/** wallet button*/
+[data-rk]{
+    /* --rk-colors-accentColor:#818cf8 !important; */
+    --rk-radii-connectButton: 6px !important;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -41,7 +48,7 @@ html {
       22px 25px 16px 0px rgba(0, 0, 0, 0.2);
     --hard-shadow-left: 0px 29px 52px 0px rgba(0, 0, 0, 0.4),
       -22px 25px 16px 0px rgba(0, 0, 0, 0.2);
-    --background: 0 0% 100%;
+    /* --background: 0 0% 100%; */
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -50,7 +57,7 @@ html {
     --primary-foreground: 355.7 100% 97.3%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
+    /* --muted: 240 4.8% 95.9%; */
     --muted-foreground: 240 3.8% 46.1%;
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
@@ -86,7 +93,7 @@ html {
   }
 
   .dark {
-    --background: 20 14.3% 4.1%;
+    /* --background: 20 14.3% 4.1%; */
     --foreground: 0 0% 95%;
     --card: 24 9.8% 10%;
     --card-foreground: 0 0% 95%;
@@ -255,4 +262,10 @@ html {
     --tw-text-opacity: 1;
     color: rgba(var(--secondary-dark), var(--tw-text-opacity));
 }
+
+.data-\[state\=active\]\:shadow-sm[data-state=active] {
+    /* --tw-shadow: 2px 1px 2px 2px rgb(0 0 0 / 0.05); */
+    /* --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color); */
+    /* box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow); */
+    border-bottom: 2px solid;}
 

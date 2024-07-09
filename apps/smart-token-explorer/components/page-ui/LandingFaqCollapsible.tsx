@@ -1,11 +1,11 @@
 import { clsx } from "clsx";
-import { GlowBg } from "@/components/shared/ui/glow-bg";
+import { GlowBg } from "@/components/shadcn/ui/glow-bg";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/shared/ui/accordion";
+} from "@/components/shadcn/ui/accordion";
 
 export interface FaqItem {
   question: string;
