@@ -35,7 +35,7 @@ export default function LandingPage() {
                     </span>
                 </h1>
             }
-            description="Smart Toke Explorer description...."
+            description="Smart Token Explorer description...."
             imageSrc="/images/1.webp"
             imageAlt="Sample image"
             variant="primary"

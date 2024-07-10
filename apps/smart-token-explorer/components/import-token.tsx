@@ -57,7 +57,7 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
     return (<>
         <Dialog open={open} onOpenChange={openHandler} >
             <DialogTrigger asChild>
-                <Button variant='secondary' className="text-white font-bold">Import</Button>
+                <Button className="text-white font-bold bg-secondary-500">Import</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px] bg-white dark:text-black">
                 <DialogHeader>
@@ -105,7 +105,7 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
 
                 </div>
                 <DialogFooter>
-                    <Button className="text-white font-bold" onClick={confirmHandler}>
+                    <Button className="text-white font-bold bg-primary-500" onClick={confirmHandler}>
                         {loading && (
                             <SpinIcon
                                 className="animate-spin h-5 w-5 text-white mr-2" />

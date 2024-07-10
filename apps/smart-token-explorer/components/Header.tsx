@@ -5,10 +5,15 @@ import ThemeSwitch from "./shadcn/ThemeSwitch";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from 'wagmi'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./shadcn/ui/tooltip";
+import DevMode from "@/components/dev-mode";
+import { getDevModeAtom, setDevModeAtom } from "@/lib/store";
+import { useAtomValue, useSetAtom } from "jotai";
+import { STETooltip } from "./ste-tooltip";
 
 
 export default function Header() {
     const { address } = useAccount()
+    let devMode = useAtomValue(getDevModeAtom)
     return (
         <section className="p-3 w-full">
             <div className="max-w-full  container-wide flex justify-between mx-auto">
@@ -16,36 +21,27 @@ export default function Header() {
                 <div className="gap-3 flex items-center">
                     <div className="mt-2 gap-3 flex items-center">
                         <a className="nav-link hidden sm:block font-bold " href="http://outer">
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger><ListIcon /></TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Token list</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-
+                            <STETooltip trigger={(<ListIcon />)} content={(<p>Token list</p>)}></STETooltip>
                         </a>
 
-                        {address ? (<a className="nav-link hidden sm:block font-bold" href="/setting">
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger><SettingsIcon /></TooltipTrigger>
-                                    <TooltipContent>
-                                        Setting
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        </a>) : (<></>)}
 
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger><ThemeSwitch /></TooltipTrigger>
-                                <TooltipContent>
-                                    <b>Switch theme</b>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+
+
+                        {address ? (
+                            <>
+                                {devMode && (
+                                    <a className="nav-link hidden sm:block font-bold" href="/setting">
+                                        <STETooltip trigger={(<SettingsIcon />)} content={(<p>Setting</p>)}></STETooltip>
+
+                                    </a>
+                                )}
+
+                                <DevMode />
+                            </>
+
+                        ) : (<></>)}
+
+                        <STETooltip trigger={(<ThemeSwitch />)} content={(<b>Switch theme</b>)}></STETooltip>
                     </div>
                     <ConnectButton
                         showBalance={false}

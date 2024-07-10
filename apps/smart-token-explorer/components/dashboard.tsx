@@ -6,10 +6,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./shadcn/ui/tabs";
 import MyTokenList from "./token-list";
 import { useCallback } from "react";
 import { useToast } from "./shadcn/ui/use-toast";
+import { useAtomValue } from "jotai";
+import { getTokenTypeAtom } from "@/lib/store"
 
 
 export default function DashboardPage() {
     const { toast } = useToast()
+    let tokenType = useAtomValue(getTokenTypeAtom)
     const importTokenHandler = useCallback(
         (type: string, address: string, tokenId?: string) => {
             console.log(type, address, tokenId);
@@ -21,6 +24,7 @@ export default function DashboardPage() {
         },
         [toast]
     )
+
     return (<>
         <section className="min-h-screen fancy-overlay bg-primary-100/20 dark:bg-primary-900/10 pt-8">
             <div className="container-wide mx-auto">
@@ -28,16 +32,16 @@ export default function DashboardPage() {
                     <h1 className="uppercase">Your tokens</h1>
                     <ImportToken onConfirm={importTokenHandler} />
                 </div>
-                <Tabs defaultValue={TOKENTYPE_LIST[0]} className="w-full mt-2">
+                <Tabs defaultValue={tokenType} className="w-full mt-2">
                     <TabsList className="w-full  justify-start  ">
                         {TOKENTYPE_LIST.map((tab, index) => (
                             <>
-                                <TabsTrigger value={tab} key={index}>{tab}</TabsTrigger>
+                                <TabsTrigger value={tab} key={`${tab}-h` + index}>{tab}</TabsTrigger>
                             </>))}
                     </TabsList>
                     {TOKENTYPE_LIST.map((tab, index) => (
                         <>
-                            <TabsContent value={tab} key={index}>
+                            <TabsContent value={tab} key={`${tab}` + index}>
                                 <MyTokenList type={tab} />
                             </TabsContent>
                         </>))}

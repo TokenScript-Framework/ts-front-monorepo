@@ -23,7 +23,7 @@ Object.keys(globalColors).map((variant) => {
 });
 
 export const metadata: Metadata = {
-    title: "Smart Toke Explorer",
+    title: "Smart Token Explorer",
     description: "Token explorer",
 };
 
