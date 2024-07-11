@@ -8,8 +8,8 @@ import {
 } from "@rainbow-me/rainbowkit";
 
 import "@rainbow-me/rainbowkit/styles.css";
-import { type ReactNode } from "react";
-import { WagmiProvider } from "wagmi";
+import { useEffect, useState, type ReactNode } from "react";
+import { Config, WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
     rainbowWallet,
@@ -17,39 +17,57 @@ import {
     coinbaseWallet, injectedWallet
 } from "@rainbow-me/rainbowkit/wallets";
 import { useAtomValue } from "jotai";
-import { getChainsAtom } from "@/lib/store";
-import { DEFAULT_CHAINS } from "@/lib/constants";
-const connectors = connectorsForWallets(
-    [
-        {
-            groupName: "Popular",
-            wallets: [rainbowWallet, safeWallet, coinbaseWallet, injectedWallet],
-        },
-    ],
-    {
-        appName: "Smart Token Explorer",
-        projectId: "759fe092b9c9d2bbdc592d38a1486a73",
-    }
-);
-const config = getDefaultConfig({
-    appName: "Smart Token Explorer",
-    projectId: "759fe092b9c9d2bbdc592d38a1486a73",
-    chains: DEFAULT_CHAINS,
-    ssr: true,
-});
+import { getChainsAtom, getDevModeAtom } from "@/lib/store";
+import { MAIN_CHAINS, TEST_CHAINS } from "@/lib/constants";
+// const connectors = connectorsForWallets(
+//     [
+//         {
+//             groupName: "Popular",
+//             wallets: [rainbowWallet, safeWallet, coinbaseWallet, injectedWallet],
+//         },
+//     ],
+//     {
+//         appName: "Smart Token Explorer",
+//         projectId: "759fe092b9c9d2bbdc592d38a1486a73",
+//     }
+// );
+// let config = getDefaultConfig({
+//     appName: "Smart Token Explorer",
+//     projectId: "759fe092b9c9d2bbdc592d38a1486a73",
+//     chains: TEST_CHAINS,
+//     ssr: true,
+// });
 
 const client = new QueryClient();
 export function Providers({ children }: { children: ReactNode }) {
-    // let chainList = useAtomValue(getChainsAtom)
+    let devMode = useAtomValue(getDevModeAtom)
+    const [config, setConfig] = useState<Config>()
+    useEffect(() => {
+        let chainList = []
+        if (devMode) {
+            chainList = [...TEST_CHAINS, ...MAIN_CHAINS]
+        } else {
+            chainList = MAIN_CHAINS
+        }
+        setConfig(getDefaultConfig({
+            appName: "Smart Token Explorer",
+            projectId: "759fe092b9c9d2bbdc592d38a1486a73",
+            chains: chainList,
+            ssr: true,
+        }));
 
-    // chainList = chainList.length == 0 ? DEFAULT_CHAINS : chainList
+    }, [devMode, setConfig])
 
 
-    return (
-        <WagmiProvider config={config}>
-            <QueryClientProvider client={client}>
-                <RainbowKitProvider>{children}</RainbowKitProvider>
-            </QueryClientProvider>
-        </WagmiProvider>
+    return (<>
+        {config &&
+            <WagmiProvider config={config}>
+                <QueryClientProvider client={client}>
+                    <RainbowKitProvider>{children}</RainbowKitProvider>
+                </QueryClientProvider>
+            </WagmiProvider>
+        }
+    </>
     );
 }
+

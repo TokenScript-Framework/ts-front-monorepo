@@ -25,7 +25,7 @@ export default function DashboardPage() {
         [toast]
     )
 
-    return (<>
+    return (
         <section className="min-h-screen fancy-overlay bg-primary-100/20 dark:bg-primary-900/10 pt-8">
             <div className="container-wide mx-auto">
                 <div className="flex justify-between items-base">
@@ -35,21 +35,18 @@ export default function DashboardPage() {
                 <Tabs defaultValue={tokenType} className="w-full mt-2">
                     <TabsList className="w-full  justify-start  ">
                         {TOKENTYPE_LIST.map((tab, index) => (
-                            <>
-                                <TabsTrigger value={tab} key={`${tab}-h` + index}>{tab}</TabsTrigger>
-                            </>))}
+
+                            <TabsTrigger value={tab} key={`${tab}-h` + index}>{tab}</TabsTrigger>
+                        ))}
                     </TabsList>
                     {TOKENTYPE_LIST.map((tab, index) => (
-                        <>
-                            <TabsContent value={tab} key={`${tab}` + index}>
-                                <MyTokenList type={tab} />
-                            </TabsContent>
-                        </>))}
+
+                        <TabsContent value={tab} key={`${tab}-c` + index}>
+                            <MyTokenList type={tab} key={`${tab}-t` + index} />
+                        </TabsContent>
+                    ))}
                 </Tabs>
-
             </div>
-
         </section>
-    </>
     );
 }

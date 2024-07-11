@@ -1,7 +1,7 @@
 "use client"
 import { Button } from "@/components/shadcn/ui/button"
 import { Card, CardContent, CardTitle } from "@/components/shadcn/ui/card"
-import { addressPipe } from "@/lib/utils"
+import { addressPipe, rewriteUrlIfIFPSUrl } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/ui/avatar"
 import { useAccount } from "wagmi"
 import { ChevronLeftIcon } from "lucide-react";
@@ -52,7 +52,7 @@ export default function ERC20Page({
                                 <div className="absolute top-2 left-2 cursor-pointer  hover:bg-primary-300 hover:rounded-full hover:text-white" onClick={() => router.back()}><ChevronLeftIcon /></div>
                                 <div className="mt-8 flex justify-center gap-2 items-center">
                                     <Avatar>
-                                        <AvatarImage src={token.logoURI} alt="token" />
+                                        <AvatarImage src={rewriteUrlIfIFPSUrl(token.image)} alt="token" />
                                         <AvatarFallback className="bg-primary-100/20">T</AvatarFallback>
                                     </Avatar>
 
@@ -62,9 +62,9 @@ export default function ERC20Page({
                             </CardTitle>
 
                             <CardContent>
+                                <div className="mt-8">Token Id</div>
 
-
-                                <Button variant="outlinePrimary">Transfer</Button>
+                                <Button variant="outlinePrimary" className="mt-4">Transfer</Button>
                             </CardContent>
 
                         </Card>

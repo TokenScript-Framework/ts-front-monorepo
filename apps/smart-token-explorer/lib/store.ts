@@ -1,5 +1,4 @@
 import { atom } from "jotai"
-import { DEFAULT_CHAINS } from "./constants"
 export const chainsAtom = atom<any>([])
 export const getChainsAtom = atom((get) => get(chainsAtom))
 
@@ -21,9 +20,8 @@ export const setTokenTypeAtom = atom(
 )
 
 
-export const devModeAtom = atom<boolean>(false)
+export const devModeAtom = atom<boolean>(true)
 export const getDevModeAtom = atom((get) => get(devModeAtom))
-
 export const setDevModeAtom = atom(
   null,
   async (get, set, mode: boolean ) => {

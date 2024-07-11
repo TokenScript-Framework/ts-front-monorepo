@@ -24,24 +24,23 @@ export default function Header() {
                             <STETooltip trigger={(<ListIcon />)} content={(<p>Token list</p>)}></STETooltip>
                         </a>
 
+                        {address && (
+                            <a className="nav-link hidden sm:block font-bold" href="/setting">
+                                <STETooltip trigger={(<SettingsIcon />)} content={(<p>Setting</p>)}></STETooltip>
+
+                            </a>
+                        )}
 
 
-
-                        {address ? (
+                        <STETooltip trigger={(<ThemeSwitch />)} content={(<b>Switch theme</b>)}></STETooltip>
+                        {address && (
                             <>
-                                {devMode && (
-                                    <a className="nav-link hidden sm:block font-bold" href="/setting">
-                                        <STETooltip trigger={(<SettingsIcon />)} content={(<p>Setting</p>)}></STETooltip>
-
-                                    </a>
-                                )}
-
                                 <DevMode />
                             </>
 
-                        ) : (<></>)}
+                        )}
 
-                        <STETooltip trigger={(<ThemeSwitch />)} content={(<b>Switch theme</b>)}></STETooltip>
+
                     </div>
                     <ConnectButton
                         showBalance={false}

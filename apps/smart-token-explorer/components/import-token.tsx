@@ -21,7 +21,6 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
     const [loading, setLoading] = React.useState(false);
     const [type, setType] = useState(TOKENTYPE_LIST[0])
     const confirmHandler = () => {
-        console.log(address, tokenId)
 
         if (!address || (type !== 'ERC20' && !tokenId)) {
             return
@@ -57,7 +56,7 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
     return (<>
         <Dialog open={open} onOpenChange={openHandler} >
             <DialogTrigger asChild>
-                <Button className="text-white font-bold bg-secondary-500">Import</Button>
+                <Button className="text-white font-bold bg-secondary-500 hover:bg-secondary-300">Import</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px] bg-white dark:text-black">
                 <DialogHeader>
@@ -69,12 +68,12 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
                 <div className="grid gap-4 py-4">
                     <RadioGroup defaultValue={TOKENTYPE_LIST[0]} className="flex itemx-center justify-center gap-10">
                         {TOKENTYPE_LIST.map((type, index) => (
-                            <>
-                                <div className="flex items-center space-x-2" key={index}>
-                                    <RadioGroupItem value={type} id={type} className="border-black" onClick={() => checkedChangeHandler(type)} />
-                                    <Label htmlFor={type}>{type}</Label>
-                                </div>
-                            </>
+
+                            <div className="flex items-center space-x-2" key={`${type}-` + index}>
+                                <RadioGroupItem value={type} id={type} className="border-black" onClick={() => checkedChangeHandler(type)} />
+                                <Label htmlFor={type}>{type}</Label>
+                            </div>
+
                         ))}
                     </RadioGroup>
                     <div className="grid grid-cols-5 items-center gap-4">
