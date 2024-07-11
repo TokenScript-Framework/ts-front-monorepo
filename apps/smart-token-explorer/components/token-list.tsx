@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/ui/avat
 import Image from "@/components/shadcn/Image";
 import { Card, CardTitle, CardContent } from "@/components/shadcn/ui/card";
 
-import { addressPipe, urlPipe } from "@/lib/utils";
+import { addressPipe, rewriteUrlIfIFPSUrl } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 interface TokenProps {
@@ -74,7 +74,7 @@ export default function MyTokenList({ type }: TokenProps) {
                             <CardTitle >
                                 <div className="flex justify-center gap-2 items-center">
                                     <Avatar>
-                                        <AvatarImage src={token.logoURI ? token.logoURI : urlPipe(token.image)} alt="token" />
+                                        <AvatarImage src={token.logoURI ? token.logoURI : rewriteUrlIfIFPSUrl(token.image)} alt="token" />
                                         <AvatarFallback className="bg-primary-100/20">T</AvatarFallback>
                                     </Avatar>
 
