@@ -3,6 +3,7 @@ import { LandingFaqCollapsibleSection } from "@/components/page-ui/LandingFaqCol
 import { LandingPrimaryImageCtaSection } from "@/components/page-ui/cta/LandingPrimaryCta";
 import { Button } from "@/components/shadcn/ui/button";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { SmartRating } from "token-kit";
 
 export default function LandingPage() {
     const faqItems = [
@@ -48,6 +49,8 @@ export default function LandingPage() {
             <Button variant="outlinePrimary">
                 <a href="#">Learn more</a>
             </Button>
+
+            <SmartRating testIdPrefix={"2"} theme={"primary"} />
         </LandingPrimaryImageCtaSection>
         <section className="bg-primary-100/10 py-[100px]  dark:bg-primay-900/50">
             <div className="font-bold text-7xl grid grid-cols-4 gap-8  container-wide mx-auto ">

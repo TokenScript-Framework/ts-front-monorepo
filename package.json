@@ -5,8 +5,9 @@
   "scripts": {
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
-    "explorer": "pnpm --filter smart-token-explorer"
-
+    "explorer": "pnpm --filter smart-token-explorer",
+    "storage": "pnpm --filter storage",
+    "tokenkit": "pnpm --filter token-kit"
   },
   "dependencies": {
     "@t3-oss/env-core": "^0.10.1",
