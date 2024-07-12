@@ -20,7 +20,7 @@ export default function Header() {
                 <Logo />
                 <div className="gap-3 flex items-center">
                     <div className="mt-2 gap-3 flex items-center">
-                        <a className="nav-link hidden sm:block font-bold " href="http://outer">
+                        <a className="nav-link hidden sm:block font-bold " href="https://tokens.tokenscript.org/">
                             <STETooltip trigger={(<ListIcon />)} content={(<p>Token list</p>)}></STETooltip>
                         </a>
 

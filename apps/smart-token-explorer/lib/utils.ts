@@ -25,3 +25,22 @@ export function rewriteUrlIfIFPSUrl(url:string){
     return url;
   } 
 }
+
+export function chainPipe(chain: number) {
+    switch (chain) {
+        case 1:
+        return 'Ethereum Mainnet';
+        case 137:
+        return 'Polygon';
+        case 10:
+        return 'OP Mainnet';
+        case 8453:
+        return 'Base';
+        case 11155111:
+        return 'Sepolia';
+        case 84532:
+        return 'Base Sepolia';
+        default:
+        return `Chain ${chain}`;
+    }
+}

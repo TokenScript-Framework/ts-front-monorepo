@@ -9,46 +9,62 @@ import React from "react";
 import { SpinIcon } from "@/components/icons/SpinIcon"
 import { RadioGroupItem, RadioGroup } from "./shadcn/ui/radio-group";
 import { TOKENTYPE_LIST } from "@/lib/constants";
+import { validateToken } from "@/lib/etherService";
+import { useAccount, useChainId } from "wagmi";
 
 interface ImportTokenProps {
-    onConfirm: (type: string, address: string, tokenId?: string) => void
+    onConfirm: (type: string, token: string, tokenId?: string) => void
 }
 
 export default function ImportToken({ onConfirm }: ImportTokenProps) {
-    const [address, setAddress] = useState("")
+    const [token, setToken] = useState("")
     const [tokenId, setTokenId] = useState("")
     const [open, setOpen] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const [type, setType] = useState(TOKENTYPE_LIST[0])
-    const confirmHandler = () => {
+    const [error, setError] = useState("")
+    const { address } = useAccount()
+    const chainId = useChainId()
 
-        if (!address || (type !== 'ERC20' && !tokenId)) {
+
+    const confirmHandler = async () => {
+        if (!token || (type !== 'ERC20' && !tokenId)) {
             return
         }
 
-        console.log(address, tokenId, open)
+        console.log(token, tokenId, open)
         setLoading(true)
-        setTimeout(() => {
-            setOpen(false)
-            onConfirm(type, address, tokenId)
-        }, 500);
+        if (address) {
+            const validate: any = await validateToken(chainId, address, type, token, tokenId)
+            if (validate.error) {
+                setLoading(false)
+                setError(validate.message)
+            } else {
+                //to import 
+                setOpen(false)
+                onConfirm(type, token, tokenId)
+            }
+        }
     }
-    const changeAddressHandler = (e: any) => {
-        setAddress(e.target.value)
+    const changeTokenHandler = (e: any) => {
+        setToken(e.target.value)
+        setError("")
     }
 
     const changeTokenIdHandler = (e: any) => {
         setTokenId(e.target.value)
+        setError("")
     }
 
     const checkedChangeHandler = (type: string) => {
         console.log(type)
         setType(type)
+        setError("")
     }
     const openHandler = () => {
-        console.log('#####')
         setOpen(!open)
-        setAddress("")
+        setError("")
+        setToken("")
         setTokenId("")
         setLoading(false)
     }
@@ -77,13 +93,13 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
                         ))}
                     </RadioGroup>
                     <div className="grid grid-cols-5 items-center gap-4">
-                        <Label htmlFor="address" className="text-right">
-                            Address
+                        <Label htmlFor="token" className="text-right">
+                            Token
                         </Label>
                         <Input
-                            id={address}
-                            defaultValue={address}
-                            onChange={changeAddressHandler}
+                            id={token}
+                            defaultValue={token}
+                            onChange={changeTokenHandler}
                             placeholder="Token Address"
                             className="col-span-4"
                         />
@@ -101,6 +117,10 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
                                 className="col-span-4"
                             />
                         </div></>)}
+
+                    {error && (<div className="text-center text-red-500">
+                        {error}
+                    </div>)}
 
                 </div>
                 <DialogFooter>
