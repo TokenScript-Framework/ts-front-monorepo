@@ -1,3 +1,19 @@
 export const erc165ABI = [
-  "function supportsInterface(bytes4 interfaceId) view returns (bool)",
+  {
+    type: "function",
+    name: "supportsInterface",
+    inputs: [
+      {
+        name: "interfaceID",
+        type: "bytes4",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
 ] as const;
