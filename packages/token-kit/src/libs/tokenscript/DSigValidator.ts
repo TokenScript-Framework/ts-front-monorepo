@@ -1,7 +1,7 @@
 import * as xmldsigjs from "@tokenscript/xmldsigjs";
 import {KeyInfoX509Data, KeyValue, X509Certificate} from "@tokenscript/xmldsigjs";
 import * as x509 from "@peculiar/x509";
-import {uint8tohex} from "./utils";
+import {uint8tohex} from "../../utils/utils";
 import {Crypto, CryptoKey} from "webcrypto-liner/build";
 
 const crypto = new Crypto();

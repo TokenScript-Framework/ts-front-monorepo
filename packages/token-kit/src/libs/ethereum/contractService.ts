@@ -9,6 +9,7 @@ import {
   getERC5169ScriptURICache,
   setERC5169ScriptURICache,
 } from "./erc5169ScriptURICache"
+import {TokenKit} from "../.."
 
 export function getERC721Contract(
   chainId: number,
@@ -110,7 +111,7 @@ async function getERC5169ScriptURI(
   let provider = getInfuraBatchedRPCProvider(chainId)
   try {
     const contract = new ethers.Contract(contractAddress, erc5169ABI, provider)
-    return contract["scriptURI"]().catch(() => "not implemented")
+    return contract.scriptURI().catch(() =>  "not implemented")
   } catch {
     return null
   }
@@ -145,16 +146,11 @@ function getInfuraBatchedRPCProvider(chainId: number): ethers.JsonRpcProvider {
         { staticNetwork }
       )
     } else {
-      provider = new ethers.InfuraProvider(chainId, infuraApiKey)
+      provider = new ethers.InfuraProvider(chainId, TokenKit.infuraApiKey)
     }
     batchedRPCProviders[chainId] = provider
     return provider
   }
-}
-
-let infuraApiKey: string | undefined
-export function setInfuraApiKey(apiKey: string) {
-  infuraApiKey = apiKey
 }
 
 function getRPCbyChainId(chainId: number) {

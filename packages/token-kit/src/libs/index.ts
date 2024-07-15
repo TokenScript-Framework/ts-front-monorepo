@@ -1,2 +1,2 @@
-export * from "./tokenscript";
+export * from "./tokenscript/tsValidation";
 export * from "./ethereum";
