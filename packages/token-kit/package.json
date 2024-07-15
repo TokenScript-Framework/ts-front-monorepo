@@ -27,5 +27,12 @@
     "rollup-plugin-postcss": "^4.0.2",
     "tslib": "^2.6.3",
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@peculiar/x509": "^1.11.0",
+    "@tokenscript/xmldsigjs": "^2.5.2",
+    "axios": "^1.7.2",
+    "ethers": "^6.13.1",
+    "webcrypto-liner": "^1.4.3"
   }
 }
