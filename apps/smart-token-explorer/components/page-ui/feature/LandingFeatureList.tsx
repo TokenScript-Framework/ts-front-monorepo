@@ -1,6 +1,6 @@
-import { clsx } from "clsx";
 import { LandingFeature } from "@/components/page-ui/feature/LandingFeature";
 import { GlowBg } from "@/components/shadcn/ui/glow-bg";
+import { clsx } from "clsx";
 
 export interface FeatureListItem {
   title: string;
@@ -40,7 +40,7 @@ export const LandingFeatureList = ({
   return (
     <section
       className={clsx(
-        "relative w-full flex justify-center items-center gap-8 py-12 lg:py-16 flex-col",
+        "relative flex w-full flex-col items-center justify-center gap-8 py-12 lg:py-16",
         withBackground && variant === "primary"
           ? "bg-primary-100/20 dark:bg-primary-900/10"
           : "",
@@ -48,23 +48,23 @@ export const LandingFeatureList = ({
           ? "bg-secondary-100/20 dark:bg-secondary-900/10"
           : "",
         withBackgroundGlow ? "overflow-hidden" : "",
-        className
+        className,
       )}
     >
       {withBackgroundGlow ? (
-        <div className="hidden lg:flex justify-center w-full h-full absolute -bottom-1/2">
+        <div className="absolute -bottom-1/2 hidden h-full w-full justify-center lg:flex">
           <GlowBg
-            className={clsx("w-full lg:w-2/3 h-auto z-0")}
+            className={clsx("z-0 h-auto w-full lg:w-2/3")}
             variant={backgroundGlowVariant}
           />
         </div>
       ) : null}
 
       <div
-        className={clsx("w-full p-6 max-w-full container-wide relative z-10")}
+        className={clsx("container-wide relative z-10 w-full max-w-full p-6")}
       >
         {title ? (
-          <h2 className="text-3xl font-semibold leading-tight max-w-xs sm:max-w-none md:text-4xl lg:text-5xl fancyHeading">
+          <h2 className="fancyHeading max-w-xs text-3xl font-semibold leading-tight sm:max-w-none md:text-4xl lg:text-5xl">
             {title}
           </h2>
         ) : (
@@ -77,7 +77,7 @@ export const LandingFeatureList = ({
           descriptionComponent
         )}
 
-        <div className="mt-12 flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-12">
+        <div className="mt-12 flex flex-col gap-6 sm:grid sm:grid-cols-2 md:grid-cols-3 md:gap-12">
           {featureItems.map((featureItem, index) => (
             <LandingFeature
               key={index}

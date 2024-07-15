@@ -1,1 +1,1 @@
-export * from './smartrating';
+export * from "./smartrating";

@@ -1,6 +1,6 @@
+import Image from "@/components/shadcn/Image";
 import clsx from "clsx";
 import { BadgeCheck } from "lucide-react";
-import Image from "@/components/shadcn/Image";
 
 export interface TestimonialItem {
   className?: string;
@@ -37,12 +37,12 @@ export const LandingTestimonial = ({
       target="_blank"
       rel="noopener noreferrer"
       className={clsx(
-        "w-full inline-block bg-white dark:bg-neutral-900 rounded-2xl shadow-md ring-1 ring-gray-900/5",
+        "inline-block w-full rounded-2xl bg-white shadow-md ring-1 ring-gray-900/5 dark:bg-neutral-900",
         featured ? "shadow-xl" : "p-6",
         missingUrl
-          ? "cursor-default pointer-events-none"
-          : "cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors",
-        className
+          ? "pointer-events-none cursor-default"
+          : "cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800",
+        className,
       )}
     >
       <figure>
@@ -51,7 +51,7 @@ export const LandingTestimonial = ({
             "text-gray-900 dark:text-gray-100",
             featured
               ? "p-6 text-lg font-semibold leading-7 tracking-tight sm:text-xl sm:leading-8"
-              : ""
+              : "",
           )}
         >
           <p className="whitespace-pre-line">{`“${text}”`}</p>
@@ -62,7 +62,7 @@ export const LandingTestimonial = ({
             "flex items-center gap-x-4",
             featured
               ? "flex-wrap gap-y-4 border-t border-gray-900/10 px-6 py-4 sm:flex-nowrap"
-              : "mt-6"
+              : "mt-6",
           )}
         >
           <Image
@@ -73,10 +73,10 @@ export const LandingTestimonial = ({
             alt=""
           />
           <div className="flex-auto">
-            <div className="font-semibold flex gap-0.5 items-center">
+            <div className="flex items-center gap-0.5 font-semibold">
               {name}{" "}
               {verified && (
-                <BadgeCheck className="flex-shrink-0 fill-blue-500 text-white w-4 h-4" />
+                <BadgeCheck className="h-4 w-4 flex-shrink-0 fill-blue-500 text-white" />
               )}
             </div>
             <div className="text-gray-600">{`${handle}`}</div>

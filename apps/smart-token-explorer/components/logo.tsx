@@ -1,3 +1,9 @@
 export default function Logo() {
-    return <><a href="/" className="font-bold text-4xl uppercase">Smart Token Explorer</a></>;
+  return (
+    <>
+      <a href="/" className="text-4xl font-bold uppercase">
+        Smart Token Explorer
+      </a>
+    </>
+  );
 }

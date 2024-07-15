@@ -1,11 +1,11 @@
-import { clsx } from "clsx";
-import { GlowBg } from "@/components/shadcn/ui/glow-bg";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/shadcn/ui/accordion";
+import { GlowBg } from "@/components/shadcn/ui/glow-bg";
+import { clsx } from "clsx";
 
 export interface FaqItem {
   question: string;
@@ -42,7 +42,7 @@ export const LandingFaqCollapsibleSection = ({
   return (
     <section
       className={clsx(
-        "relative w-full flex justify-center items-center gap-8 py-12 lg:py-16 flex-col",
+        "relative flex w-full flex-col items-center justify-center gap-8 py-12 lg:py-16",
         withBackground && variant === "primary"
           ? "bg-primary-100/20 dark:bg-primary-900/10"
           : "",
@@ -50,21 +50,21 @@ export const LandingFaqCollapsibleSection = ({
           ? "bg-secondary-100/20 dark:bg-secondary-900/10"
           : "",
         withBackgroundGlow ? "overflow-hidden" : "",
-        className
+        className,
       )}
     >
       {withBackgroundGlow ? (
-        <div className="hidden lg:flex justify-center w-full h-full absolute -bottom-1/2 pointer-events-none">
+        <div className="pointer-events-none absolute -bottom-1/2 hidden h-full w-full justify-center lg:flex">
           <GlowBg
-            className={clsx("w-full lg:w-2/3 h-auto z-0")}
+            className={clsx("z-0 h-auto w-full lg:w-2/3")}
             variant={backgroundGlowVariant}
           />
         </div>
       ) : null}
 
-      <div className={clsx(className, "w-full p-6 container-wide")}>
+      <div className={clsx(className, "container-wide w-full p-6")}>
         {title ? (
-          <h2 className="text-3xl font-semibold leading-tight max-w-xs sm:max-w-none md:text-4xl lg:text-5xl fancyHeading">
+          <h2 className="fancyHeading max-w-xs text-3xl font-semibold leading-tight sm:max-w-none md:text-4xl lg:text-5xl">
             {title}
           </h2>
         ) : (
@@ -80,7 +80,7 @@ export const LandingFaqCollapsibleSection = ({
         <Accordion
           type="single"
           collapsible
-          className="w-full mt-12 relative z-10"
+          className="relative z-10 mt-12 w-full"
         >
           {faqItems.map((faqItem, index) => (
             <AccordionItem
@@ -92,7 +92,7 @@ export const LandingFaqCollapsibleSection = ({
                   : "",
                 withBackground && variant === "secondary"
                   ? "border-secondary-500/10"
-                  : ""
+                  : "",
               )}
             >
               <AccordionTrigger className="text-left">

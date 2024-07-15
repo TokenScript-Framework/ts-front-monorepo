@@ -1,9 +1,9 @@
-import clsx from "clsx";
+import { LandingRating } from "@/components/page-ui/rating/LandingRating";
 import {
   LandingAvatar,
   SocialProofItem,
 } from "@/components/page-ui/social-proof/LandingAvatar";
-import { LandingRating } from "@/components/page-ui/rating/LandingRating";
+import clsx from "clsx";
 
 /**
  * Shows social proof with avatars, number of users and an optional rating.
@@ -43,11 +43,11 @@ export const LandingSocialProof = ({
             className={clsx(
               "relative",
               !disableAnimation
-                ? "md:group-hover:-ml-0.5 transition-all duration-300"
+                ? "transition-all duration-300 md:group-hover:-ml-0.5"
                 : "",
               index === 1 || index === 2 ? `-ml-4` : "",
               index === 3 ? `-ml-5` : "",
-              index > 3 ? `-ml-6` : ""
+              index > 3 ? `-ml-6` : "",
             )}
           />
         ))}
@@ -55,9 +55,9 @@ export const LandingSocialProof = ({
         <div
           className={clsx(
             !disableAnimation
-              ? "md:group-hover:-ml-0.5 transition-all duration-300"
+              ? "transition-all duration-300 md:group-hover:-ml-0.5"
               : "",
-            "relative flex items-center justify-center rounded-full h-9 w-9 border-2 border-solid border-primary-100 -ml-5 text-xs bg-primary-100 text-gray-900 dark:text-gray-900"
+            "border-primary-100 bg-primary-100 relative -ml-5 flex h-9 w-9 items-center justify-center rounded-full border-2 border-solid text-xs text-gray-900 dark:text-gray-900",
           )}
         >
           {numberText}+
@@ -68,7 +68,7 @@ export const LandingSocialProof = ({
         {showRating ? <LandingRating /> : null}
 
         {!children ? (
-          <p className="text-xs max-w-sm">
+          <p className="max-w-sm text-xs">
             from {numberText}+ {suffixText}
           </p>
         ) : (

@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
-import clsx from "clsx";
 import { Button } from "@/components/shadcn/ui/button";
+import clsx from "clsx";
+import { useState } from "react";
 
 /**
  * Wraps the testimonial section in the landing page, and adds a "Read more" button (truncates to the given height).
@@ -22,7 +22,7 @@ export const LandingTestimonialReadMoreWrapper = ({
   return (
     <div
       className={clsx(
-        "relative w-full flex justify-center items-start overflow-hidden",
+        "relative flex w-full items-start justify-center overflow-hidden",
         className,
 
         size === "lg"
@@ -39,7 +39,7 @@ export const LandingTestimonialReadMoreWrapper = ({
           ? readMore
             ? "h-auto"
             : "h-[100vh] sm:h-[50vh] lg:h-[600px] xl:h-[500px]"
-          : ""
+          : "",
       )}
     >
       {children}
@@ -48,10 +48,10 @@ export const LandingTestimonialReadMoreWrapper = ({
         <>
           <div
             className={clsx(
-              "pointer-events-none z-20 absolute bottom-0 left-0 w-full h-2/5 bg-gradient-to-t from-gray-100 via-gray-100/40 dark:from-gray-950 dark:via-gray-950/60"
+              "pointer-events-none absolute bottom-0 left-0 z-20 h-2/5 w-full bg-gradient-to-t from-gray-100 via-gray-100/40 dark:from-gray-950 dark:via-gray-950/60",
             )}
           />
-          <div className="z-20 absolute bottom-12 left-0 right-0 flex justify-center items-center">
+          <div className="absolute bottom-12 left-0 right-0 z-20 flex items-center justify-center">
             <Button
               variant={variant}
               className="backdrop-blur-sm"

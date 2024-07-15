@@ -1,33 +1,33 @@
 export interface ChainsData {
-  name: string
-  chain: string
-  icon?: string
-  title?: string
-  rpc: string[]
-  apiURL?: string
-  browserURL?: string
-  features?: { name: string }[]
-  faucets?: string[]
-  nativeCurrency: { name: string; symbol: string; decimals: number }
-  infoURL?: string
-  shortName?: string
-  chainId: number
-  networkId: number
-  slip44?: number
-  status?: string
-  ens?: { registry: string }
+  name: string;
+  chain: string;
+  icon?: string;
+  title?: string;
+  rpc: string[];
+  apiURL?: string;
+  browserURL?: string;
+  features?: { name: string }[];
+  faucets?: string[];
+  nativeCurrency: { name: string; symbol: string; decimals: number };
+  infoURL?: string;
+  shortName?: string;
+  chainId: number;
+  networkId: number;
+  slip44?: number;
+  status?: string;
+  ens?: { registry: string };
   explorers?: {
-    name: string
-    url: string
-    icon?: string
-    standard: string
-  }[]
+    name: string;
+    url: string;
+    icon?: string;
+    standard: string;
+  }[];
   parent?: {
-    type: string
-    chain: string
-    bridges?: { url: string }[]
-  }
-  redFlags?: string[]
+    type: string;
+    chain: string;
+    bridges?: { url: string }[];
+  };
+  redFlags?: string[];
 }
 
 export const chainsData: ChainsData[] = [
@@ -376,4 +376,4 @@ export const chainsData: ChainsData[] = [
       },
     ],
   },
-]
+];

@@ -12,7 +12,7 @@ export class CacheService<T = any> {
 
   set(key: string, value: T, ttl: number): void {
     const expireAt = Date.now() + ttl;
-    this.cache.set(key, {value, expireAt});
+    this.cache.set(key, { value, expireAt });
   }
 
   get(key: string): T | null {

@@ -1,6 +1,6 @@
-import clsx from "clsx";
 import Image from "@/components/shadcn/Image";
 import { GlowBg } from "@/components/shadcn/ui/glow-bg";
+import clsx from "clsx";
 
 /**
  * A component meant to be used in the landing page.
@@ -60,7 +60,7 @@ export const LandingProductFeature = ({
   return (
     <section
       className={clsx(
-        "w-full flex flex-col justify-center items-center gap-8 py-12 lg:py-16",
+        "flex w-full flex-col items-center justify-center gap-8 py-12 lg:py-16",
         withBackground && variant === "primary"
           ? "bg-primary-100/20 dark:bg-primary-900/10"
           : "",
@@ -71,16 +71,16 @@ export const LandingProductFeature = ({
           ? "overflow-x-hidden"
           : "",
         imagePerspective === "paper" ? "md:pb-24" : "",
-        className
+        className,
       )}
     >
       <div
         className={clsx(
-          "w-full p-6 flex flex-col items-center relative",
+          "relative flex w-full flex-col items-center p-6",
           imagePosition === "center"
             ? "container-narrow"
-            : "max-w-full container-wide grid lg:grid-cols-2",
-          innerClassName
+            : "container-wide grid max-w-full lg:grid-cols-2",
+          innerClassName,
         )}
         // style={{
         //   minHeight,
@@ -113,12 +113,12 @@ export const LandingProductFeature = ({
         {imageSrc ? (
           <>
             {withBackgroundGlow ? (
-              <div className="hidden lg:flex justify-center w-8 h-8 absolute pointer-events-none">
+              <div className="pointer-events-none absolute hidden h-8 w-8 justify-center lg:flex">
                 <GlowBg
                   className={clsx(
-                    "w-full lg:w-1/2 h-auto z-0 dark:opacity-50",
-                    imagePosition === "center" ? "top-5" : " -top-1/3",
-                    imagePerspective === "paper" ? "opacity-70" : "opacity-100"
+                    "z-0 h-auto w-full lg:w-1/2 dark:opacity-50",
+                    imagePosition === "center" ? "top-5" : "-top-1/3",
+                    imagePerspective === "paper" ? "opacity-70" : "opacity-100",
                   )}
                   variant={backgroundGlowVariant}
                 />
@@ -126,12 +126,12 @@ export const LandingProductFeature = ({
             ) : null}
 
             {imagePosition === "center" ? (
-              <section className="w-full flex items-center gap-4">
+              <section className="flex w-full items-center gap-4">
                 <Image
                   className={clsx(
-                    "w-8 rounded-md overflow-hidden",
+                    "w-8 overflow-hidden rounded-md",
                     imageShadow === "soft" && "shadow-md",
-                    imageShadow === "hard" && "hard-shadow"
+                    imageShadow === "hard" && "hard-shadow",
                   )}
                   src={imageSrc}
                   alt={imageAlt}
@@ -147,7 +147,7 @@ export const LandingProductFeature = ({
                 className={clsx(
                   "relative w-full rounded-md",
                   zoomOnHover
-                    ? "lg:scale-90 hover:scale-100 transition-all"
+                    ? "transition-all hover:scale-100 lg:scale-90"
                     : "",
                   imageShadow === "soft" && "shadow-md",
                   imageShadow === "hard" && "hard-shadow",
@@ -160,7 +160,7 @@ export const LandingProductFeature = ({
                     "lg:perspective-bottom-lg",
                   imagePerspective === "paper" &&
                     "lg:perspective-paper hover:scale-90",
-                  imagePerspective === "none" ? "my-4" : "my-8"
+                  imagePerspective === "none" ? "my-4" : "my-8",
                 )}
                 alt={imageAlt}
                 src={imageSrc}

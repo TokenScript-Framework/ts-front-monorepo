@@ -9,9 +9,9 @@ npm run rollup
 ## Set up
 
 ```js
-import {TokenKit} from "token-kit"
+import { TokenKit } from "token-kit";
 
-TokenKit.setInfuraApiKey("YOUR_INFURA_API_KEY")
+TokenKit.setInfuraApiKey("YOUR_INFURA_API_KEY");
 ```
 
 ## Components

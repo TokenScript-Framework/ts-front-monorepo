@@ -1,163 +1,202 @@
-import * as xmldsigjs from "@tokenscript/xmldsigjs";
-import {KeyInfoX509Data, KeyValue, X509Certificate} from "@tokenscript/xmldsigjs";
 import * as x509 from "@peculiar/x509";
-import {uint8tohex} from "../../utils/utils";
-import {Crypto, CryptoKey} from "webcrypto-liner/build";
+import * as xmldsigjs from "@tokenscript/xmldsigjs";
+import {
+  KeyInfoX509Data,
+  KeyValue,
+  X509Certificate,
+} from "@tokenscript/xmldsigjs";
+import { Crypto, CryptoKey } from "webcrypto-liner/build";
+import { uint8tohex } from "../../utils/utils";
 
 const crypto = new Crypto();
 xmldsigjs.Application.setEngine("WebCryptoLiner", crypto);
 x509.cryptoProvider.set(crypto);
 
 export interface DSigKeyResult {
-	authoritiveKey: string, // If certificates are included, this is the key that issued the certificate to the signing key, otherwise it's the signing key
-	signingKey: string
+  authoritiveKey: string; // If certificates are included, this is the key that issued the certificate to the signing key, otherwise it's the signing key
+  signingKey: string;
 }
 
 export class DSigValidator {
+  /**
+   * Extract the XML DSig signer key or root key in the certificate chain
+   * @param tokenScript
+   */
+  public async getSignerKey(xmlStr: string): Promise<false | DSigKeyResult> {
+    let doc = xmldsigjs.Parse(xmlStr);
+    let signatures = doc.getElementsByTagNameNS(
+      "http://www.w3.org/2000/09/xmldsig#",
+      "Signature",
+    );
 
-	/**
-	 * Extract the XML DSig signer key or root key in the certificate chain
-	 * @param tokenScript
-	 */
-	public async getSignerKey(xmlStr: string): Promise<false|DSigKeyResult>{
+    if (!signatures.length) {
+      console.log("No DSIG detected, skipping signature validation");
+      return false;
+    }
 
-		let doc = xmldsigjs.Parse(xmlStr);
-		let signatures = doc.getElementsByTagNameNS("http://www.w3.org/2000/09/xmldsig#", "Signature");
+    try {
+      const xml = new xmldsigjs.SignedXml(doc);
 
-		if (!signatures.length) {
-			console.log("No DSIG detected, skipping signature validation")
-			return false;
-		}
+      xml.LoadXml(signatures[0]);
+      const verified = await xml.Verify();
 
-		try {
-			const xml = new xmldsigjs.SignedXml(doc);
+      if (verified) {
+        const signerKey = await (
+          xml.XmlSignature.KeyInfo.GetIterator().find(
+            (value) => value instanceof KeyValue,
+          ) as KeyValue
+        ).exportKey();
+        const x509Data = xml.XmlSignature.KeyInfo.GetIterator().find(
+          (value) => value instanceof KeyInfoX509Data,
+        ) as KeyInfoX509Data;
+        const signerKeyHex = await this.keyToHex(signerKey);
 
-			xml.LoadXml(signatures[0]);
-			const verified = await xml.Verify();
+        //console.log("DSIG validator: signer key: ", signerKeyHex, computeAddress(signerKeyHex));
 
-			if (verified){
+        if (x509Data && x509Data.Certificates.length > 0) {
+          console.info(
+            "DSIG validator: Signature includes certificate, verifying chain.",
+          );
 
-				const signerKey = await (xml.XmlSignature.KeyInfo.GetIterator().find((value) => value instanceof KeyValue) as KeyValue).exportKey();
-				const x509Data = (xml.XmlSignature.KeyInfo.GetIterator().find((value) => value instanceof KeyInfoX509Data) as KeyInfoX509Data);
-				const signerKeyHex = await this.keyToHex(signerKey);
+          if (x509Data.Certificates.length > 1) {
+            const masterKeyHex = await this.keyToHex(
+              await this.verifyCertificateChain(
+                x509Data.Certificates,
+                signerKeyHex,
+              ),
+            );
 
-				//console.log("DSIG validator: signer key: ", signerKeyHex, computeAddress(signerKeyHex));
+            return {
+              authoritiveKey: masterKeyHex,
+              signingKey: signerKeyHex,
+            };
+          } else {
+            const cert = new x509.X509Certificate(
+              x509Data.Certificates[0].GetRaw(),
+            );
 
-				if (x509Data && x509Data.Certificates.length > 0){
+            const masterPubKey =
+              await this.getSignerPublicKeyFromCertificate(cert);
 
-					console.info("DSIG validator: Signature includes certificate, verifying chain.");
+            const masterKeyHex = await this.keyToHex(masterPubKey);
 
-					if (x509Data.Certificates.length > 1){
+            //console.log("DSIG validator: master key: ", masterKeyHex, computeAddress(masterKeyHex));
 
-						const masterKeyHex = await this.keyToHex(await this.verifyCertificateChain(x509Data.Certificates, signerKeyHex));
+            if (!(await cert.verify({ publicKey: masterPubKey })))
+              throw new Error("x509 certificate verification failed!");
 
-						return {
-							authoritiveKey: masterKeyHex,
-							signingKey: signerKeyHex
-						};
-					} else {
+            const cerPubKey = await this.keyToHex(
+              await cert.publicKey.export(),
+            );
 
-						const cert = new x509.X509Certificate(x509Data.Certificates[0].GetRaw());
+            if (cerPubKey != signerKeyHex)
+              throw new Error(
+                "Certificate subject public key does not match XML signing key",
+              );
 
-						const masterPubKey = await this.getSignerPublicKeyFromCertificate(cert);
+            return {
+              authoritiveKey: masterKeyHex,
+              signingKey: signerKeyHex,
+            };
+          }
+        }
 
-						const masterKeyHex = await this.keyToHex(masterPubKey);
+        return {
+          authoritiveKey: signerKeyHex,
+          signingKey: signerKeyHex,
+        };
+      } else {
+        throw new Error("DSIG verification failed!");
+      }
+    } catch (e) {
+      console.warn("Signature validation failed: ");
+      console.warn(e);
+      return false;
+    }
+  }
 
-						//console.log("DSIG validator: master key: ", masterKeyHex, computeAddress(masterKeyHex));
+  /**
+   * Convert subtle CryptoKey into hex
+   * @param key
+   * @private
+   */
+  private async keyToHex(key: CryptoKey) {
+    return (
+      "0x" +
+      uint8tohex(
+        new Uint8Array(
+          await crypto.subtle.exportKey(
+            key.algorithm.name === "ECDSA" ? "raw" : "spki",
+            key,
+          ),
+        ),
+      )
+    );
+  }
 
-						if (!await cert.verify({ publicKey: masterPubKey }))
-							throw new Error("x509 certificate verification failed!");
+  /**
+   * Verify certificate chain and find CA subjectKey
+   * @param certificates
+   * @param signerKeyHex
+   * @private
+   */
+  private async verifyCertificateChain(
+    certificates: X509Certificate[],
+    signerKeyHex: string,
+  ) {
+    for (let [index, cert] of certificates.entries()) {
+      // Find certificate corresponding to the public key that signed the XML
+      if (signerKeyHex === (await this.keyToHex(await cert.exportKey()))) {
+        certificates = certificates.splice(index);
 
-						const cerPubKey = await this.keyToHex(await cert.publicKey.export());
+        // Create & validate a certificate chain to find the root cert
+        const chainBuilder = new x509.X509ChainBuilder({
+          certificates: certificates.map(
+            (cert) => new x509.X509Certificate(cert.GetRaw()),
+          ),
+        });
 
-						if (cerPubKey != signerKeyHex)
-							throw new Error("Certificate subject public key does not match XML signing key");
+        const chain = await chainBuilder.build(
+          new x509.X509Certificate(cert.GetRaw()),
+        );
 
-						return {
-							authoritiveKey: masterKeyHex,
-							signingKey: signerKeyHex
-						};
-					}
+        // TODO: If contract signer public key is not found, return a list of public keys to match against whitelist (in case of using RSA)
+        return this.getSignerPublicKeyFromCertificate(chain[chain.length - 1]);
+      }
+    }
 
-				}
+    throw new Error(
+      "The x509 certificate corresponding to the public key was not found",
+    );
+  }
 
-				return {
-					authoritiveKey: signerKeyHex,
-					signingKey: signerKeyHex
-				};
+  // TODO: improve, this should probably use issuerDirectoryExtension and include algorithm identifiers
+  /**
+   * Usually in X.509, the public key is stored by the OS or browser. Here the CA is a self-signed certificate.
+   * For simplicity, we store the public key within the certificate under the issuerAltName field.
+   * This is to accommodate signature algorithms that don't have public key recover (i.e. RSA)
+   * @param certificate
+   * @private
+   */
+  private async getSignerPublicKeyFromCertificate(
+    certificate: x509.X509Certificate,
+  ) {
+    const issuerAltNameExt = certificate.getExtension("2.5.29.18");
 
-			} else {
-				throw new Error("DSIG verification failed!");
-			}
-		} catch (e){
-			console.warn("Signature validation failed: ");
-			console.warn(e);
-			return false;
-		}
-	}
+    if (!issuerAltNameExt)
+      throw new Error(
+        "Root certificate does not contain issuerAltName extension",
+      );
 
-	/**
-	 * Convert subtle CryptoKey into hex
-	 * @param key
-	 * @private
-	 */
-	private async keyToHex(key: CryptoKey){
-		return "0x" + uint8tohex(new Uint8Array(await crypto.subtle.exportKey(key.algorithm.name === "ECDSA" ? "raw" : "spki", key)))
-	}
-
-	/**
-	 * Verify certificate chain and find CA subjectKey
-	 * @param certificates
-	 * @param signerKeyHex
-	 * @private
-	 */
-	private async verifyCertificateChain(certificates: X509Certificate[], signerKeyHex: string){
-
-		for (let [index, cert] of certificates.entries()){
-
-			// Find certificate corresponding to the public key that signed the XML
-			if (signerKeyHex === await this.keyToHex(await cert.exportKey())){
-
-				certificates = certificates.splice(index);
-
-				// Create & validate a certificate chain to find the root cert
-				const chainBuilder = new x509.X509ChainBuilder({certificates: certificates.map(cert => new x509.X509Certificate(cert.GetRaw()))});
-
-				const chain = await chainBuilder.build(new x509.X509Certificate(cert.GetRaw()));
-
-				// TODO: If contract signer public key is not found, return a list of public keys to match against whitelist (in case of using RSA)
-				return this.getSignerPublicKeyFromCertificate(chain[chain.length - 1]);
-			}
-		}
-
-		throw new Error("The x509 certificate corresponding to the public key was not found");
-	}
-
-	// TODO: improve, this should probably use issuerDirectoryExtension and include algorithm identifiers
-	/**
-	 * Usually in X.509, the public key is stored by the OS or browser. Here the CA is a self-signed certificate.
-	 * For simplicity, we store the public key within the certificate under the issuerAltName field.
-	 * This is to accommodate signature algorithms that don't have public key recover (i.e. RSA)
-	 * @param certificate
-	 * @private
-	 */
-	private async getSignerPublicKeyFromCertificate(certificate: x509.X509Certificate){
-
-		const issuerAltNameExt = certificate.getExtension("2.5.29.18");
-
-		if (!issuerAltNameExt)
-			throw new Error("Root certificate does not contain issuerAltName extension");
-
-		return await crypto.subtle.importKey(
-			"raw",
-			new Uint8Array(issuerAltNameExt.value),
-			{
-				name: "ECDSA",
-				namedCurve: "K-256"
-			},
-			true,
-			["verify"]
-		);
-	}
-
+    return await crypto.subtle.importKey(
+      "raw",
+      new Uint8Array(issuerAltNameExt.value),
+      {
+        name: "ECDSA",
+        namedCurve: "K-256",
+      },
+      true,
+      ["verify"],
+    );
+  }
 }

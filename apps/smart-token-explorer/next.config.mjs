@@ -1,11 +1,13 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {images: {
+const nextConfig = {
+  images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'resources.smartlayer.network',
+        protocol: "https",
+        hostname: "resources.smartlayer.network",
       },
     ],
-  },};
+  },
+};
 
 export default nextConfig;
