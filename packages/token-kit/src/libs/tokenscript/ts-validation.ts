@@ -1,14 +1,13 @@
 import axios from "axios";
-import { Chain } from "viem";
 import { getERC5169ScriptURISingle } from "../ethereum";
 import { DSigValidator } from "./dsig-validator";
 import { TrustedKeyResolver } from "./trusted-key-resolver";
 
 export async function isTokenscriptValid(
-  chain: Chain,
+  chainId: number,
   contract: `0x${string}`,
 ) {
-  const scriptURIs = await getERC5169ScriptURISingle(chain, contract);
+  const scriptURIs = await getERC5169ScriptURISingle(chainId, contract);
 
   if (scriptURIs === "not implemented" || !scriptURIs[0]) return false;
 

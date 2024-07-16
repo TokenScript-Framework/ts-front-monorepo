@@ -1,4 +1,5 @@
-import { Chain, createPublicClient, http, PublicClient } from "viem";
+import { createPublicClient, extractChain, http, PublicClient } from "viem";
+import * as chains from "viem/chains";
 import { erc5169ABI } from "./abi/erc5169";
 import {
   getERC5169ScriptURICache,
@@ -6,26 +7,26 @@ import {
 } from "./erc5169-scriptURI-cache";
 
 export async function getERC5169ScriptURISingle(
-  chain: Chain,
+  chainId: number,
   contract: `0x${string}`,
 ): Promise<string[] | "not implemented"> {
-  let cachedValue = getERC5169ScriptURICache(contract, chain.id);
+  let cachedValue = getERC5169ScriptURICache(contract, chainId);
   if (cachedValue !== null) {
     return cachedValue;
   }
   try {
-    const onChain = await getERC5169ScriptURI(chain, contract);
+    const onChain = await getERC5169ScriptURI(chainId, contract);
     const result = onChain === null ? "not implemented" : onChain;
-    setERC5169ScriptURICache(contract, chain.id, result);
+    setERC5169ScriptURICache(contract, chainId, result);
     return result;
   } catch {
-    setERC5169ScriptURICache(contract, chain.id, "not implemented");
+    setERC5169ScriptURICache(contract, chainId, "not implemented");
     return "not implemented";
   }
 }
 
 export async function getERC5169ScriptURIBatched(
-  chain: Chain,
+  chainId: number,
   contractAddresses: `0x${string}`[],
 ): Promise<Record<string, string[] | "not implemented">> {
   const cachedScriptURIs: Record<string, string[] | "not implemented"> = {};
@@ -42,7 +43,7 @@ export async function getERC5169ScriptURIBatched(
       scriptURI:
         cachedScriptURIs[each] !== undefined
           ? cachedScriptURIs[each]
-          : getERC5169ScriptURI(chain, each),
+          : getERC5169ScriptURI(chainId, each),
     };
   });
   let scriptURIs: Record<string, string[] | "not implemented"> = {};
@@ -61,18 +62,18 @@ export async function getERC5169ScriptURIBatched(
   }
   for (const [eachContract, eachScriptURI] of Object.entries(scriptURIs)) {
     if (cachedScriptURIs[eachContract] === undefined) {
-      setERC5169ScriptURICache(eachContract, chain.id, eachScriptURI);
+      setERC5169ScriptURICache(eachContract, chainId, eachScriptURI);
     }
   }
   return scriptURIs;
 }
 
 async function getERC5169ScriptURI(
-  chain: Chain,
+  chainId: number,
   contractAddress: `0x${string}`,
 ) {
   try {
-    const client = getBatchClient(chain);
+    const client = getBatchClient(chainId);
 
     return client
       .readContract({
@@ -90,10 +91,13 @@ async function getERC5169ScriptURI(
 }
 
 const clientCache: Record<number, PublicClient> = {};
-function getBatchClient(chain: Chain) {
-  if (!clientCache[chain.id]) {
-    clientCache[chain.id] = createPublicClient({
-      chain,
+function getBatchClient(chainId: any) {
+  if (!clientCache[chainId]) {
+    clientCache[chainId] = createPublicClient({
+      chain: extractChain({
+        chains: Object.values(chains),
+        id: chainId,
+      }),
       transport: http(),
       batch: {
         // Apply the same config as ethers.js batch provider
@@ -105,5 +109,5 @@ function getBatchClient(chain: Chain) {
     }) as any;
   }
 
-  return clientCache[chain.id];
+  return clientCache[chainId];
 }
