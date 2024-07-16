@@ -3,7 +3,7 @@ import { erc5169ABI } from "./abi/erc5169";
 import {
   getERC5169ScriptURICache,
   setERC5169ScriptURICache,
-} from "./erc5169ScriptURICache";
+} from "./erc5169-scriptURI-cache";
 
 export async function getERC5169ScriptURISingle(
   chain: Chain,
@@ -80,9 +80,10 @@ async function getERC5169ScriptURI(
         abi: erc5169ABI,
         functionName: "scriptURI",
       })
-      .catch((e) => {console.log(e); return "not implemented"}) as Promise<
-      string[] | null | "not implemented"
-    >;
+      .catch((e) => {
+        console.log(e);
+        return "not implemented";
+      }) as Promise<string[] | null | "not implemented">;
   } catch {
     return null;
   }
@@ -101,7 +102,7 @@ function getBatchClient(chain: Chain) {
           wait: 10,
         },
       },
-    });
+    }) as any;
   }
 
   return clientCache[chain.id];

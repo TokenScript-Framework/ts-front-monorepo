@@ -1,8 +1,8 @@
 import axios from "axios";
 import { Chain } from "viem";
 import { getERC5169ScriptURISingle } from "../ethereum";
-import { DSigValidator } from "./DSigValidator";
-import { TrustedKeyResolver } from "./TrustedKeyResolver";
+import { DSigValidator } from "./dsig-validator";
+import { TrustedKeyResolver } from "./trusted-key-resolver";
 
 export async function isTokenscriptValid(
   chain: Chain,
