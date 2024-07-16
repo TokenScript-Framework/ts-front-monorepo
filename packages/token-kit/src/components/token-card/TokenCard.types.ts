@@ -1,6 +1,5 @@
 export interface TokenCardProps {
-  testIdPrefix: string;
-  title?: string;
-  theme: "primary" | "secondary";
-  disabled?: boolean;
+  chainId: number;
+  contract: string;
+  tokenId: string;
 }
