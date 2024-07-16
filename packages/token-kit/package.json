@@ -32,7 +32,12 @@
     "@peculiar/x509": "^1.11.0",
     "@tokenscript/xmldsigjs": "^2.5.2",
     "axios": "^1.7.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
     "ethers": "^6.13.1",
+    "lucide-react": "^0.401.0",
+    "tailwind-merge": "^2.4.0",
+    "tailwindcss-animate": "^1.0.7",
     "viem": "2.x",
     "wagmi": "^2.10.9",
     "webcrypto-liner": "^1.4.3"

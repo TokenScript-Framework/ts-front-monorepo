@@ -6,7 +6,7 @@ import {
   X509Certificate,
 } from "@tokenscript/xmldsigjs";
 import { Crypto, CryptoKey } from "webcrypto-liner/build";
-import { uint8tohex } from "../../utils/utils";
+import { uint8tohex } from "../../utils/crypto";
 
 const crypto = new Crypto();
 xmldsigjs.Application.setEngine("WebCryptoLiner", crypto);
