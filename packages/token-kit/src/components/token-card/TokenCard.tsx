@@ -5,6 +5,7 @@ import { erc721Abi } from "viem";
 import { useReadContract } from "wagmi";
 import { OpenseaIcon } from "../icons/opensea-icon";
 import { Card, CardContent, CardHeader } from "../shadcn/ui/card";
+import { ScrollArea, ScrollBar } from "../shadcn/ui/scroll-area";
 import { Skeleton } from "../shadcn/ui/skeleton";
 import { TokenCardProps } from "./TokenCard.types";
 
@@ -72,27 +73,30 @@ export const TokenCard: React.FC<TokenCardProps> = ({
           </div>
           <div className="w-full">
             <h3 className="mb-2 text-lg font-semibold leading-none">Traits</h3>
-            <div className="flex w-full flex-col flex-wrap gap-2">
-              {metadata?.attributes?.map(
-                ({
-                  trait_type,
-                  value,
-                }: {
-                  trait_type: string;
-                  value: string;
-                }) => {
-                  return (
-                    <div
-                      key={trait_type}
-                      className="bg-primary-100/10 flex w-full flex-col items-center rounded-md border"
-                    >
-                      <div className="font-semibold">{trait_type}</div>
-                      <div>{value}</div>
-                    </div>
-                  );
-                },
-              )}
-            </div>
+            <ScrollArea className="w-full whitespace-nowrap rounded-md border p-2">
+              <div className="flex w-full gap-2">
+                {metadata?.attributes?.map(
+                  ({
+                    trait_type,
+                    value,
+                  }: {
+                    trait_type: string;
+                    value: string;
+                  }) => {
+                    return (
+                      <div
+                        key={trait_type}
+                        className="bg-primary-100/10 flex w-full flex-col items-center rounded-md border"
+                      >
+                        <div className="font-semibold">{trait_type}</div>
+                        <div>{value}</div>
+                      </div>
+                    );
+                  },
+                )}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           </div>
         </div>
       </CardContent>

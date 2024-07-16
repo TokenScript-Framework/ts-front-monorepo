@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@peculiar/x509": "^1.11.0",
+    "@radix-ui/react-scroll-area": "^1.1.0",
     "@tanstack/react-query": "^5.50.1",
     "@tokenscript/xmldsigjs": "^2.5.2",
     "axios": "^1.7.2",
