@@ -1,5 +1,5 @@
 export interface TokenCardProps {
   chainId: number;
-  contract: string;
+  contract: `0x${string}`;
   tokenId: string;
 }
