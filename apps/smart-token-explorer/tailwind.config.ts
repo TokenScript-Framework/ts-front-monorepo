@@ -36,6 +36,7 @@ module.exports = {
     "./layouts/**/*.{js,ts,jsx,tsx,css,mdx}",
     "./demo/**/*.{js,ts,jsx,tsx,css,mdx}",
     "./data/**/*.mdx",
+    // "../../packages/token-kit/src/components/**/*.{js,ts,jsx,tsx,css,mdx}", // Added for local development
   ],
   darkMode: ["class"],
   theme: {
