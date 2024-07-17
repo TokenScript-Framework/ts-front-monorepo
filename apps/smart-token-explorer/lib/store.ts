@@ -18,3 +18,5 @@ export const getDevModeAtom = atom((get) => get(devModeAtom));
 export const setDevModeAtom = atom(null, async (get, set, mode: boolean) => {
   set(devModeAtom, mode);
 });
+
+export const tokenListAtom = atom<any>(null);

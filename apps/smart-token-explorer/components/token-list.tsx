@@ -6,8 +6,10 @@ import {
 } from "@/components/shadcn/ui/avatar";
 
 import { Card, CardContent, CardTitle } from "@/components/shadcn/ui/card";
+import { tokenListAtom } from "@/lib/store";
 
 import { addressPipe, rewriteUrlIfIFPSUrl } from "@/lib/utils";
+import { useAtomValue } from "jotai";
 import { useRouter } from "next/navigation";
 
 interface TokenProps {
@@ -15,7 +17,10 @@ interface TokenProps {
 }
 
 export default function MyTokenList({ type }: TokenProps) {
-  let tokenList: any[] = [];
+  // const tokenListMap = useAtomValue(tokenListAtom);
+
+  let tokenList: any[] = [] // tokenListMap[type];
+
   const router = useRouter();
 
   if (tokenList.length == 0) {

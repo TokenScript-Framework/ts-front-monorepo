@@ -1,9 +1,11 @@
 "use client";
 
 import { TOKENTYPE_LIST } from "@/lib/constants";
-import { getTokenTypeAtom } from "@/lib/store";
-import { useAtomValue } from "jotai";
-import { useCallback } from "react";
+import { getTokenTypeAtom, tokenListAtom } from "@/lib/store";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useEffect } from "react";
+import { useAccount } from "wagmi";
+import { addToken, loadTokenList, TokenType } from "../lib/tempStorage";
 import ImportToken from "./import-token";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./shadcn/ui/tabs";
 import { useToast } from "./shadcn/ui/use-toast";
@@ -12,16 +14,30 @@ import MyTokenList from "./token-list";
 export default function DashboardPage() {
   const { toast } = useToast();
   let tokenType = useAtomValue(getTokenTypeAtom);
+  const { address } = useAccount();
+  const setTokenList = useSetAtom(tokenListAtom);
+
+  useEffect(() => {
+    if (address) {
+      setTokenList(loadTokenList(address));
+    }
+  }, [address, setTokenList]);
+
   const importTokenHandler = useCallback(
-    (type: string, address: string, tokenId?: string) => {
-      console.log(type, address, tokenId);
+    (type: TokenType, token: string, tokenId?: string) => {
+      console.log(type, token, tokenId);
+      if (!address) return;
+
+      addToken(address, type, token, tokenId);
+      setTokenList(loadTokenList(address));
+
       toast({
         title: "Import token",
         description: "you've import token successfully!",
         className: "bg-secondary-500 text-black",
       });
     },
-    [toast],
+    [address, setTokenList, toast],
   );
 
   return (
