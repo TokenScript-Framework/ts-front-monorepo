@@ -3,7 +3,7 @@
 import { SpinIcon } from "@/components/icons/SpinIcon";
 import { TOKENTYPE_LIST } from "@/lib/constants";
 import { validateToken } from "@/lib/etherService";
-import { TokenType } from "@/lib/tempStorage";
+import { TokenInfo, TokenType } from "@/lib/tempStorage";
 import React, { useState } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { Button } from "./shadcn/ui/button";
@@ -21,16 +21,11 @@ import { Label } from "./shadcn/ui/label";
 import { RadioGroup, RadioGroupItem } from "./shadcn/ui/radio-group";
 
 interface ImportTokenProps {
-  onConfirm: (
-    type: TokenType,
-    chainId: number,
-    token: string,
-    tokenId?: string,
-  ) => void;
+  onConfirm: (type: TokenType, tokenInfo: TokenInfo) => void;
 }
 
 export default function ImportToken({ onConfirm }: ImportTokenProps) {
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState<`0x${string}`>("0x0");
   const [tokenId, setTokenId] = useState("");
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -60,7 +55,7 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
       } else {
         //to import
         setOpen(false);
-        onConfirm(type, chainId, token, tokenId);
+        onConfirm(type, { chainId, contract: token, tokenId });
       }
     }
   };

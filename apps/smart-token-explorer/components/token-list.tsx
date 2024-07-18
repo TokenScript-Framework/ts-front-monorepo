@@ -12,9 +12,10 @@ import { addressPipe, rewriteUrlIfIFPSUrl } from "@/lib/utils";
 import { useAtomValue } from "jotai";
 import { useRouter } from "next/navigation";
 import { TokenCard } from "./token-kit/token-card";
+import {TokenInfo, TokenType} from "@/lib/tempStorage";
 
 interface TokenProps {
-  type: string;
+  type: TokenType;
 }
 
 export default function MyTokenList({ type }: TokenProps) {

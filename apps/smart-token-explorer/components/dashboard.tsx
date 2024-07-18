@@ -5,7 +5,12 @@ import { getTokenTypeAtom, tokenListAtom } from "@/lib/store";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { addToken, loadTokenList, TokenType } from "../lib/tempStorage";
+import {
+  addToken,
+  loadTokenList,
+  TokenInfo,
+  TokenType,
+} from "../lib/tempStorage";
 import ImportToken from "./import-token";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./shadcn/ui/tabs";
 import { useToast } from "./shadcn/ui/use-toast";
@@ -24,11 +29,11 @@ export default function DashboardPage() {
   }, [address, setTokenList]);
 
   const importTokenHandler = useCallback(
-    (type: TokenType, chainId: number, token: string, tokenId?: string) => {
-      console.log(type, chainId, token, tokenId);
+    (type: TokenType, tokenInfo: TokenInfo) => {
+      console.log(type, tokenInfo);
       if (!address) return;
 
-      addToken(address, type, chainId, token, tokenId);
+      addToken(address, type, tokenInfo);
       setTokenList(loadTokenList(address));
 
       toast({
