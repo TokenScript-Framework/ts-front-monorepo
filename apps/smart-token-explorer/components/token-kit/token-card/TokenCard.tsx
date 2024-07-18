@@ -23,7 +23,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
   contract,
   tokenId,
 }) => {
-  const { data: tokenURI } = useReadContract({
+  const { data: tokenURI, isFetching: isFetchingTokenURI } = useReadContract({
     chainId: chainId,
     address: contract,
     abi: erc721Abi,
@@ -31,7 +31,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
     args: [BigInt(tokenId)],
   });
 
-  const { data: metadata } = useQuery({
+  const { data: metadata, isFetching: isLoadingMetadata } = useQuery({
     queryKey: ["metadata", chainId, contract, tokenId],
     queryFn: async () => {
       const res = await axios.get(tokenURI!);
@@ -42,7 +42,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
 
   const { isValid, isChecking } = useTsValidation({ chainId, contract });
 
-  if (!metadata || isChecking) {
+  if (isFetchingTokenURI || isLoadingMetadata || isChecking) {
     return (
       <Card>
         <CardHeader className="relative space-y-0 p-0">

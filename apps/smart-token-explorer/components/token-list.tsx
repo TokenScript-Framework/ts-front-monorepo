@@ -8,11 +8,11 @@ import {
 import { Card, CardContent, CardTitle } from "@/components/shadcn/ui/card";
 
 import { tokenListAtom } from "@/lib/store";
+import { TokenType } from "@/lib/tempStorage";
 import { addressPipe, rewriteUrlIfIFPSUrl } from "@/lib/utils";
 import { useAtomValue } from "jotai";
 import { useRouter } from "next/navigation";
 import { TokenCard } from "./token-kit/token-card";
-import {TokenInfo, TokenType} from "@/lib/tempStorage";
 
 interface TokenProps {
   type: TokenType;
@@ -89,7 +89,7 @@ export default function MyTokenList({ type }: TokenProps) {
         {tokenList.map((token, index) =>
           type === "ERC721" ? (
             <TokenCard
-              key={`${type}-c` + index}
+              key={`${type}-${token.chainId}-${token.contract}-${token.tokenId}`}
               chainId={token.chainId}
               contract={token.contract}
               tokenId={token.tokenId}
