@@ -2,9 +2,17 @@ import Image from "@/components/shadcn/Image";
 import { Card, CardContent, CardHeader } from "@/components/shadcn/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/shadcn/ui/scroll-area";
 import { Skeleton } from "@/components/shadcn/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/shadcn/ui/tooltip";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { ShieldCheck, ShieldX } from "lucide-react";
 import React from "react";
+import { useTsValidation } from "token-kit";
 import { erc721Abi } from "viem";
 import { useReadContract } from "wagmi";
 import { OpenseaIcon } from "../../icons/opensea-icon";
@@ -32,7 +40,9 @@ export const TokenCard: React.FC<TokenCardProps> = ({
     enabled: !!tokenURI,
   });
 
-  if (!metadata) {
+  const { isValid, isChecking } = useTsValidation({ chainId, contract });
+
+  if (!metadata || isChecking) {
     return (
       <Card>
         <CardHeader className="relative space-y-0 p-0">
@@ -70,13 +80,29 @@ export const TokenCard: React.FC<TokenCardProps> = ({
       </CardHeader>
       <CardContent className="p-4">
         <div className="flex flex-col gap-4">
-          <div className="w-full">
+          <div className="relative w-full">
             <h3 className="mb-2 text-lg font-semibold leading-none">
               Description
             </h3>
             <p className="text-muted-foreground text-sm">
               {metadata?.description}
             </p>
+            <div className="absolute right-2 top-0">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    {isValid ? (
+                      <ShieldCheck color="#16a34a" />
+                    ) : (
+                      <ShieldX color="#aa3131" />
+                    )}
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {isValid ? "Secure Tokenscript" : "Insecure Tokenscript"}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
           <div className="w-full">
             <h3 className="mb-2 text-lg font-semibold leading-none">Traits</h3>

@@ -41,7 +41,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
 
   const { isValid, isChecking } = useTsValidation({ chainId, contract });
 
-  if (!metadata) {
+  if (!metadata || isChecking) {
     return (
       <Card>
         <CardHeader className="relative space-y-0 p-0">
