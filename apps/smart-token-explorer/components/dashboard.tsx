@@ -24,11 +24,11 @@ export default function DashboardPage() {
   }, [address, setTokenList]);
 
   const importTokenHandler = useCallback(
-    (type: TokenType, token: string, tokenId?: string) => {
-      console.log(type, token, tokenId);
+    (type: TokenType, chainId: number, token: string, tokenId?: string) => {
+      console.log(type, chainId, token, tokenId);
       if (!address) return;
 
-      addToken(address, type, token, tokenId);
+      addToken(address, type, chainId, token, tokenId);
       setTokenList(loadTokenList(address));
 
       toast({

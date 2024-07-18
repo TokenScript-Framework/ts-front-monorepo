@@ -2,11 +2,12 @@
 export function addToken(
   address: string,
   type: TokenType,
+  chainId: number,
   contract: string,
   tokenId?: string,
 ) {
   const tokenList = loadTokenList(address);
-  tokenList[type] = [...tokenList[type], { contract, tokenId }];
+  tokenList[type] = [...tokenList[type], { chainId, contract, tokenId }];
 
   localStorage.setItem(`ste_tokenList_${address}`, JSON.stringify(tokenList));
 }

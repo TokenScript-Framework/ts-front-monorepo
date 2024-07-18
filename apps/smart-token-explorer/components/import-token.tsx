@@ -21,7 +21,12 @@ import { Label } from "./shadcn/ui/label";
 import { RadioGroup, RadioGroupItem } from "./shadcn/ui/radio-group";
 
 interface ImportTokenProps {
-  onConfirm: (type: TokenType, token: string, tokenId?: string) => void;
+  onConfirm: (
+    type: TokenType,
+    chainId: number,
+    token: string,
+    tokenId?: string,
+  ) => void;
 }
 
 export default function ImportToken({ onConfirm }: ImportTokenProps) {
@@ -29,7 +34,7 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
   const [tokenId, setTokenId] = useState("");
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [type, setType] = useState(TOKENTYPE_LIST[0]);
+  const [type, setType] = useState<TokenType>(TOKENTYPE_LIST[0]);
   const [error, setError] = useState("");
   const { address } = useAccount();
   const chainId = useChainId();
@@ -55,7 +60,7 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
       } else {
         //to import
         setOpen(false);
-        onConfirm(type, token, tokenId);
+        onConfirm(type, chainId, token, tokenId);
       }
     }
   };
@@ -69,7 +74,7 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
     setError("");
   };
 
-  const checkedChangeHandler = (type: string) => {
+  const checkedChangeHandler = (type: TokenType) => {
     console.log(type);
     setType(type);
     setError("");

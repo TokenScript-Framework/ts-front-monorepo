@@ -19,4 +19,4 @@ export const setDevModeAtom = atom(null, async (get, set, mode: boolean) => {
   set(devModeAtom, mode);
 });
 
-export const tokenListAtom = atom<any>(null);
+export const tokenListAtom = atom<any>({ERC20: [], ERC721: [], ERC1155: []});

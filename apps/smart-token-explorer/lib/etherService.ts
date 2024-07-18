@@ -147,7 +147,7 @@ export async function validateToken(
   }
 
   const result = await isERC5169(token);
-  if (result) {
+  if (!result) {
     return {
       error: true,
       message: `This token on ${chainPipe(chain)} is not a valid ERC5169 token.`,
