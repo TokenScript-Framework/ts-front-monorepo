@@ -1,12 +1,13 @@
+import Image from "@/components/shadcn/Image";
+import { Card, CardContent, CardHeader } from "@/components/shadcn/ui/card";
+import { ScrollArea, ScrollBar } from "@/components/shadcn/ui/scroll-area";
+import { Skeleton } from "@/components/shadcn/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
 import { erc721Abi } from "viem";
 import { useReadContract } from "wagmi";
 import { OpenseaIcon } from "../../icons/opensea-icon";
-import { Card, CardContent, CardHeader } from "../../shadcn/ui/card";
-import { ScrollArea, ScrollBar } from "../../shadcn/ui/scroll-area";
-import { Skeleton } from "../../shadcn/ui/skeleton";
 import { TokenCardProps } from "./TokenCard.types";
 
 export const TokenCard: React.FC<TokenCardProps> = ({
@@ -59,7 +60,13 @@ export const TokenCard: React.FC<TokenCardProps> = ({
         >
           <OpenseaIcon className="absolute right-2 top-2" />
         </a>
-        <img className="rounded-lg" src={metadata?.image} />
+        <Image
+          className="rounded-lg"
+          src={metadata?.image}
+          width={400}
+          height={400}
+          alt="token image"
+        />
       </CardHeader>
       <CardContent className="p-4">
         <div className="flex flex-col gap-4">
