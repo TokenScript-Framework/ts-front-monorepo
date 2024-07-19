@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { TokenInfo, TokenType } from "./tempStorage";
+import { Token, TokenType } from "./tokenStorage";
 export const chainsAtom = atom<any>([]);
 export const getChainsAtom = atom((get) => get(chainsAtom));
 
@@ -20,7 +20,7 @@ export const setDevModeAtom = atom(null, async (get, set, mode: boolean) => {
   set(devModeAtom, mode);
 });
 
-export const tokenListAtom = atom<Record<TokenType, TokenInfo[]>>({
+export const tokenListAtom = atom<Record<TokenType, Token[]>>({
   ERC20: [],
   ERC721: [],
   ERC1155: [],

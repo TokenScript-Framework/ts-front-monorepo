@@ -140,7 +140,7 @@ export async function validateToken(
   owner: `0x${string}`,
   type: string,
   token: string,
-  tokenId: string,
+  tokenId?: string,
 ) {
   if (!isValidAddress(token)) {
     return { error: true, message: "Please input correct address" };

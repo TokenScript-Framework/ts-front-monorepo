@@ -8,10 +8,11 @@ import {
 import { Card, CardContent, CardTitle } from "@/components/shadcn/ui/card";
 
 import { tokenListAtom } from "@/lib/store";
-import { TokenType } from "@/lib/tempStorage";
+import { Token, TokenType } from "@/lib/tokenStorage";
 import { addressPipe, rewriteUrlIfIFPSUrl } from "@/lib/utils";
 import { useAtomValue } from "jotai";
 import { useRouter } from "next/navigation";
+import { query, TokenInfo } from "smart-token-list";
 
 interface TokenProps {
   type: TokenType;
@@ -20,7 +21,7 @@ interface TokenProps {
 export default function MyTokenList({ type }: TokenProps) {
   const tokenListMap = useAtomValue(tokenListAtom);
 
-  let tokenList: any[] = tokenListMap[type];
+  let tokenList: Token[] = tokenListMap[type];
 
   const router = useRouter();
 
@@ -29,14 +30,8 @@ export default function MyTokenList({ type }: TokenProps) {
       case "ERC20": {
         tokenList = [
           {
-            name: "Wrapped Ether",
             address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-            symbol: "WETH",
-            decimals: 18,
             chainId: 1,
-            logoURI:
-              "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
-            balance: 0.002,
           },
         ];
         break;
@@ -44,14 +39,9 @@ export default function MyTokenList({ type }: TokenProps) {
       case "ERC721": {
         tokenList = [
           {
-            name: "COSCon’22 Collectible",
-            description:
-              "We really appreciate your participation to COSCon’22 and hope to see you again the next year.",
-            image:
-              "ipfs://bafybeicc4vygaek76mkbaywa53zbr35etjqodjfifqicycpfdnbupz4gem",
             address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
             chainId: 1,
-            tokenId: 12344,
+            tokenId: "12344",
           },
         ];
         break;
@@ -59,14 +49,9 @@ export default function MyTokenList({ type }: TokenProps) {
       default: {
         tokenList = [
           {
-            name: "COSCon 11 Collectible",
-            description:
-              "We really appreciate your participation to COSCon’22 and hope to see you again the next year.",
-            image:
-              "ipfs://bafybeicc4vygaek76mkbaywa53zbr35etjqodjfifqicycpfdnbupz4gem",
             address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
             chainId: 1,
-            tokenId: 355,
+            tokenId: "355",
           },
         ];
 
@@ -75,7 +60,15 @@ export default function MyTokenList({ type }: TokenProps) {
     }
   }
 
-  const loadNFTHandler = (address: string, tokenId: string) => {
+  const tokenData: any[] = tokenList.map((token) => {
+    const results = query({ chainId: token.chainId, address: token.address });
+    return {
+      ...token,
+      ...(results[0] ? results[0] : { notFound: true }),
+    };
+  });
+
+  const loadNFTHandler = (address: string, tokenId?: string) => {
     if (tokenId) {
       router.push(`/${type}/${address}/${tokenId}`);
     } else {
@@ -85,7 +78,7 @@ export default function MyTokenList({ type }: TokenProps) {
   return (
     <section className="fancy-overlay min-h-screen pt-4">
       <div className="container-wide mx-auto grid grid-cols-3 gap-8" key={type}>
-        {tokenList.map((token, index) => (
+        {tokenData.map((token, index) => (
           <Card
             className="cursor-pointer p-8 text-center dark:bg-gray-900"
             onClick={() => loadNFTHandler(token.address, token.tokenId)}
