@@ -107,7 +107,7 @@ export default function TokenCard({ type, token }: TokenCardProps) {
             <a className="hover:text-primary-500 text-sm text-gray-500 underline">
               {addressPipe(token.address)}
             </a>
-            {!token.notFound && (
+            {token.notFound && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
