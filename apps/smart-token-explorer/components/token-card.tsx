@@ -50,7 +50,7 @@ export default function TokenCard({ type, token }: TokenCardProps) {
     return (
       <Card>
         <CardHeader className="relative space-y-0 p-0">
-          <Skeleton className="w-full rounded-xl pb-[40%]" />
+          <Skeleton className="w-full rounded-lg pb-[40%]" />
         </CardHeader>
         <CardContent className="p-4">
           <div className="relative flex w-full items-center space-x-4">
