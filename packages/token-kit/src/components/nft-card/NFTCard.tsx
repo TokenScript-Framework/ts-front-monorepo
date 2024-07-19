@@ -15,12 +15,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../shadcn/ui/tooltip";
-import { TokenCardProps } from "./TokenCard.types";
+import { NFTCardProps } from "./NFTCard.types";
 
-export const TokenCard: React.FC<TokenCardProps> = ({
+export const NFTCard: React.FC<NFTCardProps> = ({
   chainId,
   contract,
   tokenId,
+  onClick
 }) => {
   const { data: tokenURI } = useReadContract({
     chainId: chainId,
@@ -61,7 +62,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
   }
 
   return (
-    <Card>
+    <Card onClick={onClick}>
       <CardHeader className="relative space-y-0 p-0">
         <a
           href="https://opensea.io/assets/matic/0xd5ca946ac1c1f24eb26dae9e1a53ba6a02bd97fe/1202370524"
