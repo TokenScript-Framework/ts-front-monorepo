@@ -21,9 +21,13 @@ import {
 } from "@/components/shadcn/ui/tooltip";
 import { TokenType } from "@/lib/tokenStorage";
 import { addressPipe, rewriteUrlIfIFPSUrl } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { OctagonAlert, ShieldCheck, ShieldX } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTsValidation } from "token-kit";
+import { erc20Abi, erc721Abi } from "viem";
+import { useAccount, useReadContract, useReadContracts } from "wagmi";
 
 interface TokenCardProps {
   type: TokenType;
@@ -31,6 +35,7 @@ interface TokenCardProps {
 }
 
 export default function TokenCard({ type, token }: TokenCardProps) {
+  const { address: walletAddress } = useAccount();
   const router = useRouter();
 
   const loadNFTHandler = (address: string, tokenId?: string) => {
@@ -46,7 +51,57 @@ export default function TokenCard({ type, token }: TokenCardProps) {
     contract: token.address,
   });
 
-  if (isChecking) {
+  const { data: extraTokenData, isFetching: isFetchingERC20Info } =
+    useReadContracts({
+      contracts: contractsForErc20(token, walletAddress!),
+      query: {
+        enabled: type === "ERC20" && !!walletAddress,
+      },
+    });
+
+  const { data: erc721TokenURI, isFetching: isFetchingERC721TokenURI } =
+    useReadContract({
+      chainId: token.chainId,
+      address: token.address,
+      abi: erc721Abi,
+      functionName: "tokenURI",
+      args: [BigInt(token.tokenId || 0)],
+      query: {
+        enabled: type === "ERC721",
+      },
+    });
+
+  const { data: erc721Metadata, isFetching: isFetchingERC721Metadata } =
+    useQuery({
+      queryKey: ["metadata", token.chainId, token.address, token.tokenId],
+      queryFn: async () => {
+        const res = await axios.get(erc721TokenURI!);
+        return res.data;
+      },
+      enabled: !!erc721TokenURI,
+    });
+
+  if (type === "ERC20") {
+    token.balance = Number(extraTokenData?.[0]?.result);
+  }
+
+  if (token.notFound) {
+    if (type === "ERC20") {
+      token.name = extraTokenData?.[1]?.result;
+      token.symbol = extraTokenData?.[2]?.result;
+      token.decimals = extraTokenData?.[3]?.result;
+    } else if (type === "ERC721") {
+      token.image = erc721Metadata?.image;
+      token.description = erc721Metadata?.description;
+    }
+  }
+
+  if (
+    isChecking ||
+    isFetchingERC20Info ||
+    isFetchingERC721TokenURI ||
+    isFetchingERC721Metadata
+  ) {
     return (
       <Card>
         <CardHeader className="relative space-y-0 p-0">
@@ -162,4 +217,36 @@ export default function TokenCard({ type, token }: TokenCardProps) {
       </CardContent>
     </Card>
   );
+}
+
+function contractsForErc20(token: any, walletAddress: string) {
+  const contractInfo = [
+    {
+      chainId: token.chainId,
+      address: token.address,
+      abi: erc20Abi,
+      functionName: "name",
+    },
+    {
+      chainId: token.chainId,
+      address: token.address,
+      abi: erc20Abi,
+      functionName: "symbol",
+    },
+    {
+      chainId: token.chainId,
+      address: token.address,
+      abi: erc20Abi,
+      functionName: "decimals",
+    },
+  ];
+  const balanceInfo = {
+    chainId: token.chainId,
+    address: token.address,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: [walletAddress],
+  };
+
+  return token.notFound ? [balanceInfo, ...contractInfo] : [balanceInfo];
 }
