@@ -51,13 +51,14 @@ export default function TokenCard({ type, token }: TokenCardProps) {
     contract: token.address,
   });
 
-  const { data: extraTokenData, isFetching: isFetchingERC20Info } =
-    useReadContracts({
+  const { data: erc20Data, isFetching: isFetchingERC20Info } = useReadContracts(
+    {
       contracts: contractsForErc20(token, walletAddress!),
       query: {
         enabled: type === "ERC20" && !!walletAddress,
       },
-    });
+    },
+  );
 
   const { data: erc721TokenURI, isFetching: isFetchingERC721TokenURI } =
     useReadContract({
@@ -67,7 +68,7 @@ export default function TokenCard({ type, token }: TokenCardProps) {
       functionName: "tokenURI",
       args: [BigInt(token.tokenId || 0)],
       query: {
-        enabled: type === "ERC721",
+        enabled: type === "ERC721" && !!token.notFound,
       },
     });
 
@@ -82,14 +83,14 @@ export default function TokenCard({ type, token }: TokenCardProps) {
     });
 
   if (type === "ERC20") {
-    token.balance = Number(extraTokenData?.[0]?.result);
+    token.balance = Number(erc20Data?.[0]?.result);
   }
 
   if (token.notFound) {
     if (type === "ERC20") {
-      token.name = extraTokenData?.[1]?.result;
-      token.symbol = extraTokenData?.[2]?.result;
-      token.decimals = extraTokenData?.[3]?.result;
+      token.name = erc20Data?.[1]?.result;
+      token.symbol = erc20Data?.[2]?.result;
+      token.decimals = erc20Data?.[3]?.result;
     } else if (type === "ERC721") {
       token.image = erc721Metadata?.image;
       token.description = erc721Metadata?.description;

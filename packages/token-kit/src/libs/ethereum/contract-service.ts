@@ -10,17 +10,17 @@ export async function getERC5169ScriptURISingle(
   chainId: number,
   contract: `0x${string}`,
 ): Promise<string[] | "not implemented"> {
-  let cachedValue = getERC5169ScriptURICache(contract, chainId);
+  let cachedValue = getERC5169ScriptURICache(chainId, contract);
   if (cachedValue !== null) {
     return cachedValue;
   }
   try {
     const onChain = await getERC5169ScriptURI(chainId, contract);
     const result = onChain === null ? "not implemented" : onChain;
-    setERC5169ScriptURICache(contract, chainId, result);
+    setERC5169ScriptURICache(chainId, contract, result);
     return result;
   } catch {
-    setERC5169ScriptURICache(contract, chainId, "not implemented");
+    setERC5169ScriptURICache(chainId, contract, "not implemented");
     return "not implemented";
   }
 }
@@ -31,7 +31,7 @@ export async function getERC5169ScriptURIBatched(
 ): Promise<Record<string, string[] | "not implemented">> {
   const cachedScriptURIs: Record<string, string[] | "not implemented"> = {};
   for (const each of contractAddresses) {
-    const cachedValue = getERC5169ScriptURICache(each, chain.id);
+    const cachedValue = getERC5169ScriptURICache(chainId, each);
     if (cachedValue !== null) {
       cachedScriptURIs[each] = cachedValue;
     }
@@ -62,7 +62,7 @@ export async function getERC5169ScriptURIBatched(
   }
   for (const [eachContract, eachScriptURI] of Object.entries(scriptURIs)) {
     if (cachedScriptURIs[eachContract] === undefined) {
-      setERC5169ScriptURICache(eachContract, chainId, eachScriptURI);
+      setERC5169ScriptURICache(chainId, eachContract, eachScriptURI);
     }
   }
   return scriptURIs;

@@ -1,5 +1,5 @@
-import { isTokenscriptValid } from "../libs";
 import { useEffect, useState } from "react";
+import { isTokenscriptValid } from "../libs";
 
 export const useTsValidation = (v: {
   chainId: number;
@@ -11,11 +11,19 @@ export const useTsValidation = (v: {
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     (async function check() {
-      setIsValid(await isTokenscriptValid(chainId, contract));
-      setIsChecking(false);
+      if (isMounted) {
+        setIsValid(await isTokenscriptValid(chainId, contract));
+        setIsChecking(false);
+      }
     })();
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [chainId, contract]);
 
   return { isValid, isChecking };
 };
