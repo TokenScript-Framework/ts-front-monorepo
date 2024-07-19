@@ -5,18 +5,25 @@ import {
   AvatarImage,
 } from "@/components/shadcn/ui/avatar";
 
-import { Card, CardContent, CardTitle } from "@/components/shadcn/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/shadcn/ui/card";
 
-import { TokenType } from "@/lib/tokenStorage";
-import { addressPipe, rewriteUrlIfIFPSUrl } from "@/lib/utils";
-import { OctagonAlert } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/shadcn/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./shadcn/ui/tooltip";
+} from "@/components/shadcn/ui/tooltip";
+import { TokenType } from "@/lib/tokenStorage";
+import { addressPipe, rewriteUrlIfIFPSUrl } from "@/lib/utils";
+import { OctagonAlert, ShieldCheck, ShieldX } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useTsValidation } from "token-kit";
 
 interface TokenCardProps {
   type: TokenType;
@@ -34,48 +41,92 @@ export default function TokenCard({ type, token }: TokenCardProps) {
     }
   };
 
+  const { isValid, isChecking } = useTsValidation({
+    chainId: token.chainId,
+    contract: token.address,
+  });
+
+  if (isChecking) {
+    return (
+      <Card>
+        <CardHeader className="relative space-y-0 p-0">
+          <Skeleton className="w-full rounded-xl pb-[40%]" />
+        </CardHeader>
+        <CardContent className="p-4">
+          <div className="relative flex w-full items-center space-x-4">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-48" />
+              <Skeleton className="h-4 w-36" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card
-      className="cursor-pointer p-8 text-center dark:bg-gray-900"
+      className="cursor-pointer text-center dark:bg-gray-900"
       onClick={() => loadNFTHandler(token.address, token.tokenId)}
     >
       <CardTitle>
-        <div className="flex items-center justify-center gap-2">
-          <Avatar>
-            <AvatarImage
-              src={
-                token.logoURI ? token.logoURI : rewriteUrlIfIFPSUrl(token.image)
-              }
-              alt="token"
-            />
-            <AvatarFallback className="bg-primary-100/20">T</AvatarFallback>
-          </Avatar>
-
-          <span>{token.name}</span>
-        </div>
-        <div className="flex items-center justify-center gap-2 pt-4">
-          <a className="hover:text-primary-500 text-sm text-gray-500 underline">
-            {addressPipe(token.address)}
-          </a>
-          {!token.notFound && (
+        <div className="relative flex flex-col gap-4 p-8">
+          <div className="absolute right-2 top-2">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <OctagonAlert size={20} color="#e3e633" />
+                  {isValid ? (
+                    <ShieldCheck color="#16a34a" />
+                  ) : (
+                    <ShieldX color="#aa3131" />
+                  )}
                 </TooltipTrigger>
                 <TooltipContent>
-                  Your token is not recognized, please register{" "}
-                  <a
-                    className="hover:text-primary-500 text-sm text-gray-500 underline"
-                    target="_blank"
-                    href="https://token-list.smarttokenlabs.com"
-                  >
-                    here
-                  </a>
+                  {isValid ? "Secure Tokenscript" : "Insecure Tokenscript"}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          )}
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <Avatar>
+              <AvatarImage
+                src={
+                  token.logoURI
+                    ? token.logoURI
+                    : rewriteUrlIfIFPSUrl(token.image)
+                }
+                alt="token"
+              />
+              <AvatarFallback className="bg-primary-100/20">T</AvatarFallback>
+            </Avatar>
+
+            <span>{token.name}</span>
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <a className="hover:text-primary-500 text-sm text-gray-500 underline">
+              {addressPipe(token.address)}
+            </a>
+            {!token.notFound && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <OctagonAlert size={20} color="#e3e633" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Your token is not recognized, please register{" "}
+                    <a
+                      className="hover:text-primary-500 text-sm text-gray-500 underline"
+                      target="_blank"
+                      href="https://token-list.smarttokenlabs.com"
+                    >
+                      here
+                    </a>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
         </div>
       </CardTitle>
       <CardContent>
