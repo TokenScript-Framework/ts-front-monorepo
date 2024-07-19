@@ -1,21 +1,27 @@
 import axios from "axios";
 import { getERC5169ScriptURISingle } from "../ethereum";
 import { DSigValidator } from "./dsig-validator";
-import { getTokenscriptCache, setTokenscriptCache } from "./tokenscript-cache";
 import { TrustedKeyResolver } from "./trusted-key-resolver";
+import {
+  getTsValidationCache,
+  setTsValidationCache,
+} from "./ts-validation-cache";
 
 export async function isTokenscriptValid(
   chainId: number,
   contract: `0x${string}`,
+  index = 0,
 ) {
   const scriptURIs = await getERC5169ScriptURISingle(chainId, contract);
+  const scriptURI = scriptURIs[index];
+  if (scriptURIs === "not implemented" || !scriptURI) return false;
 
-  if (scriptURIs === "not implemented" || !scriptURIs[0]) return false;
+  const cachedResult = getTsValidationCache(scriptURI);
+  if (cachedResult !== null) return cachedResult;
 
   try {
-    const tsXml = await fetchTokenscript(scriptURIs[0]);
+    const tsXml = (await axios.get(scriptURI)).data;
     const result = await new DSigValidator().getSignerKey(tsXml);
-
     if (result === false) return false;
 
     const keyResolver = new TrustedKeyResolver();
@@ -24,18 +30,11 @@ export async function isTokenscriptValid(
       result.signingKey,
     );
 
-    return !!trustedKey;
+    const isValid = !!trustedKey;
+    setTsValidationCache(scriptURI, isValid);
+
+    return isValid;
   } catch {
     return false;
   }
-}
-
-async function fetchTokenscript(scriptURI: string) {
-  const tokenscript = getTokenscriptCache(scriptURI);
-  if (tokenscript) return tokenscript;
-
-  const result = (await axios.get(scriptURI)).data;
-  setTokenscriptCache(scriptURI, result);
-
-  return result;
 }
