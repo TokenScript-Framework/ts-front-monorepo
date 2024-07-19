@@ -9,7 +9,14 @@ import { Card, CardContent, CardTitle } from "@/components/shadcn/ui/card";
 
 import { TokenType } from "@/lib/tokenStorage";
 import { addressPipe, rewriteUrlIfIFPSUrl } from "@/lib/utils";
+import { OctagonAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./shadcn/ui/tooltip";
 
 interface TokenCardProps {
   type: TokenType;
@@ -46,9 +53,30 @@ export default function TokenCard({ type, token }: TokenCardProps) {
 
           <span>{token.name}</span>
         </div>
-        <a className="hover:text-primary-500 text-sm text-gray-500 underline">
-          {addressPipe(token.address)}
-        </a>
+        <div className="flex items-center justify-center gap-2 pt-4">
+          <a className="hover:text-primary-500 text-sm text-gray-500 underline">
+            {addressPipe(token.address)}
+          </a>
+          {!token.notFound && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <OctagonAlert size={20} color="#e3e633" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  Your token is not recognized, please register{" "}
+                  <a
+                    className="hover:text-primary-500 text-sm text-gray-500 underline"
+                    target="_blank"
+                    href="https://token-list.smarttokenlabs.com"
+                  >
+                    here
+                  </a>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
       </CardTitle>
       <CardContent>
         {type === "ERC20" ? (
