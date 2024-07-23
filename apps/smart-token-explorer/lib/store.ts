@@ -1,4 +1,5 @@
 import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 import { Token, TokenType } from "./tokenStorage";
 export const chainsAtom = atom<any>([]);
 export const getChainsAtom = atom((get) => get(chainsAtom));
@@ -14,7 +15,7 @@ export const setTokenTypeAtom = atom(null, async (get, set, type: string) => {
   set(tokenTypeAtom, type);
 });
 
-export const devModeAtom = atom<boolean>(true);
+export const devModeAtom = atomWithStorage<boolean>("devMode", true);
 export const getDevModeAtom = atom((get) => get(devModeAtom));
 export const setDevModeAtom = atom(null, async (get, set, mode: boolean) => {
   set(devModeAtom, mode);

@@ -1,5 +1,6 @@
 import { ethers, formatEther } from "ethers";
 import * as sha3 from "js-sha3";
+import { isTokenscriptValid } from "token-kit";
 import { ERC1155_ABI, ERC20_ABI, ERC5169_ABI, ERC721_ABI } from "./abi";
 import { provider } from "./etherProvider";
 import { chainPipe } from "./utils";
@@ -136,10 +137,11 @@ export function isValidTokenId(tokenId: string) {
 }
 
 export async function validateToken(
+  devMode: boolean,
   chain: number,
   owner: `0x${string}`,
   type: string,
-  token: string,
+  token: `0x${string}`,
   tokenId?: string,
 ) {
   if (!isValidAddress(token)) {
@@ -152,6 +154,16 @@ export async function validateToken(
       error: true,
       message: `This token on ${chainPipe(chain)} is not a valid ERC5169 token.`,
     };
+  }
+
+  if (!devMode) {
+    const isValid = await isTokenscriptValid(chain, token);
+    if (!isValid) {
+      return {
+        error: true,
+        message: "Tokenscript is not signed by a trusted party.",
+      };
+    }
   }
 
   switch (type) {

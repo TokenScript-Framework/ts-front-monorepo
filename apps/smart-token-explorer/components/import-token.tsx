@@ -3,7 +3,9 @@
 import { SpinIcon } from "@/components/icons/SpinIcon";
 import { TOKENTYPE_LIST } from "@/lib/constants";
 import { validateToken } from "@/lib/etherService";
+import { getDevModeAtom } from "@/lib/store";
 import { Token, TokenType } from "@/lib/tokenStorage";
+import { useAtomValue } from "jotai";
 import React, { useState } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { Button } from "./shadcn/ui/button";
@@ -28,6 +30,7 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
   const [token, setToken] = useState<`0x${string}`>("0x0");
   const [tokenId, setTokenId] = useState<string | undefined>();
   const [open, setOpen] = React.useState(false);
+  const devMode = useAtomValue(getDevModeAtom);
   const [loading, setLoading] = React.useState(false);
   const [type, setType] = useState<TokenType>(TOKENTYPE_LIST[0]);
   const [error, setError] = useState("");
@@ -43,6 +46,7 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
     setLoading(true);
     if (address) {
       const validate: any = await validateToken(
+        devMode,
         chainId,
         address,
         type,
