@@ -156,14 +156,12 @@ export async function validateToken(
     };
   }
 
-  if (!devMode) {
-    const isValid = await isTokenscriptValid(chain, token);
-    if (!isValid) {
-      return {
-        error: true,
-        message: "Tokenscript is not signed by a trusted party.",
-      };
-    }
+  const isValid = await isTokenscriptValid(chain, token);
+  if (!devMode && !isValid) {
+    return {
+      error: true,
+      message: "Tokenscript is not signed by a trusted party.",
+    };
   }
 
   switch (type) {
@@ -179,7 +177,7 @@ export async function validateToken(
       break;
     }
     case "ERC721": {
-      if (!isValidInteger(tokenId)) {
+      if (!isValidInteger(tokenId!)) {
         return { error: true, message: "Please input correct tokenId" };
       }
 
@@ -191,7 +189,7 @@ export async function validateToken(
         };
       }
 
-      const allowance = await allowanceERC721(token, tokenId, owner);
+      const allowance = await allowanceERC721(token, tokenId!, owner);
       if (!allowance) {
         return {
           error: true,
@@ -203,7 +201,7 @@ export async function validateToken(
     }
     default: {
       //1155
-      if (!isValidTokenId(tokenId)) {
+      if (!isValidTokenId(tokenId!)) {
         return { error: true, message: "Please input correct tokenId" };
       }
 
@@ -215,7 +213,7 @@ export async function validateToken(
         };
       }
 
-      const allowance = await allowanceERC1155(token, tokenId, owner);
+      const allowance = await allowanceERC1155(token, tokenId!, owner);
       if (!allowance) {
         return {
           error: true,
@@ -227,5 +225,5 @@ export async function validateToken(
     }
   }
 
-  return { error: false };
+  return { error: false, signed: isValid };
 }

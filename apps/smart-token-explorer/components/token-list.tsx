@@ -1,5 +1,5 @@
 "use client";
-import { tokenListAtom } from "@/lib/store";
+import { getDevModeAtom, tokenListAtom } from "@/lib/store";
 import { Token, TokenType } from "@/lib/tokenStorage";
 import { useAtomValue } from "jotai";
 import { query } from "smart-token-list";
@@ -11,6 +11,7 @@ interface TokenProps {
 
 export default function MyTokenList({ type }: TokenProps) {
   const tokenListMap = useAtomValue(tokenListAtom);
+  const devMode = useAtomValue(getDevModeAtom);
 
   let tokenList: Token[] = tokenListMap[type];
 
@@ -19,6 +20,7 @@ export default function MyTokenList({ type }: TokenProps) {
       case "ERC20": {
         tokenList = [
           {
+            signed: false,
             address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
             chainId: 1,
           },
@@ -28,6 +30,7 @@ export default function MyTokenList({ type }: TokenProps) {
       case "ERC721": {
         tokenList = [
           {
+            signed: false,
             address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
             chainId: 1,
             tokenId: "12344",
@@ -38,6 +41,7 @@ export default function MyTokenList({ type }: TokenProps) {
       default: {
         tokenList = [
           {
+            signed: false,
             address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
             chainId: 1,
             tokenId: "355",
@@ -47,6 +51,10 @@ export default function MyTokenList({ type }: TokenProps) {
         break;
       }
     }
+  }
+
+  if (!devMode) {
+    tokenList = tokenList.filter((token) => token.signed);
   }
 
   const tokenData: any[] = tokenList.map((token) => {

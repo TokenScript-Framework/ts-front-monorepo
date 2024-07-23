@@ -23,9 +23,8 @@ import { TokenType } from "@/lib/tokenStorage";
 import { addressPipe, rewriteUrlIfIFPSUrl } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { OctagonAlert, ShieldCheck, ShieldX } from "lucide-react";
+import { ShieldCheck, ShieldX } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTsValidation } from "token-kit";
 import { erc20Abi, erc721Abi } from "viem";
 import { useAccount, useReadContract, useReadContracts } from "wagmi";
 
@@ -45,11 +44,6 @@ export default function TokenCard({ type, token }: TokenCardProps) {
       router.push(`/${type}/${address}`);
     }
   };
-
-  const { isValid, isChecking } = useTsValidation({
-    chainId: token.chainId,
-    contract: token.address,
-  });
 
   const { data: erc20Data, isFetching: isFetchingERC20Info } = useReadContracts(
     {
@@ -98,7 +92,6 @@ export default function TokenCard({ type, token }: TokenCardProps) {
   }
 
   if (
-    isChecking ||
     isFetchingERC20Info ||
     isFetchingERC721TokenURI ||
     isFetchingERC721Metadata
@@ -132,14 +125,14 @@ export default function TokenCard({ type, token }: TokenCardProps) {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  {isValid ? (
+                  {token.signed ? (
                     <ShieldCheck color="#16a34a" />
                   ) : (
                     <ShieldX color="#aa3131" />
                   )}
                 </TooltipTrigger>
                 <TooltipContent>
-                  {isValid ? "Secure Tokenscript" : "Insecure Tokenscript"}
+                  {token.signed ? "Secure Tokenscript" : "Insecure Tokenscript"}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -163,25 +156,6 @@ export default function TokenCard({ type, token }: TokenCardProps) {
             <a className="hover:text-primary-500 text-sm text-gray-500 underline">
               {addressPipe(token.address)}
             </a>
-            {token.notFound && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <OctagonAlert size={20} color="#e3e633" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    Your token is not recognized, please register{" "}
-                    <a
-                      className="hover:text-primary-500 text-sm text-gray-500 underline"
-                      target="_blank"
-                      href="https://token-list.smarttokenlabs.com"
-                    >
-                      here
-                    </a>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
           </div>
         </div>
       </CardTitle>

@@ -60,6 +60,7 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
         //to import
         setOpen(false);
         onConfirm(type, {
+          signed: validate.signed,
           chainId,
           address: token,
           tokenId: tokenId,

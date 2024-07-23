@@ -16,6 +16,7 @@ export function loadTokenList(address: string): Record<TokenType, Token[]> {
 export type TokenType = "ERC20" | "ERC721" | "ERC1155";
 
 export type Token = {
+  signed: boolean;
   chainId: number;
   address: string;
   tokenId?: string;
