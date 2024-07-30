@@ -12,6 +12,17 @@ import {
   CardTitle,
 } from "@/components/shadcn/ui/card";
 
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/shadcn/ui/drawer";
+
 import { Skeleton } from "@/components/shadcn/ui/skeleton";
 import {
   Tooltip,
@@ -21,12 +32,13 @@ import {
 } from "@/components/shadcn/ui/tooltip";
 import { TokenType } from "@/lib/tokenStorage";
 import { addressPipe, rewriteUrlIfIFPSUrl } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { ShieldCheck, ShieldX } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { erc20Abi, erc721Abi } from "viem";
-import { useAccount, useReadContract, useReadContracts } from "wagmi";
+import { erc20Abi } from "viem";
+import { useAccount, useReadContracts } from "wagmi";
+import { Badge } from "./shadcn/ui/badge";
+import { Button } from "./shadcn/ui/button";
+import { NFTCard } from "./token-kit/nft-card";
 
 interface TokenCardProps {
   type: TokenType;
@@ -37,10 +49,12 @@ export default function TokenCard({ type, token }: TokenCardProps) {
   const { address: walletAddress } = useAccount();
   const router = useRouter();
 
+  const isERC20 = type === "ERC20";
+
   const loadNFTHandler = (address: string, tokenId?: string) => {
     if (tokenId) {
       router.push(`/${type}/${address}/${tokenId}`);
-    } else {
+    } else if (isERC20) {
       router.push(`/${type}/${address}`);
     }
   };
@@ -49,53 +63,24 @@ export default function TokenCard({ type, token }: TokenCardProps) {
     {
       contracts: contractsForErc20(token, walletAddress!),
       query: {
-        enabled: type === "ERC20" && !!walletAddress,
+        enabled: isERC20 && !!walletAddress,
       },
     },
   );
 
-  const { data: erc721TokenURI, isFetching: isFetchingERC721TokenURI } =
-    useReadContract({
-      chainId: token.chainId,
-      address: token.address,
-      abi: erc721Abi,
-      functionName: "tokenURI",
-      args: [BigInt(token.tokenId || 0)],
-      query: {
-        enabled: type === "ERC721" && !!token.notFound,
-      },
-    });
-
-  const { data: erc721Metadata, isFetching: isFetchingERC721Metadata } =
-    useQuery({
-      queryKey: ["metadata", token.chainId, token.address, token.tokenId],
-      queryFn: async () => {
-        const res = await axios.get(erc721TokenURI!);
-        return res.data;
-      },
-      enabled: !!erc721TokenURI,
-    });
-
-  if (type === "ERC20") {
+  if (isERC20) {
     token.balance = Number(erc20Data?.[0]?.result);
   }
 
   if (token.notFound) {
-    if (type === "ERC20") {
+    if (isERC20) {
       token.name = erc20Data?.[1]?.result;
       token.symbol = erc20Data?.[2]?.result;
       token.decimals = erc20Data?.[3]?.result;
-    } else if (type === "ERC721") {
-      token.image = erc721Metadata?.image;
-      token.description = erc721Metadata?.description;
     }
   }
 
-  if (
-    isFetchingERC20Info ||
-    isFetchingERC721TokenURI ||
-    isFetchingERC721Metadata
-  ) {
+  if (isFetchingERC20Info) {
     return (
       <Card>
         <CardHeader className="relative space-y-0 p-0">
@@ -114,13 +99,18 @@ export default function TokenCard({ type, token }: TokenCardProps) {
     );
   }
 
-  return (
+  const cardView = (
     <Card
       className="cursor-pointer text-center dark:bg-gray-900"
-      onClick={() => loadNFTHandler(token.address, token.tokenId)}
+      onClick={() => loadNFTHandler(token.address)}
     >
       <CardTitle>
         <div className="relative flex flex-col gap-4 p-8">
+          {token.tokenIds && (
+            <Badge variant="outline" className="absolute left-2 top-2">
+              {token.tokenIds.length}
+            </Badge>
+          )}
           <div className="absolute right-2 top-2">
             <TooltipProvider>
               <Tooltip>
@@ -160,7 +150,7 @@ export default function TokenCard({ type, token }: TokenCardProps) {
         </div>
       </CardTitle>
       <CardContent>
-        {type === "ERC20" ? (
+        {isERC20 ? (
           <>
             <div className="flex justify-between text-gray-500 dark:text-[#B3B3B3]">
               <div>ChainId</div>
@@ -192,6 +182,39 @@ export default function TokenCard({ type, token }: TokenCardProps) {
       </CardContent>
     </Card>
   );
+
+  const cardViewWithDrawer = (
+    <Drawer>
+      <DrawerTrigger>{cardView}</DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>Imported Smart Tokens</DrawerTitle>
+          <DrawerDescription>
+            Click on the Smart Token to experience
+          </DrawerDescription>
+        </DrawerHeader>
+        <div className="flex justify-center gap-4">
+          {token.tokenIds?.map((tokenId: string) => (
+            <div key={tokenId} className="max-w-[320px] cursor-pointer">
+              <NFTCard
+                chainId={token.chainId}
+                contract={token.address}
+                tokenId={tokenId}
+                onClick={() => loadNFTHandler(token.address, tokenId)}
+              />
+            </div>
+          ))}
+        </div>
+        <DrawerFooter>
+          <DrawerClose>
+            <Button variant="outline">Cancel</Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  );
+
+  return isERC20 ? cardView : cardViewWithDrawer;
 }
 
 function contractsForErc20(token: any, walletAddress: string) {

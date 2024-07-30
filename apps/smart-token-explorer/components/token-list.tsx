@@ -1,6 +1,6 @@
 "use client";
 import { getDevModeAtom, tokenListAtom } from "@/lib/store";
-import { Token, TokenType } from "@/lib/tokenStorage";
+import { TokenCollection, TokenType } from "@/lib/tokenStorage";
 import { useAtomValue } from "jotai";
 import { query } from "smart-token-list";
 import TokenCard from "./token-card";
@@ -13,7 +13,7 @@ export default function MyTokenList({ type }: TokenProps) {
   const tokenListMap = useAtomValue(tokenListAtom);
   const devMode = useAtomValue(getDevModeAtom);
 
-  let tokenList: Token[] = tokenListMap[type];
+  let tokenList: TokenCollection[] = tokenListMap[type];
 
   if (tokenList.length == 0) {
     switch (type) {
@@ -33,7 +33,7 @@ export default function MyTokenList({ type }: TokenProps) {
             signed: false,
             address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
             chainId: 1,
-            tokenId: "12344",
+            tokenIds: ["12344"],
           },
         ];
         break;
@@ -44,7 +44,7 @@ export default function MyTokenList({ type }: TokenProps) {
             signed: false,
             address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
             chainId: 1,
-            tokenId: "355",
+            tokenIds: ["355"],
           },
         ];
 
