@@ -114,12 +114,14 @@ export default function TokenCard({ type, token }: TokenCardProps) {
           <div className="absolute right-2 top-2">
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
-                  {token.signed ? (
-                    <ShieldCheck color="#16a34a" />
-                  ) : (
-                    <ShieldX color="#aa3131" />
-                  )}
+                <TooltipTrigger asChild>
+                  <div>
+                    {token.signed ? (
+                      <ShieldCheck color="#16a34a" />
+                    ) : (
+                      <ShieldX color="#aa3131" />
+                    )}
+                  </div>
                 </TooltipTrigger>
                 <TooltipContent>
                   {token.signed ? "Secure Tokenscript" : "Insecure Tokenscript"}
@@ -207,7 +209,7 @@ export default function TokenCard({ type, token }: TokenCardProps) {
           ))}
         </div>
         <DrawerFooter>
-          <DrawerClose>
+          <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>
           </DrawerClose>
         </DrawerFooter>
