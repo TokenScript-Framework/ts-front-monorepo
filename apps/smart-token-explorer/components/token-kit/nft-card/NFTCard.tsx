@@ -1,7 +1,8 @@
-import { OpenseaIcon } from "@/components/icons/opensea-icon";
 import { Card, CardContent, CardHeader } from "@/components/shadcn/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/shadcn/ui/scroll-area";
 import { Skeleton } from "@/components/shadcn/ui/skeleton";
+import { erc1155Abi } from "@/lib/abi";
+import { rewriteUrlIfIFPSUrl } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
@@ -10,27 +11,59 @@ import { useReadContract } from "wagmi";
 import { NFTCardProps } from "./NFTCard.types";
 
 export const NFTCard: React.FC<NFTCardProps> = ({
+  type,
   chainId,
   contract,
   tokenId,
   onClick,
 }) => {
-  const { data: tokenURI } = useReadContract({
+  const { data: erc721TokenURI } = useReadContract({
     chainId: chainId,
     address: contract,
     abi: erc721Abi,
     functionName: "tokenURI",
     args: [BigInt(tokenId)],
+    query: {
+      enabled: type === "ERC721",
+    },
   });
 
-  const { data: metadata } = useQuery({
+  const { data: erc721Metadata } = useQuery({
     queryKey: ["metadata", chainId, contract, tokenId],
     queryFn: async () => {
-      const res = await axios.get(tokenURI!);
+      const res = await axios.get(rewriteUrlIfIFPSUrl(erc721TokenURI!));
       return res.data;
     },
-    enabled: !!tokenURI,
+    enabled: !!erc721TokenURI,
   });
+
+  const { data: erc1155TokenURI } = useReadContract({
+    chainId: chainId,
+    address: contract,
+    abi: erc1155Abi,
+    functionName: "uri",
+    args: [BigInt(tokenId)],
+    query: {
+      enabled: type === "ERC1155",
+    },
+  });
+
+  const { data: erc1155Metadata } = useQuery({
+    queryKey: ["metadata", chainId, contract, tokenId],
+    queryFn: async () => {
+      const res = await axios.get(rewriteUrlIfIFPSUrl(erc1155TokenURI as string));
+      return res.data;
+    },
+    enabled: !!erc1155TokenURI,
+  });
+
+  const metadata = erc721Metadata || erc1155Metadata;
+  const attributes =
+    metadata?.attributes ||
+    Object.entries(erc1155Metadata?.properties || {}).map(([key, value]) => ({
+      trait_type: key,
+      value,
+    }));
 
   if (!metadata) {
     return (
@@ -54,7 +87,10 @@ export const NFTCard: React.FC<NFTCardProps> = ({
   return (
     <Card onClick={onClick}>
       <CardHeader className="relative space-y-0 p-0">
-        <img className="rounded-lg" src={metadata?.image} />
+        <img
+          className="rounded-lg"
+          src={rewriteUrlIfIFPSUrl(metadata?.image)}
+        />
       </CardHeader>
       <CardContent className="p-4">
         <div className="flex flex-col gap-4">
@@ -70,7 +106,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({
             <h3 className="mb-2 text-lg font-semibold leading-none">Traits</h3>
             <ScrollArea className="w-full whitespace-nowrap rounded-md border p-2">
               <div className="flex w-full gap-2">
-                {metadata?.attributes?.map(
+                {attributes?.map(
                   ({
                     trait_type,
                     value,

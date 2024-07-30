@@ -197,6 +197,7 @@ export default function TokenCard({ type, token }: TokenCardProps) {
           {token.tokenIds?.map((tokenId: string) => (
             <div key={tokenId} className="max-w-[320px] cursor-pointer">
               <NFTCard
+                type={type as any}
                 chainId={token.chainId}
                 contract={token.address}
                 tokenId={tokenId}

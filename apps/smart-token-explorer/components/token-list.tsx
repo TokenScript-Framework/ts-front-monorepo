@@ -42,9 +42,9 @@ export default function MyTokenList({ type }: TokenProps) {
         tokenList = [
           {
             signed: false,
-            address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+            address: "0x73da73ef3a6982109c4d5bdb0db9dd3e3783f313",
             chainId: 1,
-            tokenIds: ["355"],
+            tokenIds: ["1", "2"],
           },
         ];
 
