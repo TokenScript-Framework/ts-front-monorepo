@@ -9,6 +9,14 @@ export function addressPipe(address: string, start: number = 38) {
   return `${address.slice(0, 6)}...${address.slice(start)}`;
 }
 
+export function valuePipe(value: string) {
+  return value.indexOf("0x") === 0 ? addressPipe(value) : value;
+}
+
+export function urlPipe(url: string) {
+  return `${url.slice(0, 10)}...${url.slice(-4)}`;
+}
+
 export function rewriteUrlIfIFPSUrl(url: string) {
   if (!url) {
     return "";
