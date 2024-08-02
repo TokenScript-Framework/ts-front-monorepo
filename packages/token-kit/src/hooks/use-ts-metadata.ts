@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { isTokenscriptValid } from "../libs";
+import { getTokenscriptMetadata, MetdataOptions, TsMetadata } from "../libs";
 
-export const useTsValidation = (v: {
+export const useTsMetadata = (v: {
   chainId: number;
   contract: `0x${string}`;
+  options?: MetdataOptions;
 }) => {
-  const { chainId, contract } = v;
+  const { chainId, contract, options } = v;
 
-  const [isValid, setIsValid] = useState(false);
+  const [tsMetadata, setTsMetadata] = useState<TsMetadata | null>(null);
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
@@ -15,7 +16,7 @@ export const useTsValidation = (v: {
 
     (async function check() {
       if (isMounted) {
-        setIsValid(await isTokenscriptValid(chainId, contract));
+        setTsMetadata(await getTokenscriptMetadata(chainId, contract, options));
         setIsChecking(false);
       }
     })();
@@ -25,5 +26,5 @@ export const useTsValidation = (v: {
     };
   }, [chainId, contract]);
 
-  return { isValid, isChecking };
+  return { tsMetadata, isChecking };
 };

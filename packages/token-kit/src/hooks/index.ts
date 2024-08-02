@@ -1,1 +1,1 @@
-export * from "./use-ts-validation"
+export * from "./use-ts-metadata"

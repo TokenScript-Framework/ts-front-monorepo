@@ -6,7 +6,8 @@ import {
   X509Certificate,
 } from "@tokenscript/xmldsigjs";
 import { Crypto, CryptoKey } from "webcrypto-liner/build";
-import { uint8tohex } from "../../utils/crypto";
+import { uint8tohex } from "../../../../utils/crypto";
+import { TokenScript } from "../tokenscript";
 
 const crypto = new Crypto();
 xmldsigjs.Application.setEngine("WebCryptoLiner", crypto);
@@ -22,7 +23,11 @@ export class DSigValidator {
    * Extract the XML DSig signer key or root key in the certificate chain
    * @param tokenScript
    */
-  public async getSignerKey(xmlStr: string): Promise<false | DSigKeyResult> {
+  public async getSignerKey(
+    tokenScript: TokenScript,
+  ): Promise<false | DSigKeyResult> {
+    const xmlStr = tokenScript.getXmlString();
+
     let doc = xmldsigjs.Parse(xmlStr);
     let signatures = doc.getElementsByTagNameNS(
       "http://www.w3.org/2000/09/xmldsig#",
@@ -36,7 +41,6 @@ export class DSigValidator {
 
     try {
       const xml = new xmldsigjs.SignedXml(doc);
-
       xml.LoadXml(signatures[0]);
       const verified = await xml.Verify();
 

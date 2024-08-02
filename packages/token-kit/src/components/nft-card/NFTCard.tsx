@@ -4,7 +4,7 @@ import { ShieldCheck, ShieldX } from "lucide-react";
 import React from "react";
 import { erc721Abi } from "viem";
 import { useReadContract } from "wagmi";
-import { useTsValidation } from "../../hooks";
+import { useTsMetadata } from "../../hooks";
 import { OpenseaIcon } from "../icons/opensea-icon";
 import { Card, CardContent, CardHeader } from "../shadcn/ui/card";
 import { ScrollArea, ScrollBar } from "../shadcn/ui/scroll-area";
@@ -21,7 +21,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({
   chainId,
   contract,
   tokenId,
-  onClick
+  onClick,
 }) => {
   const { data: tokenURI } = useReadContract({
     chainId: chainId,
@@ -40,7 +40,11 @@ export const NFTCard: React.FC<NFTCardProps> = ({
     enabled: !!tokenURI,
   });
 
-  const { isValid, isChecking } = useTsValidation({ chainId, contract });
+  const { tsMetadata, isChecking } = useTsMetadata({
+    chainId,
+    contract,
+    options: { checkSignature: true },
+  });
 
   if (!metadata || isChecking) {
     return (
@@ -85,14 +89,14 @@ export const NFTCard: React.FC<NFTCardProps> = ({
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
-                    {isValid ? (
+                    {tsMetadata?.signed ? (
                       <ShieldCheck color="#16a34a" />
                     ) : (
                       <ShieldX color="#aa3131" />
                     )}
                   </TooltipTrigger>
                   <TooltipContent>
-                    {isValid ? "Secure Tokenscript" : "Insecure Tokenscript"}
+                    {tsMetadata?.signed ? "Secure Tokenscript" : "Insecure Tokenscript"}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

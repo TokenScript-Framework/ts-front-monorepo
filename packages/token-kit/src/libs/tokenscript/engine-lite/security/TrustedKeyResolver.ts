@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { TokenScript } from "../tokenscript";
 
 export interface TrustedKey {
   issuerName: string;
@@ -28,9 +29,9 @@ const trustedKeys = [
  * The contract key resolver is used to resolve the owner or deployer of a smart contract
  */
 export class TrustedKeyResolver {
-  public getTrustedPublicKey(authPubKey: string, signerPubKey: string) {
-    if (!trustedKeys) return null;
+  constructor(private tokenScript: TokenScript) {}
 
+  public getTrustedPublicKey(authPubKey: string, signerPubKey: string) {
     const authEthAddress = ethers.computeAddress(authPubKey);
     const signerEthAddress = ethers.computeAddress(signerPubKey);
 

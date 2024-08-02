@@ -10,7 +10,7 @@ npm run rollup
 
 ### NFT Card
 
-```tsx
+```jsx
 import { NFTCard } from "token-kit";
 
 <NFTCard
@@ -23,26 +23,35 @@ import { NFTCard } from "token-kit";
 
 ## React Hooks
 
-### useTsValidation
+### useTsMetadata
 
-Check tokenscript file digital signature
+get tokenscript file metadata
 
 ```ts
-import { useTsValidation } from "token-kit";
+import { useTsMetadata } from "token-kit";
 
-const { isValid, isChecking } = useTsValidation({ chainId, contract });
+const { tsMetadata, isChecking } = useTsMetadata({
+  chainId,
+  contract,
+  options,
+});
 ```
+
+| options                  | tsMetadata            |
+| ------------------------ | --------------------- |
+| `{checkSignature: true}` | `{signed: boolean}`   |
+| `{actions: true}`        | `{actions: string[]}` |
 
 ## Libraries
 
 ### Ethereum
 
-#### Validate Tokenscript File Digital Signature
+#### Get Tokenscript File Metadata
 
 ```ts
-import { isTokenscriptValid } from "token-kit";
+import { getTokenscriptMetadata, TsMetadata } from "token-kit";
 
-const isValid: boolean = await isTokenscriptValid(
+const tsMetadata: TsMetadata = await getTokenscriptMetadata(
   137,
   "0xd5ca946ac1c1f24eb26dae9e1a53ba6a02bd97fe",
 );

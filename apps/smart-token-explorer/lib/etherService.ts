@@ -1,6 +1,6 @@
 import { ethers, formatEther } from "ethers";
 import * as sha3 from "js-sha3";
-import { isTokenscriptValid } from "token-kit";
+import { getTokenscriptMetadata } from "token-kit";
 import { ERC1155_ABI, ERC20_ABI, ERC5169_ABI, ERC721_ABI } from "./abi";
 import { provider } from "./etherProvider";
 import { chainPipe } from "./utils";
@@ -156,8 +156,10 @@ export async function validateToken(
     };
   }
 
-  const isValid = await isTokenscriptValid(chain, token);
-  if (!devMode && !isValid) {
+  const { signed } = await getTokenscriptMetadata(chain, token, {
+    checkSignature: true,
+  });
+  if (!devMode && !signed) {
     return {
       error: true,
       message: "Tokenscript is not signed by a trusted party.",
@@ -225,5 +227,5 @@ export async function validateToken(
     }
   }
 
-  return { error: false, signed: isValid };
+  return { error: false, signed };
 }
