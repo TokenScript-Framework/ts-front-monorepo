@@ -200,6 +200,11 @@ store.transaction(() => {
 
 We support define schema with `Zod`:
 
+```sh
+# add zod to your project
+npm i zod
+```
+
 ```ts
 import { z } from "zod";
 // kv pairs schema
@@ -272,7 +277,7 @@ store.delListener(listenerId);
 Migrations are a way to update data from one version to another. You can define a migration function that will be called when data schema changes
 
 ```ts
-// migration only triggers when the schema changes
+// migration only triggers when the schema changes (zod schema validation failed)
 // so only presist data need this function
 // you have to define schemas first
 
