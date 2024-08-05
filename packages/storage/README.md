@@ -161,6 +161,12 @@ store.getTables(); // get all tables. -> {pets: {fido: {species: 'dog', color: '
 store.table("species").get(); // get a table. -> {dog: {price: 5}, cat: {price: 4}}
 store.table("species").row("dog").get(); // get a row. -> {species: 'dog', color: 'brown'}
 store.table("species").row("dog").cell("price").get(); // get a cell. -> 5
+
+// delete table values
+store.table("species").row("dog").cell("price").del(); // delete a cell
+store.table("species").row("dog").del(); // delete a row
+store.table("species").del(); // delete a table
+store.delTables(); // delete all tables
 ```
 
 > For more complex table queries, see the [Table Queries](#table-queries) section. (WIP)
