@@ -27,8 +27,6 @@ export interface ITokenIdContext {
  * executing transactions
  */
 export class TokenScript {
-  public tokenDef: XMLDocument;
-
   private label?: Label;
 
   private meta?: Meta;
@@ -45,9 +43,8 @@ export class TokenScript {
 
   private securityInfo: SecurityInfo;
 
-  constructor(public readonly xmlStr: string) {
+  constructor(public readonly xmlStr: string, public readonly tokenDef: XMLDocument) {
     this.securityInfo = new SecurityInfo(this);
-    this.tokenDef = new DOMParser().parseFromString(xmlStr, "text/xml");
   }
 
   /**
