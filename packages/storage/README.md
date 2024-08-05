@@ -173,7 +173,7 @@ Basic usages:
 
 ```ts
 // Multiple changes in a transaction
-store.transaction(() => {
+store.transaction((_) => {
   store.table("pets").row("fido").cell("color").set("walnut");
   store.table("pets").row("fido").cell("sold").set(true);
 });
@@ -181,18 +181,18 @@ store.transaction(() => {
 
 If no errors, the transaction will be committed.
 
-Or if you want to do a rollback, you can throw an error or just return `false`:
+Or if you want to do a rollback, you can throw an error or just call `tr.rollback()`:
 
 ```ts
-store.transaction(() => {
+store.transaction((tr) => {
   store.table("pets").row("fido").cell("color").set("walnut");
   store.table("pets").row("fido").cell("sold").set(true);
 
   // transaction will be rolled back
-  return false;
+  tr.rollback();
   // or
   // throw new Error("rollback");
-  // but you have to handle this exception
+  // but you have to handle this exception with try - catch block outside the transaction
 });
 ```
 
