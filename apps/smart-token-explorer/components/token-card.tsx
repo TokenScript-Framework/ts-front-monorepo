@@ -43,9 +43,10 @@ import { NFTCard } from "./token-kit/nft-card";
 interface TokenCardProps {
     type: TokenType;
     token: any;
+    chain: number;
 }
 
-export default function TokenCard({ type, token }: TokenCardProps) {
+export default function TokenCard({ type, chain, token }: TokenCardProps) {
     const { address: walletAddress } = useAccount();
     const router = useRouter();
 
@@ -53,9 +54,9 @@ export default function TokenCard({ type, token }: TokenCardProps) {
 
     const loadNFTHandler = (address: string, tokenId?: string) => {
         if (tokenId) {
-            router.push(`/${type}/${address}/${tokenId}`);
+            router.push(`/${chain}/${address}/${tokenId}`);
         } else if (isERC20) {
-            router.push(`/${type}/${address}`);
+            router.push(`/${chain}/${address}`);
         }
     };
 
