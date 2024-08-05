@@ -155,14 +155,14 @@ export async function validateToken(
       message: `This token on ${chainPipe(chain)} is not a valid ERC5169 token.`,
     };
   }
-
   const { signed } = await getTokenscriptMetadata(chain, token, {
     checkSignature: true,
   });
   if (!devMode && !signed) {
     return {
       error: true,
-      message: "Tokenscript is not signed by a trusted party.",
+      message:
+        "Tokenscript is not signed by a trusted party. Please open dev mode to import.",
     };
   }
 
