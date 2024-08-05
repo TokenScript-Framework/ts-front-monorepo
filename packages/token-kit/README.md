@@ -37,11 +37,6 @@ const { tsMetadata, isChecking } = useTsMetadata({
 });
 ```
 
-| options                  | tsMetadata            |
-| ------------------------ | --------------------- |
-| `{checkSignature: true}` | `{signed: boolean}`   |
-| `{actions: true}`        | `{actions: string[]}` |
-
 ## Libraries
 
 ### Ethereum
@@ -54,5 +49,13 @@ import { getTokenscriptMetadata, TsMetadata } from "token-kit";
 const tsMetadata: TsMetadata = await getTokenscriptMetadata(
   137,
   "0xd5ca946ac1c1f24eb26dae9e1a53ba6a02bd97fe",
+  options,
 );
 ```
+
+the function will always return name and meta info of the tokenscript file, and by default it will return all the supported query options. However, you can also fine-grained control the queried data by passing the `options` argument.
+
+| options                  | tsMetadata            |
+| ------------------------ | --------------------- |
+| `{checkSignature: true}` | `{signed: boolean}`   |
+| `{actions: true}`        | `{actions: string[]}` |
