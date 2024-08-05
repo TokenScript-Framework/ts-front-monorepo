@@ -28,15 +28,12 @@ npm i storage
 
 ## Store Format
 
-We support 3 formats to store:
+We support 2 formats to store:
 
-- kv: `{key: value}`
-- table: `{table: {row: cellValue}}`
+- flat json object: `{key1: value1, key2: value2,...}`
 - tokenscript file (WIP)
 
-you can think `kv` is a plat json object, without any nested objects in `value`. `value` can be only `number`, `string` or `boolean`.
-
-And you can think of a `table` as a json object with three levels of nesting: `table - row - cell`. Cell value can be only `number`, `string` or `boolean`.
+We don't support any nested objects in `value`. `value` can be only `number`, `string` or `boolean`.
 
 We will introduce how to access these two types of data in the following content.
 
@@ -88,90 +85,42 @@ kv usages:
 store.key("employees").set(3);
 store.key("employees").set(4); // overwrite
 store.key("open").set(true); // append a new kv
-store.getValues(); // -> {employees: 4, open: true}
+store.get(); // -> {employees: 4, open: true}
 
 // inseret or update the whole kv pairs
-store.setValues({ employees: 3, open: true });
-store.getValues(); // -> {employees: 3, open: true}
-store.setValues({ top: 10 });
-store.getValues(); // -> {top: 10} overwrite
+// again, you cannot store a nested value.
+store.set({ employees: 3, open: true });
+store.get(); // -> {employees: 3, open: true}
+store.set({ top: 10 });
+store.get(); // -> {top: 10} overwrite
 
 // delete a single kv pair
-store.setValues({ employees: 3, open: true });
+store.set({ employees: 3, open: true });
 store.key("employees").del(); // -> {open: true}
 
 // delete the whole kv pairs
-store.setValues({ employees: 3, open: true });
-store.delValues(); // -> {} empty
+store.set({ employees: 3, open: true });
+store.del(); // -> {} empty
 
 // get single value
-store.setValues({ employees: 3, open: true });
+store.set({ employees: 3, open: true });
 store.key("employees").get(); // -> 3
 
 // get whole kv pairs
-store.getValues(); // -> {employees: 3, open: true}
+store.get(); // -> {employees: 3, open: true}
+
+// get all keys
+store.getKeys(); // -> ["employees", "open"]
+
+// get all values
+store.getValues(); // -> [3, true]
 
 // query kv pairs
-store.setValues({ score1: 10, score2: 20, score3: 30 });
-store.valuesQuery((key, value) => {
+store.set({ score1: 10, score2: 20, score3: 30 });
+store.query((key, value) => {
   return key.startsWith("score") && value > 15;
 }); // -> {score2: 20, score3: 30}
 ```
-
-table usages:
-
-```ts
-// insert or update single table
-store.table("species").set({ dog: { price: 5 } });
-console.log(store.getTables());
-// -> {pets: {fido: {species: 'dog'}}, species: {dog: {price: 5}}}
-store.table("species").set({ cat: { price: 4 } }); // overwrite
-
-// similarly, you can set multiple tables:
-store.setTables({
-  pets: {
-    fido: { species: "dog", color: "brown" },
-    felix: { species: "cat" },
-  },
-  species: {
-    dog: { price: 5 },
-    cat: { price: 4 },
-  },
-});
-store.getTables();
-
-// also you can set a single row by:
-store.table("species").row("dog").set({ price: 6, paid: true });
-
-// similarly, you can set a single cell by:
-store.table("species").row("dog").cell("price").set(7);
-
-// get table values
-store.setTables({
-  pets: {
-    fido: { species: "dog", color: "brown" },
-    felix: { species: "cat" },
-  },
-  species: {
-    dog: { price: 5 },
-    cat: { price: 4 },
-  },
-});
-store.getTables(); // get all tables. -> {pets: {fido: {species: 'dog', color: 'brown'}, felix: {species: 'cat'}}, species: {dog: {price: 5}, cat: {price: 4}}}
-store.table("species").get(); // get a table. -> {dog: {price: 5}, cat: {price: 4}}
-store.table("species").row("dog").get(); // get a row. -> {species: 'dog', color: 'brown'}
-store.table("species").row("dog").cell("price").get(); // get a cell. -> 5
-
-// delete table values
-store.table("species").row("dog").cell("price").del(); // delete a cell
-store.table("species").row("dog").del(); // delete a row
-store.table("species").del(); // delete a table
-store.delTables(); // delete all tables
-```
-
-> For more complex table queries, see the [Table Queries](#table-queries) section. (WIP)
-
-### Table Relationships (TODO)
 
 ### Transactions
 
@@ -180,8 +129,8 @@ Basic usages:
 ```ts
 // Multiple changes in a transaction
 store.transaction((_) => {
-  store.table("pets").row("fido").cell("color").set("walnut");
-  store.table("pets").row("fido").cell("sold").set(true);
+  store.set({ employees: 3, open: true });
+  store.key("score").set(10);
 });
 ```
 
@@ -191,8 +140,8 @@ Or if you want to do a rollback, you can throw an error or just call `tr.rollbac
 
 ```ts
 store.transaction((tr) => {
-  store.table("pets").row("fido").cell("color").set("walnut");
-  store.table("pets").row("fido").cell("sold").set(true);
+  store.set({ employees: 3, open: true });
+  store.key("score").set(10);
 
   // transaction will be rolled back
   tr.rollback();
@@ -213,14 +162,14 @@ npm i zod
 
 ```ts
 import { z } from "zod";
-// kv pairs schema
-store.setValuesSchema(
+// kv object schema
+store.setSchema(
   z.object({
     employees: z.number(),
     open: z.boolean().optional().default(false),
   }),
 );
-store.setValues({ employees: 3, website: "pets.com" }); // -> invalid
+store.set({ employees: 3, open: "pets.com" }); // -> invalid
 
 // also, you can set a single kv schema:
 store.key("employees").setSchema(z.number());
@@ -234,43 +183,21 @@ store.setTablesSchema(
     }),
   }),
 );
-
-// also, you can set schema to single table, row, or cell:
-store.table("pets").setSchema(
-  z.object({
-    species: z.string(),
-    sold: z.boolean().optional().default(false),
-  }),
-); // -> single table schema
-
-store
-  .table("pets")
-  .row("fido")
-  .setSchema(z.object({ species: z.string() })); // -> single row schema
-
-store.table("pets").row("fido").cell("sold").setSchema(z.boolean()); // -> single cell schema
 ```
-
-### index (TODO)
-
-### aggregation (TODO)
 
 ### hooks
 
 ```ts
-const store = createStore().setTables({
-  pets: { fido: { species: "dog" } },
-  species: { dog: { price: 5 } },
-});
+store.set({{ employees: 3, open: true }});
 
-const listenerId = store.addTablesListener(() =>
-  console.log("Tables changed!"),
+const listenerId = store.addListener(() =>
+  console.log("Store changed!"),
 );
 
-store.table("species").row("dog").cell("price").set(6);
+store.key("employees").set(4);
 // -> 'Tables changed!'
 
-store.table("pets").row("fido").cell("species").set("dog");
+store.key("open").set(true);
 // Since the data didn't actually change, the listener was not called.
 
 // clean up listener
@@ -287,7 +214,7 @@ Migrations are a way to update data from one version to another. You can define 
 // so only presist data need this function
 // you have to define schemas first
 
-store.setValuesSchema(
+store.setSchema(
   z.object({
     employees: z.number(),
     open: z.boolean().optional().default(false),
