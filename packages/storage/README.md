@@ -173,16 +173,6 @@ store.set({ employees: 3, open: "pets.com" }); // -> invalid
 
 // also, you can set a single kv schema:
 store.key("employees").setSchema(z.number());
-
-// tables schema
-store.setTablesSchema(
-  z.object({
-    pets: z.object({
-      species: z.string(),
-      sold: z.boolean().optional().default(false),
-    }),
-  }),
-);
 ```
 
 ### hooks
@@ -195,7 +185,7 @@ const listenerId = store.addListener(() =>
 );
 
 store.key("employees").set(4);
-// -> 'Tables changed!'
+// -> 'Value changed!'
 
 store.key("open").set(true);
 // Since the data didn't actually change, the listener was not called.
