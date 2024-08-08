@@ -33,9 +33,10 @@ We support 2 formats to store:
 - flat json object: `{key1: value1, key2: value2,...}`
 - tokenscript file (WIP)
 
-We don't support any nested objects in `value`. `value` can be only `number`, `string` or `boolean`.
+We don't support any embbed objects in `value`. `value` can be only `number`, `string` or `boolean`. Cannot be `object` or `array`.
 
-We will introduce how to access these two types of data in the following content.
+- `{"a":1, "b": 2}` --> Supported
+- `{"a": {"b": 1}}` --> NOT Supported
 
 ## Usage
 
@@ -49,7 +50,7 @@ import { MemoryStore, PersistentStore } from "storage";
 const { MemoryStore, PersistentStore } = require("storage");
 ```
 
-create a storage instance:
+create a store instance:
 
 ```ts
 // create a memory store
@@ -78,8 +79,6 @@ You can set `{persister: <persister>}` in `PersistentStore` options to change it
 
 ### Basic CRUD
 
-kv usages:
-
 ```ts
 // insert or update single kv
 store.key("employees").set(3);
@@ -100,7 +99,7 @@ store.key("employees").del(); // -> {open: true}
 
 // delete the whole kv pairs
 store.set({ employees: 3, open: true });
-store.del(); // -> {} empty
+store.empty(); // -> {} empty the whole store
 
 // get single value
 store.set({ employees: 3, open: true });
@@ -134,9 +133,23 @@ store.transaction((_) => {
 });
 ```
 
-If no errors, the transaction will be committed.
+If no errors, the transaction will be committed. If error is thrown, the transaction will be rolled back.
 
-Or if you want to do a rollback, you can throw an error or just call `tr.rollback()`:
+```ts
+try {
+  store.transaction((tr) => {
+    store.set({ employees: 3, open: true });
+    store.key("score").set(10);
+    // we create a exception here to simulate a rollback
+    throw new Error("rollback");
+  });
+} catch (e) {
+  // transaction will be rolled back
+  console.error("transaction rollback");
+}
+```
+
+You can also call `tr.rollback()` to rollback the transaction:
 
 ```ts
 store.transaction((tr) => {
@@ -162,25 +175,44 @@ npm i zod
 
 ```ts
 import { z } from "zod";
-// kv object schema
-store.setSchema(
-  z.object({
+
+const store = new MemoryStore({
+  schema: z
+    .object({
+      employees: z.number(),
+      open: z.boolean().optional().default(false),
+    })
+    .strict(),
+});
+store.set({ employees: 3, open: "pets.com" }); // -> invalid, throws exception
+store.set({ employees: 3, open: true }); // -> valid
+```
+
+Also, `PersistentStore` supports schema validation.
+
+```ts
+const store = new PersistentStore("my-id", {
+  persister: "localStorage",
+  autoSave: true,
+  schema: z.object({
     employees: z.number(),
     open: z.boolean().optional().default(false),
   }),
-);
-store.set({ employees: 3, open: "pets.com" }); // -> invalid
-
-// also, you can set a single kv schema:
-store.key("employees").setSchema(z.number());
+});
 ```
 
-### hooks
+Schema can only be defined when creating a store instance, and cannot be changed later.
+
+If no schema is defined (default), any data can be stored.
+
+### Hooks
+
+You can listen to store or key events with `on` method:
 
 ```ts
 store.set({{ employees: 3, open: true }});
 
-const listenerId = store.addListener(() =>
+const listenerId = store.on("changed", () =>
   console.log("Store changed!"),
 );
 
@@ -188,14 +220,29 @@ store.key("employees").set(4);
 // -> 'Value changed!'
 
 store.key("open").set(true);
-// Since the data didn't actually change, the listener was not called.
+// Since the data didn't actually change, the hook was not called.
 
-// clean up listener
-store.delListener(listenerId);
-// Listener has been unregistered and so is not called.
+// clean up hook
+store.off(listenerId);
+// Hook has been unregistered and so is not called.
+
+// listen to key events
+const keyListenerId = store.key("employees").on("changed", (oldValue, newValue) =>
+  console.log("Key changed!", oldValue, newValue),
+);
+
+store.key("employees").set(4);
+// -> 'Key changed!'
+store.off(keyListenerId);
 ```
 
-### migrations
+Currently, we support the following events:
+
+- `changed`: when a key's value changes. NOTE: `removed` event will also trigger this event
+- `removed`: when a key is removed
+- `added`: when a key is added. NOTE: this is only working on key hooks, store hooks does not have this event
+
+### Migrations (TODO)
 
 Migrations are a way to update data from one version to another. You can define a migration function that will be called when data schema changes
 
@@ -203,24 +250,38 @@ Migrations are a way to update data from one version to another. You can define 
 // migration only triggers when the schema changes (zod schema validation failed)
 // so only presist data need this function
 // you have to define schemas first
-
-store.setSchema(
-  z.object({
-    employees: z.number(),
-    open: z.boolean().optional().default(false),
-  }),
-);
-
-store.migrate("v2", (oldVersion, oldData) => {
-  // your migrate logic here
-});
 ```
 
-the function is `migrate(ver: string, fn: (oldVersion: string, oldData: any) => any)`
+## Security
 
-- `ver` is the schema version.
-- `oldVersion` is the previous schema version.
+For `MemoryStore`, data is isolated by instance. So different instances do not share data.
 
-When `ver` changes we will execute your migrate function. Note that we do not compare new `ver` is greater than old, we just check if it has changed.
+```ts
+const store1 = new MemoryStore();
+const store2 = new MemoryStore();
 
-If you never set it before. We'll set a default `v1` for it.
+store1.set({ employees: 3, open: true });
+store2.get(); // -> {}
+```
+
+But for `PersistentStore`, the situation is slightly different. You can think it's working like `Redis`. The same id with same persister will use the same persistent store underground. But after data is loaded from the persister, it works like `MemoryStore`.
+
+```ts
+const store1 = new PersistentStore("id1", { persister: "localStorage" });
+const store2 = new PersistentStore("id2", {
+  persister: "localStorage",
+  autoSave: true,
+});
+
+store1.set({ employees: 3, open: true });
+store1.save();
+store2.get(); // -> {}
+
+// NOTE this. We create this instance after store1 is saved.
+const store3 = new PersistentStore("id1", { autoSave: true });
+store3.get(); // -> { employees: 3, open: true }
+```
+
+As you can see, `store3` is load the `store1`'s persistent data because they have the same id and persister. But after the instance is created, they do not share data anymore, and `store.save()` will override the persister data. So be careful with the id and persister for multiple `PersistentStore` instances.
+
+And we will support CRDT for data sharing in the future. (TODO)
