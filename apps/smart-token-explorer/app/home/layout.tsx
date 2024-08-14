@@ -114,7 +114,7 @@ export default function HomeLayout({
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
-                <div className="flex items-center px-4 py-2">
+                <div className="flex items-center px-3 py-2">
                     <span className='font-bold'>
                         My Tokens
                     </span>

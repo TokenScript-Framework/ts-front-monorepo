@@ -48,7 +48,7 @@ export default function ContractPage({
         console.log(address && (!selectedToken || selectedToken.address !== contract))
         if (address && (!selectedToken || selectedToken.address !== contract)) {
 
-            let tokenList: TokenCollection[] = tokenListMap[tokenType];
+            let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType];
             const filterResult = tokenList.filter((token) => token.signed);
             if (filterResult.length === 1) {
                 setToken(filterResult[0])
@@ -60,7 +60,7 @@ export default function ContractPage({
     return (selectedToken && selectedToken.address && <>
         <div className="flex h-full flex-col">
             <div className="flex flex-1 flex-col">
-                <div className="flex justify-between px-4 pl-2">
+                <div className="flex justify-between px-3flex-1 whitespace-pre-wrap text-sm p-3 py-2">
                     <div className="flex items-center gap-4 text-sm">
                         <Avatar className="w-8 h-8">
                             <AvatarImage src={selectedToken.logoURI} alt="token" />
@@ -76,7 +76,7 @@ export default function ContractPage({
 
                 </div>
                 <Separator />
-                <div className="flex-1 whitespace-pre-wrap text-sm p-4">
+                <div className="flex-1 whitespace-pre-wrap text-sm p-3">
                     {isFetchingERC20Info ? (<>
                         <SpinIcon className="mr-2 h-5 w-5 animate-spin text-black" />
                     </>) : (<><div>Balance: {token.balance}</div>

@@ -29,7 +29,7 @@ export default function TokenIdPage({
     useEffect(() => {
         if (address && (!selectedToken || selectedToken.address !== contract)) {
 
-            let tokenList: TokenCollection[] = tokenListMap[tokenType];
+            let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType];
             const filterResult = tokenList.filter((token) => token.signed);
             if (filterResult.length === 1) {
                 setToken(filterResult[0])
@@ -60,7 +60,7 @@ export default function TokenIdPage({
 
                 </div>
                 <Separator />
-                <div className="flex-1 whitespace-pre-wrap text-sm p-4">
+                <div className="flex-1 whitespace-pre-wrap text-sm p-3">
                     <Tabs defaultValue="token" className="w-full">
                         <TabsList className="grid w-full grid-cols-2 dark:bg-transparent">
                             <TabsTrigger value="token">Token</TabsTrigger>

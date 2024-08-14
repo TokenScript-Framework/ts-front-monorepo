@@ -79,7 +79,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({
                 <CardHeader className="relative space-y-0 p-0">
                     <Skeleton className="w-full rounded-lg pb-[100%]" />
                 </CardHeader>
-                <CardContent className="p-4">
+                <CardContent className="p-3">
                     <div className="relative flex w-full items-center space-x-4">
                         <Skeleton className="h-12 w-12 rounded-full" />
                         <div className="space-y-2">
@@ -100,7 +100,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({
                     src={rewriteUrlIfIFPSUrl(metadata?.image)}
                 />
             </CardHeader>
-            <CardContent className="p-4">
+            <CardContent className="p-3">
                 <div className="flex flex-col gap-4">
                     <div className="relative w-full">
                         <h3 className="mb-2 text-lg font-semibold leading-none">
