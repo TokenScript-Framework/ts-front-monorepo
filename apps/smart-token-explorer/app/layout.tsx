@@ -9,14 +9,14 @@ import "./globals.css";
 const globalColors = colors;
 const style: string[] = [];
 
-Object.keys(globalColors).map((variant) => {
-    return Object.keys(globalColors[variant]).map((color) => {
-        const value = colors[variant][color];
-        const rgbValue = colorsRgb[variant][color];
-        style.push(`--${variant}-${color}-hex: ${value}`);
-        style.push(`--${variant}-${color}: ${rgbValue}`);
-    });
-});
+// Object.keys(globalColors).map((variant) => {
+//     return Object.keys(globalColors[variant]).map((color) => {
+//         const value = colors[variant][color];
+//         const rgbValue = colorsRgb[variant][color];
+//         style.push(`--${variant}-${color}-hex: ${value}`);
+//         style.push(`--${variant}-${color}: ${rgbValue}`);
+//     });
+// });
 
 export const metadata: Metadata = {
     title: "Smart Token Explorer",

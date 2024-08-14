@@ -80,7 +80,7 @@ export default function TokenIdPage({
                         </TabsContent>
                         <TabsContent value="script">
 
-                            <iframe src={`${NEXT_PUBLIC_VIEWER_ROOT}/?viewType=sts-token&chain=${chainId}&contract=${selectedToken.address}&tokenId=${tokenId}`} className="w-full h-[100vh] mx-auto p-2 max-w-[500px]" />
+                            <iframe src={`${NEXT_PUBLIC_VIEWER_ROOT}/?viewType=sts-token&chain=${chainId}&contract=${selectedToken.address}&tokenId=${tokenId}`} className="w-full h-[100vh] mx-auto p-2 max-w-[500px] iframe-placeholder" />
 
                         </TabsContent>
 

@@ -23,58 +23,23 @@ import { loadTokenList, TokenCollection, TokenType } from "@/lib/tokenStorage"
 import { Separator } from "@/components/shadcn//ui/separator";
 import { useRouter } from "next/navigation";
 import MyTokenList from "@/components/token-list";
-export default function TypeLayout({
+import { useEffect, useMemo } from "react";
+export default function HomeLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-
     const { address } = useAccount();
-    const chain = useChainId()
     const setTokenList = useSetAtom(tokenListAtom);
-
-    const tokenListMap = useAtomValue(tokenListAtom);
     const router = useRouter()
-    const devMode = useAtomValue(getDevModeAtom);
-    const setToken = useSetAtom(setTokenAtom);
-    let selectedToken = useAtomValue(getTokenAtom);
-
     let tokenType = useAtomValue(getTokenTypeAtom);
-    console.log("tokenListMap--", tokenListMap)
-
-    let tokenList: TokenCollection[] = tokenListMap[tokenType]?.filter((token: any) => Number(token.chainId) === (chain));
-
-    if (!devMode) {
-        tokenList = tokenList.filter((token) => token.signed);
-        if (tokenList.length === 0) {
-            router.push("/dashboard")
+    useEffect(() => {
+        if (address) {
+            setTokenList(loadTokenList(address));
+        } else {
+            //router.push('/')
         }
-    }
-
-
-    React.useEffect(() => {
-
-        if (!address) {
-            //router.push("/")
-        }
-        if (tokenType) {
-            console.log(tokenList)
-            if (tokenList?.length > 0) {
-
-
-                const filterResult = tokenList.filter((token) => token.address === selectedToken.address);
-
-                console.log('#####', new Date(), window.location.pathname, selectedToken.address, filterResult.length)
-                if (filterResult.length === 0) {
-                    let token = tokenList[0]
-                    setToken(token)
-                    router.push((`/dashboard/${token.address}${token.tokenIds ? '/' + token.tokenIds[0] : ""}`))
-                }
-
-            }
-
-        }
-    }, [address, router, setToken, tokenList, tokenListMap, tokenType])
+    }, [address, setTokenList]);
 
     return (
         <ResizablePanelGroup
@@ -120,11 +85,10 @@ export default function TypeLayout({
                             title: "Token List",
                             icon: ListIcon,
                             variant: "ghost",
-                            href: window ? getTokenListRoot(window?.location.href) : 'https://tokens.tokenscript.org/'
+                            href: 'https://tokens.tokenscript.org/'
                         },
 
                     ]}
-
                 />
                 <div className="flex items-center text-sm font-medium hover:bg-accent hover:text-accent-foreground h-9 rounded-md justify-start mx-2 mb-2 px-3"><ThemeSwitch position={'left'} /> </div>
 
@@ -156,16 +120,17 @@ export default function TypeLayout({
                 </div>
                 <Separator />
                 <div className="m-0">
-                    {tokenType && (<MyTokenList type={tokenType as TokenType} key={`${tokenType}-t`} tokenList={tokenList} />)}
+                    {tokenType && (<MyTokenList type={tokenType as TokenType} key={`${tokenType}-t`} />)}
                 </div>
             </ResizablePanel>
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={defaultLayout[2]}>
-                {tokenList?.length > 0 ? (<>{children}</>) : (<>
+                {children}
+                {/* {tokenList?.length > 0 ? (<>{children}</>) : (<>
                     <div className="p-8 text-center text-muted-foreground">
                         No Token selected
                     </div>
-                </>)}
+                </>)} */}
             </ResizablePanel >
         </ResizablePanelGroup>
     )

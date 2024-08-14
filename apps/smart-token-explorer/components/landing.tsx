@@ -53,7 +53,7 @@ export default function LandingPage() {
                 withBackground
             >   {address ? (<>
                 <Button variant="primary">
-                    <a href="/dashboard">Your Tokens</a>
+                    <a href="/home">Your Tokens</a>
                 </Button>
             </>) : (<><ConnectButton showBalance={false} /></>)}
 

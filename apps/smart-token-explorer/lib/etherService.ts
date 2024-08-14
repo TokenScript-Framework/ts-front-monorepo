@@ -1,4 +1,5 @@
-import BigNumber from "bignumber.js";
+"use server";
+//import BigNumber from "bignumber.js";
 import { ethers, formatEther, InfuraProvider } from "ethers";
 import * as sha3 from "js-sha3";
 import { getTokenscriptMetadata } from "token-kit";
@@ -12,19 +13,6 @@ function getProvider(chain: string | number) {
     networkPipe(chain),
     "6e1527648cc24374bbb19680d506bce8",
   );
-}
-
-export async function isERC20(address: string, provider: InfuraProvider) {
-  const contract = new ethers.Contract(address, ERC20_ABI, provider);
-  try {
-    await Promise.all([
-      contract.totalSupply(),
-      contract.balanceOf("0x0000000000000000000000000000000000000000"),
-    ]);
-    return true;
-  } catch (err: unknown) {
-    return false;
-  }
 }
 
 export async function isERC721(address: string, provider: InfuraProvider) {
@@ -48,8 +36,7 @@ export async function isERC1155(address: string, provider: InfuraProvider) {
 export async function isERC5169(address: string, provider: InfuraProvider) {
   const contract = new ethers.Contract(address, ERC5169_ABI, provider);
   try {
-    const result = await contract.scriptURI();
-    console.log("script---", result, result.length, result[0]);
+    await contract.scriptURI();
     return true;
   } catch (err: unknown) {
     console.log(err);
@@ -111,7 +98,7 @@ export async function allowanceERC1155(
   }
 }
 
-export function isValidAddress(address: string) {
+export async function isValidAddress(address: string) {
   if (!/^0x[0-9a-fA-F]{40}$/.test(address)) {
     return false;
   }
@@ -141,11 +128,11 @@ function verifyChecksum(address: string): boolean {
   return true;
 }
 
-export function isValidInteger(tokenId: string) {
+export async function isValidInteger(tokenId: string) {
   return /^[1-9]\d*$/.test(tokenId);
 }
 
-export function isValidTokenId(tokenId: string) {
+export async function isValidTokenId(tokenId: string) {
   return /^[0-9a-zA-Z]\d*$/.test(tokenId);
 }
 
@@ -156,9 +143,10 @@ export async function validateToken(
   type: string,
   token: `0x${string}`,
   tokenId?: string,
+  isERC20?: boolean,
 ) {
   let provider = getProvider(chain);
-  if (!isValidAddress(token)) {
+  if (!(await isValidAddress(token))) {
     return { error: true, message: "Please input correct address" };
   }
   if (type !== "ERC20") {
@@ -171,12 +159,15 @@ export async function validateToken(
       };
     }
   }
-  const { signed } =
+  const metadata =
     type !== "ERC20"
       ? await getTokenscriptMetadata(chain, token, {
           checkSignature: true,
         })
-      : { signed: true };
+      : { name: "", meta: { description: "" }, signed: true };
+  console.log(metadata);
+  const { signed } = type !== "ERC20" ? metadata : { signed: true };
+
   if (!devMode && !signed) {
     return {
       error: true,
@@ -187,8 +178,8 @@ export async function validateToken(
 
   switch (type) {
     case "ERC20": {
-      const result = await isERC20(token, provider);
-      if (!result) {
+      // const result = await isERC20(token, provider);
+      if (!isERC20) {
         return {
           error: true,
           message: `This token on ${chainPipe(chain)} is not a valid ERC20 token.`,
@@ -198,7 +189,7 @@ export async function validateToken(
       break;
     }
     case "ERC721": {
-      if (!isValidInteger(tokenId!)) {
+      if (!(await isValidInteger(tokenId!))) {
         return { error: true, message: "Please input correct tokenId" };
       }
 
@@ -222,7 +213,7 @@ export async function validateToken(
     }
     default: {
       //1155
-      if (!isValidTokenId(tokenId!)) {
+      if (!(await isValidTokenId(tokenId!))) {
         return { error: true, message: "Please input correct tokenId" };
       }
 
@@ -251,37 +242,10 @@ export async function validateToken(
     }
   }
 
-  return { error: false, signed };
-}
-
-export async function getTokenInfo(
-  contract: `0x${string}`,
-  owner: `0x${string}`,
-  chain: string,
-) {
-  let provider = getProvider(chain);
-  try {
-    const ethContract = new ethers.Contract(contract, ERC20_ABI, provider);
-    const balance = await ethContract.balanceOf(owner);
-    const decimals = await ethContract.decimals();
-    return {
-      balance: new BigNumber(balance.toString())
-        .dividedBy(new BigNumber(10 ** Number(decimals.toString())))
-        .toString(),
-      decimals: decimals.toString(),
-    };
-  } catch (err) {
-    console.log(err);
-    return { balance: "0", decimals: "0" };
-  }
-}
-
-export async function getSymbol(contract: `0x${string}`, chain: string) {
-  let provider = getProvider(chain);
-  try {
-    return await new ethers.Contract(contract, ERC20_ABI, provider).symbol();
-  } catch (err) {
-    console.log(err);
-    return "No Symbol";
-  }
+  return {
+    error: false,
+    signed,
+    name: metadata.name,
+    description: metadata.meta.description,
+  };
 }

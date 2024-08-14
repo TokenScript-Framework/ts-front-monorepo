@@ -30,52 +30,23 @@ interface TokenCardProps {
 }
 
 export default function TokenCard({ type, token }: TokenCardProps) {
-    const { address: walletAddress } = useAccount();
     const setToken = useSetAtom(setTokenAtom);
-    const setTokenId = useSetAtom(setTokenIdAtom);
     let selectedToken = useAtomValue(getTokenAtom);
     const router = useRouter()
-
-    const isERC20 = type === "ERC20";
-
     const loadNFTHandler = (selected: TokenCollection) => {
         setToken(selected)
         // if (selected.tokenIds) {
         //     setTokenId(selected.tokenIds[0])
         // }
-        console.log(`/dashboard/${selected.address}${selected.tokenIds ? '/' + selected.tokenIds[0] : ""}`)
-        router.push(`/dashboard/${selected.address}${selected.tokenIds ? '/' + selected.tokenIds[0] : ""}`)
+        console.log(`/home/${selected.address}${selected.tokenIds ? '/' + selected.tokenIds[0] : ""}`)
+        router.push(`/home/${selected.address}${selected.tokenIds ? '/' + selected.tokenIds[0] : ""}`)
 
     };
 
-    const { data: erc20Data, isFetching: isFetchingERC20Info } = useReadContracts(
-        {
-            contracts: contractsForErc20(token, walletAddress!),
-            query: {
-                enabled: isERC20 && !!walletAddress,
-            },
-        },
-    );
-
-    const skeletonView = (
-        <Card>
-            <CardHeader className="relative space-y-0 p-0">
-                <Skeleton className="w-full rounded-lg pb-[40%]" />
-            </CardHeader>
-            <CardContent className="p-4">
-                <div className="relative flex w-full items-center space-x-4">
-                    <Skeleton className="h-12 w-12 rounded-full" />
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-48" />
-                        <Skeleton className="h-4 w-36" />
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    )
 
 
-    const cardView = selectedToken === null ? skeletonView : (
+
+    return (
         <Card
             className={cn(
                 selectedToken.address === token.address && "bg-accent", "cursor-pointer text-left dark:bg-gray-900  hover:bg-accent w-full")}
@@ -120,37 +91,5 @@ export default function TokenCard({ type, token }: TokenCardProps) {
             </CardContent>
         </Card>
     );
-    return isFetchingERC20Info ? skeletonView : cardView;
 }
 
-function contractsForErc20(token: any, walletAddress: string) {
-    const contractInfo = [
-        {
-            chainId: token.chainId,
-            address: token.address,
-            abi: erc20Abi,
-            functionName: "name",
-        },
-        {
-            chainId: token.chainId,
-            address: token.address,
-            abi: erc20Abi,
-            functionName: "symbol",
-        },
-        {
-            chainId: token.chainId,
-            address: token.address,
-            abi: erc20Abi,
-            functionName: "decimals",
-        },
-    ];
-    const balanceInfo = {
-        chainId: token.chainId,
-        address: token.address,
-        abi: erc20Abi,
-        functionName: "balanceOf",
-        args: [walletAddress],
-    };
-
-    return token.notFound ? [balanceInfo, ...contractInfo] : [balanceInfo];
-}

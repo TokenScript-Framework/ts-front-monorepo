@@ -64,7 +64,6 @@ export const NFTCard: React.FC<NFTCardProps> = ({
         enabled: !!erc1155TokenURI,
     });
 
-
     const metadata = erc721Metadata || erc1155Metadata;
 
     const attributes =

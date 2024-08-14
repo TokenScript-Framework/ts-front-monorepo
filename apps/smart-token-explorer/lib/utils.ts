@@ -76,3 +76,4 @@ export function firstUppercasePipe(value: string | undefined) {
     ? value.replace(/(^\w{1})|(\s+\w{1})/g, (letter) => letter.toUpperCase())
     : "";
 }
+
