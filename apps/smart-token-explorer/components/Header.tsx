@@ -7,6 +7,7 @@ import { useAccount } from "wagmi";
 import Logo from "./logo";
 import ThemeSwitch from "./shadcn/ThemeSwitch";
 import { STETooltip } from "./ste-tooltip";
+import { WalletButton } from "./WalletButton";
 
 export default function Header() {
     const { address } = useAccount();
@@ -42,13 +43,14 @@ export default function Header() {
                         ></STETooltip>
 
                     </div>
-                    <ConnectButton
+                    {/* <ConnectButton
                         showBalance={false}
                         accountStatus={{
                             smallScreen: "avatar",
                             largeScreen: "full",
                         }}
-                    />
+                    /> */}
+                    <WalletButton />
                 </div>
             </div>
         </section>

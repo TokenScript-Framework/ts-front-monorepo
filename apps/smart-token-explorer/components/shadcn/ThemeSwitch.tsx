@@ -15,6 +15,7 @@ const ThemeSwitch = ({ position }: ThemeProps) => {
 
     const isSystem = theme === "system";
 
+
     const isDark =
         typeof window !== "undefined" &&
         window.matchMedia &&
@@ -37,6 +38,7 @@ const ThemeSwitch = ({ position }: ThemeProps) => {
             }
         }
     };
+    console.log(isSystem, isDark)
 
     useEffect(() => setMounted(true), []);
 
@@ -88,7 +90,7 @@ const ThemeSwitch = ({ position }: ThemeProps) => {
                     )} />
                 </motion.div>
             )}
-            {position === 'left' && (<span>{firstUppercasePipe(theme)}</span>)}
+            {position === 'left' && (<span>{firstUppercasePipe(isSystem ? (isDark ? 'darl' : 'light') : theme)}</span>)}
 
         </div>
     );

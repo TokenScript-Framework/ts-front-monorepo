@@ -6,6 +6,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Footer from "@/components/footer";
 import Header from "./Header";
 import { useAccount } from "wagmi";
+import { WalletButton } from "./WalletButton";
 
 export default function LandingPage() {
 
@@ -55,7 +56,10 @@ export default function LandingPage() {
                 <Button variant="primary">
                     <a href="/home">Your Tokens</a>
                 </Button>
-            </>) : (<><ConnectButton showBalance={false} /></>)}
+            </>) : (<>
+                {/* <ConnectButton showBalance={false} /> */}
+                <WalletButton />
+            </>)}
 
 
                 <Button variant="outlinePrimary">

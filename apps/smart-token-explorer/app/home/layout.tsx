@@ -24,6 +24,7 @@ import { Separator } from "@/components/shadcn//ui/separator";
 import { useRouter } from "next/navigation";
 import MyTokenList from "@/components/token-list";
 import { useEffect, useMemo } from "react";
+import { WalletButton } from "@/components/WalletButton";
 export default function HomeLayout({
     children,
 }: Readonly<{
@@ -55,7 +56,7 @@ export default function HomeLayout({
                 defaultSize={defaultLayout[0]}
                 collapsible={true}
                 minSize={20}
-                maxSize={20}
+                maxSize={20} className="relative"
             >
                 <div className="w-full px-2 font-bold text-lg my-3">
                     Smart Token Explorer
@@ -93,15 +94,20 @@ export default function HomeLayout({
                 <div className="flex items-center text-sm font-medium hover:bg-accent hover:text-accent-foreground h-9 rounded-md justify-start mx-2 mb-2 px-3"><ThemeSwitch position={'left'} /> </div>
 
                 <Separator />
-                <footer className="fixed bottom-4 left-1">
-                    <div className="mt-2 px-2">
+                <footer className="absolute bottom-4 left-0  w-full">
+                    <div className="mb-2 px-2">
                         <ImportToken />
                     </div>
-                    <div className="my-2 w-full px-2">
+                    {/* <div className="w-full px-2">
                         <ConnectButton
                             showBalance={false}
                             accountStatus="full"
                             chainStatus="icon"
+                        />
+                    </div> */}
+                    <div className="w-full px-2">
+                        <WalletButton
+
                         />
                     </div>
                 </footer>
