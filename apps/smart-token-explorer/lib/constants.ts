@@ -6,3 +6,6 @@ export const getTokenListRoot = (href: string) => {
     ? "https://smart-token-list-website.vercel.app/"
     : "https://tokens.tokenscript.org/";
 };
+
+export const defaultLayout = [265, 340, 655];
+export const NEXT_PUBLIC_VIEWER_ROOT = "https://viewer.tokenscript.org";

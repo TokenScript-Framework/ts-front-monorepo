@@ -17,6 +17,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({
     tokenId,
     onClick,
 }) => {
+
     const { data: erc721TokenURI } = useReadContract({
         chainId: chainId,
         address: contract,
@@ -32,6 +33,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({
         queryKey: ["metadata", chainId, contract, tokenId],
         queryFn: async () => {
             const res = await axios.get(rewriteUrlIfIFPSUrl(erc721TokenURI!));
+            console.log(res.data)
             return res.data;
         },
         enabled: !!erc721TokenURI,
@@ -51,13 +53,20 @@ export const NFTCard: React.FC<NFTCardProps> = ({
     const { data: erc1155Metadata } = useQuery({
         queryKey: ["metadata", chainId, contract, tokenId],
         queryFn: async () => {
-            const res = await axios.get(rewriteUrlIfIFPSUrl(erc1155TokenURI as string));
-            return res.data;
+            if (erc1155TokenURI) {
+                const res = await axios.get(rewriteUrlIfIFPSUrl(erc1155TokenURI as string));
+                return res.data;
+            } else {
+                return null
+            }
+
         },
         enabled: !!erc1155TokenURI,
     });
 
+
     const metadata = erc721Metadata || erc1155Metadata;
+
     const attributes =
         metadata?.attributes ||
         Object.entries(erc1155Metadata?.properties || {}).map(([key, value]) => ({
@@ -117,10 +126,10 @@ export const NFTCard: React.FC<NFTCardProps> = ({
                                         return (
                                             <div
                                                 key={trait_type}
-                                                className="bg-primary-100/10 flex w-full flex-col items-center rounded-md border"
+                                                className="bg-primary-100/10 flex w-full flex-col items-center rounded-md border px-2"
                                             >
                                                 <div className="font-semibold">{trait_type}</div>
-                                                {value.indexOf('https://') === 0 ? (<a href={value} target="_blank" className="underline text-primary-500 cursor-pointer">{urlPipe(value)}</a>) : (<div>{valuePipe(value)}</div>)}
+                                                {value.toString().indexOf('https://') === 0 ? (<a href={value} target="_blank" className="underline text-primary-500 cursor-pointer">{urlPipe(value)}</a>) : (<div>{valuePipe(value.toString())}</div>)}
 
                                             </div>
                                         );

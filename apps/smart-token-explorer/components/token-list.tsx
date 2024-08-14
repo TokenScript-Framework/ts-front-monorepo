@@ -1,66 +1,22 @@
 "use client";
-import { getDevModeAtom, setTokenTypeAtom, tokenListAtom } from "@/lib/store";
+import { getDevModeAtom, getTokenAtom, setTokenAtom, tokenListAtom } from "@/lib/store";
 import { TokenCollection, TokenType } from "@/lib/tokenStorage";
 import { useAtomValue, useSetAtom } from "jotai";
 import { query } from "smart-token-list";
 import TokenCard from "./token-card";
+import { cn } from "@/lib/utils";
+import ImportToken from "@/components/import-token"
+import { useEffect, useState } from "react";
+import { ScrollArea } from "./shadcn/ui/scroll-area";
 
 interface TokenProps {
     type: TokenType;
+    tokenList: TokenCollection[]
 }
 
-export default function MyTokenList({ type }: TokenProps) {
-    const tokenListMap = useAtomValue(tokenListAtom);
-    const setTokenType = useSetAtom(setTokenTypeAtom);
-    const devMode = useAtomValue(getDevModeAtom);
-
-    setTokenType(type)
-    let tokenList: TokenCollection[] = tokenListMap[type];
-
-    if (tokenList.length == 0) {
-        switch (type) {
-            case "ERC20": {
-                tokenList = [
-                    {
-                        signed: false,
-                        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-                        chainId: 1,
-                    },
-                ];
-                break;
-            }
-            case "ERC721": {
-                tokenList = [
-                    {
-                        signed: false,
-                        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-                        chainId: 1,
-                        tokenIds: ["12344"],
-                    },
-                ];
-                break;
-            }
-            default: {
-                tokenList = [
-                    {
-                        signed: false,
-                        address: "0x73da73ef3a6982109c4d5bdb0db9dd3e3783f313",
-                        chainId: 1,
-                        tokenIds: ["1", "2"],
-                    },
-                ];
-
-                break;
-            }
-        }
-    }
-
-    if (!devMode) {
-        tokenList = tokenList.filter((token) => token.signed);
-    }
-
+export default function MyTokenList({ type, tokenList }: TokenProps) {
     const tokenData: any[] = tokenList.map((token) => {
-        const results = query({ chainId: token.chainId, address: token.address });
+        const results = query({ chainId: token.chainId, address: token.address, name: token.name });
         return {
             ...token,
             ...(results[0] ? results[0] : { notFound: true }),
@@ -68,18 +24,26 @@ export default function MyTokenList({ type }: TokenProps) {
     });
 
     return (
-        <section className="fancy-overlay min-h-screen pt-4">
-            <div className="container-wide mx-auto grid grid-cols-3 gap-8" key={type}>
+        <ScrollArea className="h-full">
+            <div className="flex flex-col">
+                {tokenData.length === 0 && (<div className="text-center mt-8">
+                    <div className="text-2xl font-bold mb-2"> No tokens, Please import</div>
+                    <div className="w-[200px] mx-auto"><ImportToken /></div>
+                </div>)}
                 {tokenData.map((token) => (
-
-                    <TokenCard
-                        key={`${type}-${token.chainId}-${token.address}`}
-                        type={type}
-                        token={token}
-                        chain={token.chainId}
-                    />
-                ))}
-            </div>
-        </section>
+                    < div className={
+                        cn(
+                            "p-3 text-left text-sm transition-all",
+                        )} key={`${type}-${token.chainId}-${token.address}`}>
+                        <TokenCard
+                            key={`${type}-${token.chainId}-${token.address}`}
+                            type={type}
+                            token={token}
+                        />
+                    </div>
+                ))
+                }
+            </div >
+        </ScrollArea>
     );
 }

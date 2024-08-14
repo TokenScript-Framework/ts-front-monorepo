@@ -29,9 +29,8 @@ export function rewriteUrlIfIFPSUrl(url: string) {
     return url.replace("ipfs://ipfs", "https://gateway.pinata.cloud/ipfs");
   } else if (url.toLowerCase().startsWith("ipfs://")) {
     return url.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/");
-  } else {
-    return url;
   }
+  return url;
 }
 
 export function chainPipe(chain: number) {
@@ -51,4 +50,29 @@ export function chainPipe(chain: number) {
     default:
       return `Chain ${chain}`;
   }
+}
+
+export function networkPipe(chain: number | string) {
+  switch (Number(chain)) {
+    case 1:
+      return "mainnet";
+    case 137:
+      return "matic";
+    case 10:
+      return "optimism";
+    case 8453:
+      return "base";
+    case 11155111:
+      return "sepolia";
+    case 84532:
+      return "baseSepolia";
+    default:
+      return "network";
+  }
+}
+
+export function firstUppercasePipe(value: string | undefined) {
+  return value
+    ? value.replace(/(^\w{1})|(\s+\w{1})/g, (letter) => letter.toUpperCase())
+    : "";
 }

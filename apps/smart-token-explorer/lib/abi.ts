@@ -5,6 +5,7 @@ export const ERC20_ABI = [
   "function balanceOf(address account) external view returns (uint256)",
   "function approve(address, uint256) external returns (bool)",
   "function totalSupply() public view returns (uint256)",
+  "function symbol() view returns (string)",
 ];
 
 export const ERC721_ABI = [
@@ -341,6 +342,4 @@ export const erc1155Abi = [
   },
 ];
 
-export const ERC5169_ABI = [
-  "function scriptURI() external view returns(string[] memory)",
-];
+export const ERC5169_ABI = ["function scriptURI() view returns (string[])"];

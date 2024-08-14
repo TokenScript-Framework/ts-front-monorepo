@@ -2,10 +2,10 @@
 
 import { SpinIcon } from "@/components/icons/SpinIcon";
 import { TOKENTYPE_LIST } from "@/lib/constants";
-import { validateToken } from "@/lib/etherService";
-import { getDevModeAtom } from "@/lib/store";
-import { Token, TokenType } from "@/lib/tokenStorage";
-import { useAtomValue } from "jotai";
+import { getSymbol, validateToken } from "@/lib/etherService";
+import { getDevModeAtom, getTokenTypeAtom, tokenListAtom } from "@/lib/store";
+import { addToken, loadTokenList, Token, TokenType } from "@/lib/tokenStorage";
+import { useAtomValue, useSetAtom } from "jotai";
 import React, { useState } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { Button } from "./shadcn/ui/button";
@@ -21,21 +21,22 @@ import {
 import { Input } from "./shadcn/ui/input";
 import { Label } from "./shadcn/ui/label";
 import { RadioGroup, RadioGroupItem } from "./shadcn/ui/radio-group";
+import { useToast } from "./shadcn/ui/use-toast";
 
-interface ImportTokenProps {
-    onConfirm: (type: TokenType, tokenInfo: Token) => void;
-}
 
-export default function ImportToken({ onConfirm }: ImportTokenProps) {
+export default function ImportToken() {
     const [token, setToken] = useState<`0x${string}`>("0x0");
-    const [tokenId, setTokenId] = useState<string | undefined>();
+    const [tokenId, setTokenId] = useState<string | undefined>('');
     const [open, setOpen] = React.useState(false);
     const devMode = useAtomValue(getDevModeAtom);
     const [loading, setLoading] = React.useState(false);
-    const [type, setType] = useState<TokenType>(TOKENTYPE_LIST[0]);
+    let tokenType = useAtomValue(getTokenTypeAtom);
+    const [type, setType] = useState<TokenType>(tokenType as TokenType);
     const [error, setError] = useState("");
     const { address } = useAccount();
     const chainId = useChainId();
+    const { toast } = useToast();
+    const setTokenList = useSetAtom(tokenListAtom);
 
     const confirmHandler = async () => {
         try {
@@ -43,9 +44,9 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
                 return;
             }
 
-            console.log(token, tokenId, open);
             setLoading(true);
             if (address) {
+                console.log(chainId)
                 const validate: any = await validateToken(
                     devMode,
                     chainId,
@@ -60,11 +61,31 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
                 } else {
                     //to import
                     setOpen(false);
-                    onConfirm(type, {
-                        signed: validate.signed,
-                        chainId,
-                        address: token,
-                        tokenId: tokenId,
+
+                    if (!address) return;
+                    if (type === "ERC20") {
+                        addToken(address, type, {
+                            signed: validate.signed,
+                            chainId,
+                            address: token,
+                            name: await getSymbol(token, chainId.toString())
+                        });
+                    } else {
+                        addToken(address, type, {
+                            signed: validate.signed,
+                            chainId,
+                            address: token,
+                            tokenId: tokenId,
+                            name: 'imported' //todo
+                        });
+                    }
+
+                    setTokenList(loadTokenList(address));
+
+                    toast({
+                        title: "Import token",
+                        description: "you've import token successfully!",
+                        className: "bg-secondary-500 text-black",
                     });
                 }
             }
@@ -85,15 +106,14 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
     };
 
     const checkedChangeHandler = (type: TokenType) => {
-        console.log(type);
         setType(type);
         setError("");
     };
     const openHandler = () => {
         setOpen(!open);
         setError("");
-        setToken("0x0");
-        setTokenId("");
+        // setToken("0x0");
+        // setTokenId("");
         setLoading(false);
     };
 
@@ -101,8 +121,8 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
         <>
             <Dialog open={open} onOpenChange={openHandler}>
                 <DialogTrigger asChild>
-                    <Button className="bg-secondary-500 hover:bg-secondary-300 font-bold text-white">
-                        Import
+                    <Button className="bg-secondary-500 hover:bg-secondary-300 font-bold text-white w-full">
+                        + Import
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="bg-white sm:max-w-[600px] dark:text-black">
@@ -114,7 +134,7 @@ export default function ImportToken({ onConfirm }: ImportTokenProps) {
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <RadioGroup
-                            defaultValue={TOKENTYPE_LIST[0]}
+                            defaultValue={tokenType}
                             className="itemx-center flex justify-center gap-10"
                         >
                             {TOKENTYPE_LIST.map((type, index) => (

@@ -1,14 +1,20 @@
-import { ethers, formatEther } from "ethers";
+import BigNumber from "bignumber.js";
+import { ethers, formatEther, InfuraProvider } from "ethers";
 import * as sha3 from "js-sha3";
 import { getTokenscriptMetadata } from "token-kit";
 import { ERC1155_ABI, ERC20_ABI, ERC5169_ABI, ERC721_ABI } from "./abi";
-import { provider } from "./etherProvider";
-import { chainPipe } from "./utils";
+import { chainPipe, networkPipe } from "./utils";
 
 const ERC721_INTERFACE_ID = "0x80ac58cd";
 const ERC1155_INTERFACE_ID = "0xd9b67a26";
+function getProvider(chain: string | number) {
+  return new ethers.InfuraProvider(
+    networkPipe(chain),
+    "6e1527648cc24374bbb19680d506bce8",
+  );
+}
 
-export async function isERC20(address: string) {
+export async function isERC20(address: string, provider: InfuraProvider) {
   const contract = new ethers.Contract(address, ERC20_ABI, provider);
   try {
     await Promise.all([
@@ -21,7 +27,7 @@ export async function isERC20(address: string) {
   }
 }
 
-export async function isERC721(address: string) {
+export async function isERC721(address: string, provider: InfuraProvider) {
   const contract = new ethers.Contract(address, ERC721_ABI, provider);
   try {
     return await contract.supportsInterface(ERC721_INTERFACE_ID);
@@ -30,7 +36,7 @@ export async function isERC721(address: string) {
   }
 }
 
-export async function isERC1155(address: string) {
+export async function isERC1155(address: string, provider: InfuraProvider) {
   const contract = new ethers.Contract(address, ERC1155_ABI, provider);
   try {
     return await contract.supportsInterface(ERC1155_INTERFACE_ID);
@@ -39,11 +45,14 @@ export async function isERC1155(address: string) {
   }
 }
 
-export async function isERC5169(address: string) {
+export async function isERC5169(address: string, provider: InfuraProvider) {
   const contract = new ethers.Contract(address, ERC5169_ABI, provider);
   try {
-    return await contract.scriptURI();
+    const result = await contract.scriptURI();
+    console.log("script---", result, result.length, result[0]);
+    return true;
   } catch (err: unknown) {
+    console.log(err);
     return false;
   }
 }
@@ -52,7 +61,9 @@ export async function allowanceERC20(
   ERC20: string,
   owner: string,
   amount: string,
+  chain: string,
 ) {
+  let provider = getProvider(chain);
   let balance = 0;
   try {
     balance = await new ethers.Contract(ERC20, ERC20_ABI, provider).balanceOf(
@@ -68,6 +79,7 @@ export async function allowanceERC721(
   ERC721: string,
   tokenId: string,
   spender: string,
+  provider: InfuraProvider,
 ) {
   let owner = "";
   try {
@@ -84,6 +96,7 @@ export async function allowanceERC1155(
   ERC1155: string,
   tokenId: string,
   owner: string,
+  provider: InfuraProvider,
 ) {
   let balance = 0;
   try {
@@ -144,20 +157,26 @@ export async function validateToken(
   token: `0x${string}`,
   tokenId?: string,
 ) {
+  let provider = getProvider(chain);
   if (!isValidAddress(token)) {
     return { error: true, message: "Please input correct address" };
   }
+  if (type !== "ERC20") {
+    const result = await isERC5169(token, provider);
 
-  const result = await isERC5169(token);
-  if (!result) {
-    return {
-      error: true,
-      message: `This token on ${chainPipe(chain)} is not a valid ERC5169 token.`,
-    };
+    if (!result) {
+      return {
+        error: true,
+        message: `This token on ${chainPipe(chain)} is not a valid ERC5169 token.`,
+      };
+    }
   }
-  const { signed } = await getTokenscriptMetadata(chain, token, {
-    checkSignature: true,
-  });
+  const { signed } =
+    type !== "ERC20"
+      ? await getTokenscriptMetadata(chain, token, {
+          checkSignature: true,
+        })
+      : { signed: true };
   if (!devMode && !signed) {
     return {
       error: true,
@@ -168,7 +187,7 @@ export async function validateToken(
 
   switch (type) {
     case "ERC20": {
-      const result = await isERC20(token);
+      const result = await isERC20(token, provider);
       if (!result) {
         return {
           error: true,
@@ -183,7 +202,7 @@ export async function validateToken(
         return { error: true, message: "Please input correct tokenId" };
       }
 
-      const result = await isERC721(token);
+      const result = await isERC721(token, provider);
       if (!result) {
         return {
           error: true,
@@ -191,7 +210,7 @@ export async function validateToken(
         };
       }
 
-      const allowance = await allowanceERC721(token, tokenId!, owner);
+      const allowance = await allowanceERC721(token, tokenId!, owner, provider);
       if (!allowance) {
         return {
           error: true,
@@ -207,7 +226,7 @@ export async function validateToken(
         return { error: true, message: "Please input correct tokenId" };
       }
 
-      const result = await isERC1155(token);
+      const result = await isERC1155(token, provider);
       if (!result) {
         return {
           error: true,
@@ -215,7 +234,12 @@ export async function validateToken(
         };
       }
 
-      const allowance = await allowanceERC1155(token, tokenId!, owner);
+      const allowance = await allowanceERC1155(
+        token,
+        tokenId!,
+        owner,
+        provider,
+      );
       if (!allowance) {
         return {
           error: true,
@@ -228,4 +252,36 @@ export async function validateToken(
   }
 
   return { error: false, signed };
+}
+
+export async function getTokenInfo(
+  contract: `0x${string}`,
+  owner: `0x${string}`,
+  chain: string,
+) {
+  let provider = getProvider(chain);
+  try {
+    const ethContract = new ethers.Contract(contract, ERC20_ABI, provider);
+    const balance = await ethContract.balanceOf(owner);
+    const decimals = await ethContract.decimals();
+    return {
+      balance: new BigNumber(balance.toString())
+        .dividedBy(new BigNumber(10 ** Number(decimals.toString())))
+        .toString(),
+      decimals: decimals.toString(),
+    };
+  } catch (err) {
+    console.log(err);
+    return { balance: "0", decimals: "0" };
+  }
+}
+
+export async function getSymbol(contract: `0x${string}`, chain: string) {
+  let provider = getProvider(chain);
+  try {
+    return await new ethers.Contract(contract, ERC20_ABI, provider).symbol();
+  } catch (err) {
+    console.log(err);
+    return "No Symbol";
+  }
 }

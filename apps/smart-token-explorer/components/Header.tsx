@@ -9,52 +9,48 @@ import ThemeSwitch from "./shadcn/ThemeSwitch";
 import { STETooltip } from "./ste-tooltip";
 
 export default function Header() {
-  const { address } = useAccount();
-  return (
-    <section className="w-full p-3">
-      <div className="container-wide mx-auto flex max-w-full justify-between">
-        <Logo />
-        <div className="flex items-center gap-3">
-          <div className="mt-2 flex items-center gap-3">
-            <a
-              className="nav-link hidden font-bold sm:block"
-              href={getTokenListRoot(window.location.href)}
-              target="_blank"
-            >
-              <STETooltip
-                trigger={<ListIcon />}
-                content={<p>Token list</p>}
-              ></STETooltip>
-            </a>
+    const { address } = useAccount();
+    return (
+        <section className="w-full p-3">
+            <div className="container-wide mx-auto flex max-w-full justify-between">
+                <Logo />
+                <div className="flex items-center gap-3">
+                    <div className="mt-2 flex items-center gap-3">
+                        <a
+                            className="nav-link hidden font-bold sm:block"
+                            href={typeof window !== "undefined" ? getTokenListRoot(window?.location.href) : ''}
+                            target="_blank"
+                        >
+                            <STETooltip
+                                trigger={<ListIcon />}
+                                content={<p>Token list</p>}
+                            ></STETooltip>
+                        </a>
 
-            {address && (
-              <a className="nav-link hidden font-bold sm:block" href="/setting">
-                <STETooltip
-                  trigger={<SettingsIcon />}
-                  content={<p>Setting</p>}
-                ></STETooltip>
-              </a>
-            )}
+                        {address && (
+                            <a className="nav-link hidden font-bold sm:block" href="/setting">
+                                <STETooltip
+                                    trigger={<SettingsIcon />}
+                                    content={<p>Setting</p>}
+                                ></STETooltip>
+                            </a>
+                        )}
 
-            <STETooltip
-              trigger={<ThemeSwitch />}
-              content={<b>Switch theme</b>}
-            ></STETooltip>
-            {address && (
-              <>
-                <DevMode />
-              </>
-            )}
-          </div>
-          <ConnectButton
-            showBalance={false}
-            accountStatus={{
-              smallScreen: "avatar",
-              largeScreen: "full",
-            }}
-          />
-        </div>
-      </div>
-    </section>
-  );
+                        <STETooltip
+                            trigger={<ThemeSwitch position={'head'} />}
+                            content={<b>Switch theme</b>}
+                        ></STETooltip>
+
+                    </div>
+                    <ConnectButton
+                        showBalance={false}
+                        accountStatus={{
+                            smallScreen: "avatar",
+                            largeScreen: "full",
+                        }}
+                    />
+                </div>
+            </div>
+        </section>
+    );
 }
