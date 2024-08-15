@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ITokenIdContext, TokenScript } from "../../tokenscript";
 import { Attribute } from "../Attribute";
 import { Attributes } from "../Attributes";

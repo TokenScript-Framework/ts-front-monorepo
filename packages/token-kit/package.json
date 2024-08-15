@@ -30,6 +30,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@ethereum-attestation-service/eas-sdk": "^2.5.0",
     "@peculiar/x509": "^1.11.0",
     "@radix-ui/react-scroll-area": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",

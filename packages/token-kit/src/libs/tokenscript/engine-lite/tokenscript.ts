@@ -43,7 +43,10 @@ export class TokenScript {
 
   private securityInfo: SecurityInfo;
 
-  constructor(public readonly xmlStr: string, public readonly tokenDef: XMLDocument) {
+  constructor(
+    public readonly xmlStr: string,
+    public readonly tokenDef: XMLDocument,
+  ) {
     this.securityInfo = new SecurityInfo(this);
   }
 
@@ -233,7 +236,7 @@ export class TokenScript {
    * Currently it is only used for ethereum event decoding, but it will be used later for attestations (off-chain tokens)
    * @param name
    */
-  public getAsnModuleDefinition(name) {
+  public getAsnModuleDefinition(name: any) {
     const modules = this.tokenDef.getElementsByTagName("asnx:module")[0];
     return modules.querySelector("[name=" + name + "]");
   }
