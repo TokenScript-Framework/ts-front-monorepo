@@ -132,11 +132,6 @@ export default function HomeLayout({
             <ResizableHandle withHandle />
             <ResizablePanel defaultSize={defaultLayout[2]}>
                 {children}
-                {/* {tokenList?.length > 0 ? (<>{children}</>) : (<>
-                    <div className="p-8 text-center text-muted-foreground">
-                        No Token selected
-                    </div>
-                </>)} */}
             </ResizablePanel >
         </ResizablePanelGroup>
     )

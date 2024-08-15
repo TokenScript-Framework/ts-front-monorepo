@@ -9,6 +9,7 @@ import ImportToken from "@/components/import-token"
 import { ScrollArea } from "./shadcn/ui/scroll-area";
 import { useChainId } from "wagmi";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface TokenProps {
     type: TokenType;
@@ -22,8 +23,6 @@ export default function MyTokenList({ type }: TokenProps) {
     const devMode = useAtomValue(getDevModeAtom);
     const router = useRouter()
 
-    console.log("tokenListMap--", tokenListMap)
-
     let tokenList: TokenCollection[] = tokenListMap[type]?.filter((token: any) => Number(token.chainId) === (chain));
 
 
@@ -31,9 +30,7 @@ export default function MyTokenList({ type }: TokenProps) {
         tokenList = tokenList.filter((token) => token.signed);
     }
 
-    if (tokenList.length === 0) {
-        //router.push("/home")
-    }
+
 
     const tokenData: any[] = tokenList.map((token) => {
         const results = query({ chainId: token.chainId, address: token.address, name: token.name });
@@ -43,12 +40,16 @@ export default function MyTokenList({ type }: TokenProps) {
         };
     });
 
-    console.log('tokenData--', tokenData)
+    useEffect(() => {
+        console.log('tokenList--', tokenList)
+
+    }, [tokenList])
+
     return (
         <ScrollArea className="h-full">
             <div className="flex flex-col">
                 {tokenData.length === 0 && (<div className="text-center mt-8">
-                    <div className="text-2xl font-bold mb-2"> No tokens, Please import</div>
+                    <div className="text-2xl font-bold mb-2"> No {type} tokens,<br /> Please import</div>
                     <div className="w-[200px] mx-auto"><ImportToken /></div>
                 </div>)}
                 {tokenData.map((token) => (

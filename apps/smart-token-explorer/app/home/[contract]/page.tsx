@@ -5,7 +5,7 @@ import { Separator } from "@/components/shadcn/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/shadcn/ui/avatar";
 import { addressPipe } from "@/lib/utils";
 import { useAtomValue, useSetAtom } from "jotai";
-import { getTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom } from "@/lib/store";
+import { getTokenTypeAtom, setTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom } from "@/lib/store";
 import { useEffect, useState } from "react";
 import { SpinIcon } from "@/components/icons/SpinIcon";
 import { erc20Abi } from "viem";
@@ -20,6 +20,7 @@ export default function ContractPage({
     const { contract } = params
 
     let tokenType = useAtomValue(getTokenTypeAtom);
+    const setTokenType = useSetAtom(setTokenTypeAtom);
     let selectedToken = useAtomValue(getTokenAtom);
     const tokenListMap = useAtomValue(tokenListAtom);
     const setToken = useSetAtom(setTokenAtom);
@@ -33,6 +34,10 @@ export default function ContractPage({
             },
         },
     );
+
+    if (tokenType !== 'ERC20') {
+        //setTokenType('ERC20')
+    }
 
 
     token.name = erc20Data?.[1]?.result;
@@ -93,7 +98,6 @@ export default function ContractPage({
 
 function contractsForErc20(chainId: number, constract: `0x${string}`, walletAddress: string) {
 
-    console.log('contractsForErc20--', constract, walletAddress)
     const contractInfo = [
         {
             chainId: chainId,

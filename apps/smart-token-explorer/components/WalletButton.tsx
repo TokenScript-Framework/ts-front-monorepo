@@ -53,7 +53,6 @@ export const WalletButton = () => {
                             }
 
                             const avatar = emojiAvatarForAddress(account.address)
-                            console.log(avatar)
 
                             return (
                                 <div style={{ display: 'flex', gap: 12 }}>

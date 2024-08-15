@@ -38,7 +38,6 @@ const ThemeSwitch = ({ position }: ThemeProps) => {
             }
         }
     };
-    console.log(isSystem, isDark)
 
     useEffect(() => setMounted(true), []);
 

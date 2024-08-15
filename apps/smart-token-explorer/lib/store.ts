@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { loadTokenList, Token, TokenCollection, TokenType } from "./tokenStorage";
+import { Token, TokenCollection, TokenType } from "./tokenStorage";
 export const chainsAtom = atom<any>([]);
 export const getChainsAtom = atom((get) => get(chainsAtom));
 

@@ -11,6 +11,7 @@ import { TokenIdSwitcher } from "@/components/tokenid-switcher";
 import { TabsList, TabsTrigger, Tabs, TabsContent } from "@/components/shadcn/ui/tabs";
 import { NFTCard } from "@/components/token-kit/nft-card";
 import { NEXT_PUBLIC_VIEWER_ROOT } from "@/lib/constants";
+import { useRouter } from "next/navigation";
 
 export default function TokenIdPage({
     params,
@@ -25,18 +26,36 @@ export default function TokenIdPage({
     const tokenListMap = useAtomValue(tokenListAtom);
     const setToken = useSetAtom(setTokenAtom);
     const chainId = useChainId();
+    const router = useRouter()
 
     useEffect(() => {
-        if (address && (!selectedToken || selectedToken.address !== contract)) {
-
+        console.log('address && (!selectedToken || selectedToken.address !== contract)--', address && (!selectedToken || selectedToken.address !== contract), tokenType, tokenListMap)
+        if (tokenType) {
             let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType];
-            const filterResult = tokenList.filter((token) => token.signed);
-            if (filterResult.length === 1) {
-                setToken(filterResult[0])
-            }
-        }
-    }, [address, contract, selectedToken, setToken, tokenListMap, tokenType])
+            console.log("tokenList", tokenList)
+            if (tokenList.length === 0) {
+                router.replace("/home")
+            } else {
+                if (address && (!selectedToken || selectedToken.address !== contract)) {
 
+
+                    const filterResult = tokenList.filter((token) => token.signed);
+                    if (filterResult.length === 1) {
+                        setToken(filterResult[0])
+                    }
+                }
+            }
+
+        }
+    }, [address, contract, router, selectedToken, setToken, tokenListMap, tokenType])
+
+
+    if (!address) {
+        return (
+            <div className="p-8 text-center text-muted-foreground">
+                No Token selected
+            </div>)
+    }
     return (selectedToken && selectedToken.address && <>
         <div className="flex h-full flex-col">
             <div className="flex flex-1 flex-col">
@@ -88,7 +107,6 @@ export default function TokenIdPage({
                     </Tabs>
                 </div>
             </div>
-
         </div>
     </>
     );
