@@ -35,11 +35,6 @@ export default function ContractPage({
         },
     );
 
-    if (tokenType !== 'ERC20') {
-        //setTokenType('ERC20')
-    }
-
-
     token.name = erc20Data?.[1]?.result;
     token.symbol = erc20Data?.[2]?.result;
     token.decimals = erc20Data?.[3]?.result;
@@ -50,7 +45,6 @@ export default function ContractPage({
 
     useEffect(() => {
 
-        console.log(address && (!selectedToken || selectedToken.address !== contract))
         if (address && (!selectedToken || selectedToken.address !== contract)) {
 
             let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType];

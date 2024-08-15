@@ -33,7 +33,6 @@ export const NFTCard: React.FC<NFTCardProps> = ({
         queryKey: ["metadata", chainId, contract, tokenId],
         queryFn: async () => {
             const res = await axios.get(rewriteUrlIfIFPSUrl(erc721TokenURI!));
-            console.log(res.data)
             return res.data;
         },
         enabled: !!erc721TokenURI,

@@ -50,7 +50,7 @@ export default function Header() {
                             largeScreen: "full",
                         }}
                     /> */}
-                    <WalletButton />
+                    <WalletButton display="flex" />
                 </div>
             </div>
         </section>

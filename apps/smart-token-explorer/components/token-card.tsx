@@ -3,10 +3,7 @@
 import {
     Card,
     CardContent,
-    CardHeader,
 } from "@/components/shadcn/ui/card"
-
-import { Skeleton } from "@/components/shadcn/ui/skeleton";
 import {
     Tooltip,
     TooltipContent,
@@ -16,10 +13,8 @@ import {
 import { TokenCollection, TokenType } from "@/lib/tokenStorage";
 import { addressPipe } from "@/lib/utils";
 import { ShieldCheck, ShieldX } from "lucide-react";
-import { erc20Abi } from "viem";
-import { useAccount, useReadContracts } from "wagmi";
 import { Badge } from "./shadcn/ui/badge";
-import { getTokenAtom, setTokenAtom, setTokenIdAtom } from "@/lib/store";
+import { getTokenAtom, setTokenAtom } from "@/lib/store";
 import { useAtomValue, useSetAtom } from "jotai";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -27,30 +22,16 @@ import { useRouter } from "next/navigation";
 interface TokenCardProps {
     type: TokenType;
     token: TokenCollection;
+    onSelect: (token: TokenCollection) => void;
 }
 
-export default function TokenCard({ type, token }: TokenCardProps) {
-    const setToken = useSetAtom(setTokenAtom);
+export default function TokenCard({ type, token, onSelect }: TokenCardProps) {
     let selectedToken = useAtomValue(getTokenAtom);
-    const router = useRouter()
-    const loadNFTHandler = (selected: TokenCollection) => {
-        setToken(selected)
-        // if (selected.tokenIds) {
-        //     setTokenId(selected.tokenIds[0])
-        // }
-        console.log(`/home/${selected.address}${selected.tokenIds ? '/' + selected.tokenIds[0] : ""}`)
-        router.push(`/home/${selected.address}${selected.tokenIds ? '/' + selected.tokenIds[0] : ""}`)
-
-    };
-
-
-
-
     return (
         <Card
             className={cn(
                 selectedToken.address === token.address && "bg-accent", "cursor-pointer text-left dark:bg-gray-900  hover:bg-accent w-full")}
-            onClick={() => loadNFTHandler(token)}
+            onClick={() => onSelect(token)}
         >
             <CardContent>
                 <div className="flex justify-between items-center m-0">

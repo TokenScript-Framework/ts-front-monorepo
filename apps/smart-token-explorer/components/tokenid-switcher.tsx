@@ -33,7 +33,7 @@ export function TokenIdSwitcher({
         if (tokenIds?.length > 0) {
             setOptions(tokenIds);
         } else {
-            router.push(`/home/${selectedToken.address}`)
+            router.replace(`/home/${selectedToken.address}`)
         }
 
     }, [router, selectedToken.address, selectedToken.chainId, tokenIds]);
@@ -42,7 +42,7 @@ export function TokenIdSwitcher({
 
     const valueChangeHandler = (event: string) => {
         // setTokenId(event)
-        router.push(`/home/${selectedToken.address}/${event}`)
+        router.replace(`/home/${selectedToken.address}/${event}`)
 
     }
 

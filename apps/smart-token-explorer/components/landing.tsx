@@ -3,10 +3,10 @@ import { LandingFaqCollapsibleSection } from "@/components/page-ui/LandingFaqCol
 import { LandingPrimaryImageCtaSection } from "@/components/page-ui/cta/LandingPrimaryCta";
 import { Button } from "@/components/shadcn/ui/button";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import Footer from "@/components/footer";
 import Header from "./Header";
 import { useAccount } from "wagmi";
 import { WalletButton } from "./WalletButton";
+import Footer from "./Footer";
 
 export default function LandingPage() {
 
@@ -57,8 +57,6 @@ export default function LandingPage() {
                     <a href="/home">Your Tokens</a>
                 </Button>
             </>) : (<>
-                {/* <ConnectButton showBalance={false} /> */}
-                <WalletButton />
             </>)}
 
 

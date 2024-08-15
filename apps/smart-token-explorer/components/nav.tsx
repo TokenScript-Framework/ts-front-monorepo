@@ -4,9 +4,10 @@ import Link from "next/link"
 import { LucideIcon, ExternalLinkIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAtomValue, useSetAtom } from "jotai"
-import { getTokenTypeAtom, setTokenTypeAtom } from "@/lib/store";
+import { getTokenTypeAtom, setTokenAtom, setTokenTypeAtom } from "@/lib/store";
 import { buttonVariants } from "@/components/shadcn/ui/button"
 import { useRouter } from "next/navigation";
+import { EMPTY_TOKEN } from "@/lib/constants"
 
 interface NavProps {
     links: {
@@ -26,14 +27,13 @@ export function Nav({ links }: NavProps) {
     const setTokenType = useSetAtom(setTokenTypeAtom);
 
     let tokenType = useAtomValue(getTokenTypeAtom);
+    const setToken = useSetAtom(setTokenAtom);
 
     const router = useRouter()
 
     const childrenClickHandler = (type: string) => {
         setTokenType(type)
-        console.log('$$$', router)
-        // router.push('/home/')
-        //router.replace("/home")
+        setToken(EMPTY_TOKEN)
     }
     return (<>
         <div

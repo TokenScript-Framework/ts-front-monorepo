@@ -4,10 +4,10 @@ import { SpinIcon } from "@/components/icons/SpinIcon";
 import { TOKENTYPE_LIST } from "@/lib/constants";
 import { validateToken } from "@/lib/etherService";
 import { getDevModeAtom, getTokenTypeAtom, tokenListAtom } from "@/lib/store";
-import { addToken, loadTokenList, Token, TokenType } from "@/lib/tokenStorage";
+import { addToken, loadTokenList, TokenType } from "@/lib/tokenStorage";
 import { useAtomValue, useSetAtom } from "jotai";
 import React, { useState } from "react";
-import { createConfig, useAccount, useChainId, useReadContract } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { Button } from "./shadcn/ui/button";
 import {
     Dialog,
@@ -22,13 +22,6 @@ import { Input } from "./shadcn/ui/input";
 import { Label } from "./shadcn/ui/label";
 import { RadioGroup, RadioGroupItem } from "./shadcn/ui/radio-group";
 import { useToast } from "./shadcn/ui/use-toast";
-import { useQuery } from "wagmi/query";
-import axios from "axios";
-import { rewriteUrlIfIFPSUrl } from "@/lib/utils";
-import { erc721Abi } from "viem";
-import { readContract } from "viem/actions";
-import { mainnet, sepolia } from "viem/chains";
-import { getTokenscriptMetadata } from "token-kit";
 import { isERC20, getSymbol } from "@/lib/erc20Service";
 import { Plus } from "lucide-react";
 
@@ -55,12 +48,6 @@ export default function ImportToken() {
 
             setLoading(true);
             if (address) {
-                console.log(devMode,
-                    chainId,
-                    address,
-                    type,
-                    token,
-                    tokenId,)
                 const validate: any = await validateToken(
                     devMode,
                     chainId,
@@ -85,7 +72,6 @@ export default function ImportToken() {
                             name: await getSymbol(token, chainId.toString())
                         });
                     } else {
-                        console.log("validate", validate)
                         addToken(address, type, {
                             signed: validate.signed,
                             chainId,

@@ -1,13 +1,13 @@
 "use client";
 import { getDevModeAtom, getTokenAtom, getTokenTypeAtom, setTokenAtom, tokenListAtom } from "@/lib/store";
-import { TokenCollection, TokenType } from "@/lib/tokenStorage";
+import { Token, TokenCollection, TokenType } from "@/lib/tokenStorage";
 import { useAtomValue, useSetAtom } from "jotai";
 import { query } from "smart-token-list";
 import TokenCard from "./token-card";
 import { cn } from "@/lib/utils";
 import ImportToken from "@/components/import-token"
 import { ScrollArea } from "./shadcn/ui/scroll-area";
-import { useChainId } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -22,6 +22,20 @@ export default function MyTokenList({ type }: TokenProps) {
     const chain = useChainId()
     const devMode = useAtomValue(getDevModeAtom);
     const router = useRouter()
+    const setToken = useSetAtom(setTokenAtom);
+    let selectedToken = useAtomValue(getTokenAtom);
+    const { connector: activeConnector } = useAccount()
+
+
+    const redirectToToken = (token: TokenCollection | null) => {
+        if (token) {
+            setToken(token)
+            router.replace(`/home/${token.address}${token.tokenIds ? '/' + token.tokenIds[0] : ""}`)
+        } else {
+            router.replace('/home')
+        }
+
+    }
 
     let tokenList: TokenCollection[] = tokenListMap[type]?.filter((token: any) => Number(token.chainId) === (chain));
 
@@ -29,8 +43,6 @@ export default function MyTokenList({ type }: TokenProps) {
     if (!devMode) {
         tokenList = tokenList.filter((token) => token.signed);
     }
-
-
 
     const tokenData: any[] = tokenList.map((token) => {
         const results = query({ chainId: token.chainId, address: token.address, name: token.name });
@@ -41,9 +53,16 @@ export default function MyTokenList({ type }: TokenProps) {
     });
 
     useEffect(() => {
-        console.log('tokenList--', tokenList)
+        if (tokenList.length > 0 && !selectedToken.address) {
+            redirectToToken(tokenList[0])
+        }
 
-    }, [tokenList])
+    }, [redirectToToken, router, selectedToken, setToken, tokenList])
+
+    const selectHanlder = (event: TokenCollection) => {
+        redirectToToken(event)
+    }
+
 
     return (
         <ScrollArea className="h-full">
@@ -61,6 +80,7 @@ export default function MyTokenList({ type }: TokenProps) {
                             key={`${type}-${token.chainId}-${token.address}`}
                             type={type}
                             token={token}
+                            onSelect={selectHanlder}
                         />
                     </div>
                 ))

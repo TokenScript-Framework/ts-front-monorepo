@@ -1,16 +1,35 @@
 "use client";
 
-import { getDevModeAtom, setDevModeAtom } from "@/lib/store";
+import { getDevModeAtom, setDevModeAtom, tokenListAtom, getTokenTypeAtom, setTokenAtom } from "@/lib/store";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Switch } from "./shadcn/ui/switch";
-import { Tabs, TabsList, TabsTrigger } from "./shadcn/ui/tabs";
+import { TokenCollection, TokenType } from "@/lib/tokenStorage";
+import { useChainId } from "wagmi";
+import { useRouter } from "next/navigation";
+import { EMPTY_TOKEN } from "@/lib/constants";
 
 export default function DevMode() {
     const setDevMode = useSetAtom(setDevModeAtom);
     let devMode = useAtomValue(getDevModeAtom);
+    const tokenListMap = useAtomValue(tokenListAtom);
+    const setToken = useSetAtom(setTokenAtom);
+    const chain = useChainId()
+    const router = useRouter()
+
+    let tokenType = useAtomValue(getTokenTypeAtom);
 
     const changeHandler = (mode: boolean) => {
         setDevMode(mode);
+
+        let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType]?.filter((token: any) => Number(token.chainId) === (chain) && token.signed === !mode);
+        console.log('mode', mode, tokenList)
+        if (tokenList.length === 0) {
+            setToken(EMPTY_TOKEN)
+            router.replace('/home')
+        }
+
+
+
     };
     return (
         <>

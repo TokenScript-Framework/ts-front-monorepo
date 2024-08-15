@@ -1,6 +1,6 @@
 "use client"
 import { useAccount, useChainId } from "wagmi";
-import { TokenCollection } from "@/lib/tokenStorage"
+import { TokenCollection, TokenType } from "@/lib/tokenStorage"
 import { Separator } from "@/components/shadcn/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/shadcn/ui/avatar";
 import { addressPipe } from "@/lib/utils";
@@ -12,6 +12,7 @@ import { TabsList, TabsTrigger, Tabs, TabsContent } from "@/components/shadcn/ui
 import { NFTCard } from "@/components/token-kit/nft-card";
 import { NEXT_PUBLIC_VIEWER_ROOT } from "@/lib/constants";
 import { useRouter } from "next/navigation";
+import { ScriptIframe } from "@/components/scriptIframe";
 
 export default function TokenIdPage({
     params,
@@ -29,16 +30,10 @@ export default function TokenIdPage({
     const router = useRouter()
 
     useEffect(() => {
-        console.log('address && (!selectedToken || selectedToken.address !== contract)--', address && (!selectedToken || selectedToken.address !== contract), tokenType, tokenListMap)
         if (tokenType) {
             let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType];
-            console.log("tokenList", tokenList)
-            if (tokenList.length === 0) {
-                router.replace("/home")
-            } else {
+            if (tokenList.length > 0) {
                 if (address && (!selectedToken || selectedToken.address !== contract)) {
-
-
                     const filterResult = tokenList.filter((token) => token.signed);
                     if (filterResult.length === 1) {
                         setToken(filterResult[0])
@@ -50,7 +45,7 @@ export default function TokenIdPage({
     }, [address, contract, router, selectedToken, setToken, tokenListMap, tokenType])
 
 
-    if (!address) {
+    if (!address || !selectedToken.address) {
         return (
             <div className="p-8 text-center text-muted-foreground">
                 No Token selected
@@ -73,7 +68,7 @@ export default function TokenIdPage({
                         </div>
 
                     </div>
-                    <div className="flex items-center p-2 w-[150px]">
+                    <div className="flex items-center p-2">
                         <TokenIdSwitcher tokenIds={selectedToken.tokenIds} tokenId={tokenId} />
                     </div>
 
@@ -98,8 +93,9 @@ export default function TokenIdPage({
                             )}
                         </TabsContent>
                         <TabsContent value="script">
+                            <ScriptIframe url={`${NEXT_PUBLIC_VIEWER_ROOT}/?viewType=sts-token&chain=${chainId}&contract=${selectedToken.address}&tokenId=${tokenId}`} />
 
-                            <iframe src={`${NEXT_PUBLIC_VIEWER_ROOT}/?viewType=sts-token&chain=${chainId}&contract=${selectedToken.address}&tokenId=${tokenId}`} className="w-full h-[100vh] mx-auto p-2 max-w-[500px] iframe-placeholder" />
+                            {/* <iframe src={`${NEXT_PUBLIC_VIEWER_ROOT}/?viewType=sts-token&chain=${chainId}&contract=${selectedToken.address}&tokenId=${tokenId}`} className="w-full h-[100vh] mx-auto p-2 max-w-[500px] iframe-placeholder" /> */}
 
                         </TabsContent>
 

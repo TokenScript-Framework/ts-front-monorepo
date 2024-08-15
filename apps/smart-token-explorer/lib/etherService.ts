@@ -165,7 +165,6 @@ export async function validateToken(
           checkSignature: true,
         })
       : { name: "", meta: { description: "" }, signed: true };
-  console.log(metadata);
   const { signed } = type !== "ERC20" ? metadata : { signed: true };
 
   if (!devMode && !signed) {

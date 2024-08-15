@@ -1,11 +1,13 @@
 import { cn } from '@/lib/utils';
-import { ConnectButton, AvatarComponent } from '@rainbow-me/rainbowkit';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Button } from './shadcn/ui/button';
 import { ChevronDown } from 'lucide-react';
-import { Avatar } from './shadcn/ui/avatar';
 import { emojiAvatarForAddress } from './emojiAvatarForAddress';
 
-export const WalletButton = () => {
+interface WalletButtonProps {
+    display?: string;
+}
+export const WalletButton = ({ display }: WalletButtonProps) => {
     const buttonCSS = 'text-white font-bold w-full p-2 text-base'
     return (
         <ConnectButton.Custom>
@@ -55,11 +57,11 @@ export const WalletButton = () => {
                             const avatar = emojiAvatarForAddress(account.address)
 
                             return (
-                                <div style={{ display: 'flex', gap: 12 }}>
+                                <div className={cn(display ? display + ' gap-2' : '')}>
                                     <Button
                                         onClick={openChainModal}
                                         style={{ display: 'flex', alignItems: 'center' }}
-                                        className={cn('p-2', "bg-white-500 hover:bg-gray-100 shadow border border-gray-100 dark:bg-gray-200 dark:text-black dark:hover:bg-gray-100")}
+                                        className={cn('p-2', "bg-white-500 hover:bg-gray-100 shadow border border-gray-100 dark:bg-gray-200 dark:text-black dark:hover:bg-gray-100 mb-2 font-bold", !display ? 'w-full' : '')}
                                     >
                                         {chain.hasIcon && (<>
                                             <div
@@ -83,10 +85,10 @@ export const WalletButton = () => {
                                                 </>
                                                 )}
                                             </div>
-                                            <ChevronDown />
                                         </>
                                         )}
-                                        {/* {chain.name} */}
+                                        {!display ? (<>{chain.name}</>) : (<></>)}
+                                        <ChevronDown />
                                     </Button>
 
                                     <Button onClick={openAccountModal}

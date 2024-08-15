@@ -30,17 +30,21 @@ export default function HomeLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const { address } = useAccount();
+    const { address, connector: activeConnector } = useAccount();
     const setTokenList = useSetAtom(tokenListAtom);
     const router = useRouter()
     let tokenType = useAtomValue(getTokenTypeAtom);
     useEffect(() => {
         if (address) {
             setTokenList(loadTokenList(address));
-        } else {
-            //router.push('/')
         }
-    }, [address, setTokenList]);
+
+
+
+
+    }
+        , [address, setTokenList]);
+
 
     return (
         <ResizablePanelGroup
@@ -106,9 +110,7 @@ export default function HomeLayout({
                         />
                     </div> */}
                     <div className="w-full px-2">
-                        <WalletButton
-
-                        />
+                        <WalletButton />
                     </div>
                 </footer>
             </ResizablePanel>
@@ -126,7 +128,8 @@ export default function HomeLayout({
                 </div>
                 <Separator />
                 <div className="m-0">
-                    {tokenType && (<MyTokenList type={tokenType as TokenType} key={`${tokenType}-t`} />)}
+                    {address && (<>{tokenType && (<MyTokenList type={tokenType as TokenType} key={`${tokenType}-t`} />)}</>)}
+
                 </div>
             </ResizablePanel>
             <ResizableHandle withHandle />
