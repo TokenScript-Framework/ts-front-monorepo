@@ -54,7 +54,7 @@ export default function TokenIdPage({
     return (selectedToken && selectedToken.address && <>
         <div className="flex h-full flex-col">
             <div className="flex flex-1 flex-col">
-                <div className="flex justify-between px-4 pl-2">
+                <div className="flex justify-between px-4 pl-2 h-[52px]">
                     <div className="flex items-center gap-4 text-sm">
                         <Avatar className="w-8 h-8">
                             <AvatarImage src={selectedToken.logoURI} alt="token" />
@@ -68,7 +68,7 @@ export default function TokenIdPage({
                         </div>
 
                     </div>
-                    <div className="flex items-center p-2">
+                    <div className="flex items-center">
                         <TokenIdSwitcher tokenIds={selectedToken.tokenIds} tokenId={tokenId} />
                     </div>
 
