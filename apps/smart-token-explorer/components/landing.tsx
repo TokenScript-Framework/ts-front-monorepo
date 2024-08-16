@@ -57,6 +57,7 @@ export default function LandingPage() {
                     <a href="/home">Your Tokens</a>
                 </Button>
             </>) : (<>
+                <WalletButton display="flex" />
             </>)}
 
 
