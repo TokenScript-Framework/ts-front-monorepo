@@ -1,4 +1,3 @@
-//import * as IPFSOnlyHash from "ipfs-only-hash";
 const IPFSOnlyHash = require("ipfs-only-hash");
 import { TokenScript } from "../tokenscript";
 import { IOriginSecurityInfo, Origin } from "../tokenScript/Origin";

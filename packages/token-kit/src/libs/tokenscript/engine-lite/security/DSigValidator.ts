@@ -5,7 +5,8 @@ import {
   KeyValue,
   X509Certificate,
 } from "@tokenscript/xmldsigjs";
-import { Crypto, CryptoKey } from "webcrypto-liner/build";
+const { Crypto, CryptoKey } = require("webcrypto-liner/build");
+//import { Crypto, CryptoKey } from "webcrypto-liner/build";
 import { uint8tohex } from "../../../../utils/crypto";
 import { TokenScript } from "../tokenscript";
 
