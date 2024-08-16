@@ -35,9 +35,3 @@ export const getTokenAtom = atom((get) => get(tokenAtom));
 export const setTokenAtom = atom(null, async (get, set, token: Token) => {
   set(tokenAtom, token);
 });
-
-export const tokenIdAtom = atomWithStorage<string>("tokenId", "");
-export const getTokenIdAtom = atom((get) => get(tokenIdAtom));
-export const setTokenIdAtom = atom(null, async (get, set, id: string) => {
-  set(tokenIdAtom, id);
-});

@@ -4,17 +4,22 @@ import { TokenType } from "@/lib/tokenStorage";
 import ImportToken from "./import-token";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAtomValue } from "jotai";
+import { getTokenTypeAtom } from "@/lib/store";
+import { useChainId } from "wagmi";
 
 
 interface TokenProps {
     type: TokenType;
+    chain: number
 }
-export default function EmptyListToken({ type
+export default function EmptyListToken({ type, chain
 }: TokenProps) {
     const router = useRouter()
+    let tokenType = useAtomValue(getTokenTypeAtom);
+
     useEffect(() => {
-        router.push(`/home`)
-    }, [router])
+    }, [router, tokenType, type, chain])
 
     return (<>
         <div className="text-center mt-8">

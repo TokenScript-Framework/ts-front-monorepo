@@ -3,7 +3,7 @@ import { LandingFaqCollapsibleSection } from "@/components/page-ui/LandingFaqCol
 import { LandingPrimaryImageCtaSection } from "@/components/page-ui/cta/LandingPrimaryCta";
 import { Button } from "@/components/shadcn/ui/button";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { WalletButton } from "./wallet-button";
 import Footer from "./Footer";
 import Header from "./Header";
@@ -11,6 +11,7 @@ import Header from "./Header";
 export default function LandingPage() {
 
     const { address } = useAccount();
+    const chain = useChainId()
     const faqItems = [
         {
             question: "Can I get a refund?",
@@ -54,11 +55,12 @@ export default function LandingPage() {
                 withBackground
             >   {address ? (<>
                 <Button variant="primary">
-                    <a href="/home">Your Tokens</a>
+                    <a href={`/ERC20/${chain}`}>Your Tokens</a>
                 </Button>
             </>) : (<>
                 <WalletButton display="flex" />
-            </>)}
+            </>)
+                }
 
 
                 <Button variant="outlinePrimary">

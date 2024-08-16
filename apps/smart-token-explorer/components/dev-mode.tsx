@@ -20,15 +20,12 @@ export default function DevMode() {
 
     const changeHandler = (mode: boolean) => {
         setDevMode(mode);
-
         let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType]?.filter((token: any) => Number(token.chainId) === (chain) && token.signed === !mode);
         if (tokenList.length === 0) {
             setToken(EMPTY_TOKEN)
-            router.replace('/home')
+            console.log('#####$$')
+            router.replace(`/${tokenType}/${chain}`)
         }
-
-
-
     };
     return (
         <>

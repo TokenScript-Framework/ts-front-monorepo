@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 import MyTokenList from "@/components/token-list";
 import { useEffect, useMemo } from "react";
 import { WalletButton } from "@/components/wallet-button";
-export default function HomeLayout({
+export default function TypeLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
@@ -50,16 +50,17 @@ export default function HomeLayout({
         const unwatch = config.subscribe(
             (state) => state.chainId,
             (chainId) => {
-                console.log('chain changed, router:', chainId);
-                // 在这里处理链变更逻辑
-                router.replace('/home')
+                console.log('chain changed, router:', chainId, window.location.pathname, window.location.pathname.split('/'));
+                if (chainId !== Number(window.location.pathname.split('/')[2])) {
+                    router.replace(`/${tokenType}/${chainId}`)
+                }
             }
         );
 
         return () => {
             unwatch();
         };
-    }, [config, router]);
+    }, [config, router, tokenType]);
 
 
 
@@ -80,9 +81,9 @@ export default function HomeLayout({
                 minSize={20}
                 maxSize={20} className="relative"
             >
-                <div className="w-full px-2 font-bold text-lg my-3">
+                <a href="/" className="w-full px-2 font-bold text-lg my-3">
                     Smart Token Explorer
-                </div>
+                </a>
 
                 <Separator />
                 <Nav

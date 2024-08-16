@@ -46,15 +46,17 @@ export default function MyTokenList({ type }: TokenProps) {
     const redirectToToken = useCallback((token: TokenCollection | null) => {
         if (token) {
             setToken(token)
-            router.replace(`/home/${token.address}${token.tokenIds ? '/' + token.tokenIds[0] : ""}`)
+            router.replace(`/${type}/${chain}/${token.address}${token.tokenIds ? '/' + token.tokenIds[0] : ""}`)
         } else {
-            router.replace('/home')
+            console.log('2')
+            router.replace(`/${type}/${chain}`)
         }
 
-    }, [setToken, router])
+    }, [setToken, router, type, chain])
 
     useEffect(() => {
         if (tokenList.length > 0 && !selectedToken.address) {
+            console.log('1')
             redirectToToken(tokenList[0])
         }
 
@@ -69,7 +71,7 @@ export default function MyTokenList({ type }: TokenProps) {
         <ScrollArea className="h-full">
             <div className="flex flex-col">
                 {tokenData.length === 0 && (
-                    <EmptyListToken type={type} />
+                    <EmptyListToken type={type} chain={chain} />
                 )}
                 {tokenData.map((token) => (
                     < div className={
