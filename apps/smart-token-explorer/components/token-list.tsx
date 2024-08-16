@@ -9,7 +9,7 @@ import ImportToken from "@/components/import-token"
 import { ScrollArea } from "./shadcn/ui/scroll-area";
 import { useAccount, useChainId } from "wagmi";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 interface TokenProps {
     type: TokenType;
@@ -27,16 +27,6 @@ export default function MyTokenList({ type }: TokenProps) {
     const { connector: activeConnector } = useAccount()
 
 
-    const redirectToToken = (token: TokenCollection | null) => {
-        if (token) {
-            setToken(token)
-            router.replace(`/home/${token.address}${token.tokenIds ? '/' + token.tokenIds[0] : ""}`)
-        } else {
-            router.replace('/home')
-        }
-
-    }
-
     let tokenList: TokenCollection[] = tokenListMap[type]?.filter((token: any) => Number(token.chainId) === (chain));
 
 
@@ -51,6 +41,16 @@ export default function MyTokenList({ type }: TokenProps) {
             ...(results[0] ? results[0] : { notFound: true }),
         };
     });
+
+    const redirectToToken = useCallback((token: TokenCollection | null) => {
+        if (token) {
+            setToken(token)
+            router.replace(`/home/${token.address}${token.tokenIds ? '/' + token.tokenIds[0] : ""}`)
+        } else {
+            router.replace('/home')
+        }
+
+    }, [setToken, router])
 
     useEffect(() => {
         if (tokenList.length > 0 && !selectedToken.address) {

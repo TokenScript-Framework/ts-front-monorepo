@@ -22,7 +22,6 @@ export default function DevMode() {
         setDevMode(mode);
 
         let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType]?.filter((token: any) => Number(token.chainId) === (chain) && token.signed === !mode);
-        console.log('mode', mode, tokenList)
         if (tokenList.length === 0) {
             setToken(EMPTY_TOKEN)
             router.replace('/home')

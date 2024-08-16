@@ -12,7 +12,7 @@ import {
 } from "@/components/shadcn/ui/resizable"
 import { Nav } from "@/components/nav"
 import DevMode from "@/components/dev-mode"
-import { useAccount, useChainId } from "wagmi";
+import { useAccount, useChainId, useConfig, useNetwork } from "wagmi";
 import { getDevModeAtom, getTokenAtom, getTokenTypeAtom, setTokenAtom, tokenListAtom } from "@/lib/store"
 import { useAtomValue, useSetAtom } from "jotai"
 import ImportToken from "@/components/import-token"
@@ -32,7 +32,6 @@ export default function HomeLayout({
 }>) {
     const { address } = useAccount();
     const setTokenList = useSetAtom(tokenListAtom);
-    const [currentChain, setCurrentChain] = React.useState(0)
     const router = useRouter()
 
     const chain = useChainId()
@@ -42,22 +41,27 @@ export default function HomeLayout({
             setTokenList(loadTokenList(address));
         }
 
-        if (chain) {
-            console.log('chain--', currentChain, chain, address)
-            if (currentChain !== chain) {
-                console.log('change router')
+
+    }, [address, chain, router, setTokenList]);
+
+    const config = useConfig();
+
+    useEffect(() => {
+        const unwatch = config.subscribe(
+            (state) => state.chainId,
+            (chainId) => {
+                console.log('chain changed, router:', chainId);
+                // 在这里处理链变更逻辑
                 router.replace('/home')
             }
-            setCurrentChain(chain)
-        }
+        );
+
+        return () => {
+            unwatch();
+        };
+    }, [config, router]);
 
 
-
-
-
-
-    }
-        , [address, chain, currentChain, setTokenList]);
 
 
     return (
@@ -116,13 +120,7 @@ export default function HomeLayout({
                     <div className="mb-2 px-2">
                         <ImportToken />
                     </div>
-                    {/* <div className="w-full px-2">
-                        <ConnectButton
-                            showBalance={false}
-                            accountStatus="full"
-                            chainStatus="icon"
-                        />
-                    </div> */}
+
                     <div className="w-full px-2">
                         <WalletButton />
                     </div>
@@ -157,3 +155,5 @@ export default function HomeLayout({
         </ResizablePanelGroup>
     )
 }
+
+
