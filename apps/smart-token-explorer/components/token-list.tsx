@@ -10,6 +10,7 @@ import { ScrollArea } from "./shadcn/ui/scroll-area";
 import { useAccount, useChainId } from "wagmi";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect } from "react";
+import EmptyListToken from "./empty-token-list";
 
 interface TokenProps {
     type: TokenType;
@@ -67,10 +68,9 @@ export default function MyTokenList({ type }: TokenProps) {
     return (
         <ScrollArea className="h-full">
             <div className="flex flex-col">
-                {tokenData.length === 0 && (<div className="text-center mt-8">
-                    <div className="text-2xl font-bold mb-2"> No {type} tokens,<br /> Please import</div>
-                    <div className="w-[200px] mx-auto"><ImportToken /></div>
-                </div>)}
+                {tokenData.length === 0 && (
+                    <EmptyListToken type={type} />
+                )}
                 {tokenData.map((token) => (
                     < div className={
                         cn(

@@ -108,7 +108,7 @@ export default function HomeLayout({
                             title: "Token List",
                             icon: ListIcon,
                             variant: "ghost",
-                            href: 'https://tokens.tokenscript.org/'
+                            href: 'https://smart-token-list-website.vercel.app/'  //todo: change to https://tokens.tokenscript.org/
                         },
 
                     ]}
