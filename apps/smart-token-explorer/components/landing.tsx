@@ -3,10 +3,10 @@ import { LandingFaqCollapsibleSection } from "@/components/page-ui/LandingFaqCol
 import { LandingPrimaryImageCtaSection } from "@/components/page-ui/cta/LandingPrimaryCta";
 import { Button } from "@/components/shadcn/ui/button";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import Header from "./header";
 import { useAccount } from "wagmi";
 import { WalletButton } from "./wallet-button";
-import Footer from "./footer";
+import Footer from "./Footer";
+import Header from "./Header";
 
 export default function LandingPage() {
 

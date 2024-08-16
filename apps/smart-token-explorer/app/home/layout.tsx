@@ -12,7 +12,7 @@ import {
 } from "@/components/shadcn/ui/resizable"
 import { Nav } from "@/components/nav"
 import DevMode from "@/components/dev-mode"
-import { useAccount, useChainId, useConfig, useNetwork } from "wagmi";
+import { useAccount, useChainId, useConfig } from "wagmi";
 import { getDevModeAtom, getTokenAtom, getTokenTypeAtom, setTokenAtom, tokenListAtom } from "@/lib/store"
 import { useAtomValue, useSetAtom } from "jotai"
 import ImportToken from "@/components/import-token"
