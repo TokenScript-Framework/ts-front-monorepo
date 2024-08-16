@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Button } from './shadcn/ui/button';
 import { ChevronDown } from 'lucide-react';
-import { emojiAvatarForAddress } from './emojiAvatarForAddress';
+import { emojiAvatarForAddress } from './emoji-avatar-for-address';
 
 interface WalletButtonProps {
     display?: string;

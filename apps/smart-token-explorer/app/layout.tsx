@@ -2,21 +2,8 @@
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/shadcn/ui/toaster";
 import { ThemeProviders } from "@/components/theme-providers";
-import { colors, colorsRgb } from "@/data/config/colors";
 import type { Metadata } from "next";
 import "./globals.css";
-
-const globalColors = colors;
-const style: string[] = [];
-
-// Object.keys(globalColors).map((variant) => {
-//     return Object.keys(globalColors[variant]).map((color) => {
-//         const value = colors[variant][color];
-//         const rgbValue = colorsRgb[variant][color];
-//         style.push(`--${variant}-${color}-hex: ${value}`);
-//         style.push(`--${variant}-${color}: ${rgbValue}`);
-//     });
-// });
 
 export const metadata: Metadata = {
     title: "Smart Token Explorer",

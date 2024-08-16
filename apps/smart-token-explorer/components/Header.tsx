@@ -7,7 +7,7 @@ import { useAccount } from "wagmi";
 import Logo from "./logo";
 import ThemeSwitch from "./shadcn/ThemeSwitch";
 import { STETooltip } from "./ste-tooltip";
-import { WalletButton } from "./WalletButton";
+import { WalletButton } from "./wallet-button";
 
 export default function Header() {
     const { address } = useAccount();

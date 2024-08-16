@@ -176,7 +176,7 @@ export default function Footer() {
                                 </button>
                             </a>
                         </div>
-                        <div className="mb-2 w-full space-x-2 p-3 text-center text-sm text-gray-500 lg:flex lg:justify-center dark:text-gray-400">
+                        <div className="mb-2 w-full space-x-2 p-3Footer. text-center text-sm text-gray-500 lg:flex lg:justify-center dark:text-gray-400">
                             <span>© 2024</span>
                             <span> • </span>
                             <a href="/">Smart Token Explorer</a>

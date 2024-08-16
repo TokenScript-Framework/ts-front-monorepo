@@ -24,26 +24,40 @@ import { Separator } from "@/components/shadcn//ui/separator";
 import { useRouter } from "next/navigation";
 import MyTokenList from "@/components/token-list";
 import { useEffect, useMemo } from "react";
-import { WalletButton } from "@/components/WalletButton";
+import { WalletButton } from "@/components/wallet-button";
 export default function HomeLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const { address, connector: activeConnector } = useAccount();
+    const { address } = useAccount();
     const setTokenList = useSetAtom(tokenListAtom);
+    const [currentChain, setCurrentChain] = React.useState(0)
     const router = useRouter()
+
+    const chain = useChainId()
     let tokenType = useAtomValue(getTokenTypeAtom);
     useEffect(() => {
         if (address) {
             setTokenList(loadTokenList(address));
         }
 
+        if (chain) {
+            console.log('chain--', currentChain, chain, address)
+            if (currentChain !== chain) {
+                console.log('change router')
+                router.replace('/home')
+            }
+            setCurrentChain(chain)
+        }
+
+
+
 
 
 
     }
-        , [address, setTokenList]);
+        , [address, chain, currentChain, setTokenList]);
 
 
     return (
@@ -128,7 +142,11 @@ export default function HomeLayout({
                 </div>
                 <Separator />
                 <div className="m-0">
-                    {address && (<>{tokenType && (<MyTokenList type={tokenType as TokenType} key={`${tokenType}-t`} />)}</>)}
+                    {address ? (<>{tokenType && (<MyTokenList type={tokenType as TokenType} key={`${tokenType}-t`} />)}</>) : (
+                        <>
+                            <div className="text-center mt-10 font-bold text-2xl text-muted-foreground">Please connect wallet</div>
+                        </>
+                    )}
 
                 </div>
             </ResizablePanel>

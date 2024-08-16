@@ -12,7 +12,8 @@ import { TabsList, TabsTrigger, Tabs, TabsContent } from "@/components/shadcn/ui
 import { NFTCard } from "@/components/token-kit/nft-card";
 import { NEXT_PUBLIC_VIEWER_ROOT } from "@/lib/constants";
 import { useRouter } from "next/navigation";
-import { ScriptIframe } from "@/components/scriptIframe";
+import { ScriptIframe } from "@/components/script-Iframe";
+import EmptyToken from "@/components/empty-token";
 
 export default function TokenIdPage({
     params,
@@ -47,9 +48,8 @@ export default function TokenIdPage({
 
     if (!address || !selectedToken.address) {
         return (
-            <div className="p-8 text-center text-muted-foreground">
-                No Token selected
-            </div>)
+            <EmptyToken />
+        )
     }
     return (selectedToken && selectedToken.address && <>
         <div className="flex h-full flex-col">
