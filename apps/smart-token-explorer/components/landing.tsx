@@ -48,7 +48,7 @@ export default function LandingPage() {
                     </h1>
                 }
                 description="Smart Token Explorer description...."
-                imageSrc="/images/1.webp"
+                imageSrc="/images/banner.png"
                 imageAlt="Sample image"
                 variant="primary"
                 withBackground

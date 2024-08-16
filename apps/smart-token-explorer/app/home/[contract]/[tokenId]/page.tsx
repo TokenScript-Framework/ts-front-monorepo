@@ -71,7 +71,6 @@ export default function TokenIdPage({
                     <div className="flex items-center">
                         <TokenIdSwitcher tokenIds={selectedToken.tokenIds} tokenId={tokenId} />
                     </div>
-
                 </div>
                 <Separator />
                 <div className="flex-1 whitespace-pre-wrap text-sm p-3">
@@ -94,12 +93,7 @@ export default function TokenIdPage({
                         </TabsContent>
                         <TabsContent value="script">
                             <ScriptIframe url={`${NEXT_PUBLIC_VIEWER_ROOT}/?viewType=sts-token&chain=${chainId}&contract=${selectedToken.address}&tokenId=${tokenId}`} />
-
-                            {/* <iframe src={`${NEXT_PUBLIC_VIEWER_ROOT}/?viewType=sts-token&chain=${chainId}&contract=${selectedToken.address}&tokenId=${tokenId}`} className="w-full h-[100vh] mx-auto p-2 max-w-[500px] iframe-placeholder" /> */}
-
                         </TabsContent>
-
-
                     </Tabs>
                 </div>
             </div>
