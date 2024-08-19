@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils"
 import { useAtomValue, useSetAtom } from "jotai"
 import { getTokenTypeAtom, setTokenAtom, setTokenTypeAtom } from "@/lib/store";
 import { buttonVariants } from "@/components/shadcn/ui/button"
-import { useRouter } from "next/navigation";
 import { EMPTY_TOKEN } from "@/lib/constants"
 
 interface NavProps {
@@ -28,8 +27,6 @@ export function Nav({ links }: NavProps) {
 
     let tokenType = useAtomValue(getTokenTypeAtom);
     const setToken = useSetAtom(setTokenAtom);
-
-    const router = useRouter()
 
     const childrenClickHandler = (type: string) => {
         setTokenType(type)

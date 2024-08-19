@@ -13,13 +13,12 @@ import {
 import { Nav } from "@/components/nav"
 import DevMode from "@/components/dev-mode"
 import { useAccount, useChainId, useConfig } from "wagmi";
-import { getDevModeAtom, getTokenAtom, getTokenTypeAtom, setTokenAtom, tokenListAtom } from "@/lib/store"
+import { getTokenTypeAtom, tokenListAtom } from "@/lib/store"
 import { useAtomValue, useSetAtom } from "jotai"
 import ImportToken from "@/components/import-token"
 import ThemeSwitch from "@/components/shadcn/ThemeSwitch"
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { defaultLayout, getTokenListRoot } from "@/lib/constants"
-import { loadTokenList, TokenCollection, TokenType } from "@/lib/tokenStorage"
+import { defaultLayout } from "@/lib/constants"
+import { loadTokenList, TokenType } from "@/lib/tokenStorage"
 import { Separator } from "@/components/shadcn//ui/separator";
 import { useRouter } from "next/navigation";
 import MyTokenList from "@/components/token-list";
@@ -34,7 +33,7 @@ export default function TypeLayout({
     const setTokenList = useSetAtom(tokenListAtom);
     const router = useRouter()
 
-    const chain = useChainId()
+    const chainId = useChainId()
     let tokenType = useAtomValue(getTokenTypeAtom);
     useEffect(() => {
         if (address) {
@@ -42,8 +41,8 @@ export default function TypeLayout({
         }
 
 
-    }, [address, chain, router, setTokenList]);
-
+    }, [address, chainId, router, setTokenList]);
+    chainId
     const config = useConfig();
 
     useEffect(() => {
@@ -61,8 +60,6 @@ export default function TypeLayout({
             unwatch();
         };
     }, [config, router, tokenType]);
-
-
 
 
     return (

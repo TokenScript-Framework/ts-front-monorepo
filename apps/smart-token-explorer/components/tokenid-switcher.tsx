@@ -28,7 +28,7 @@ export function TokenIdSwitcher({
     const [options, setOptions] = useState<string[]>([]);
     let selectedToken = useAtomValue(getTokenAtom);
     let tokenType = useAtomValue(getTokenTypeAtom);
-    const chain = useChainId()
+    const chainId = useChainId()
 
     const router = useRouter()
 
@@ -36,15 +36,15 @@ export function TokenIdSwitcher({
         if (tokenIds?.length > 0) {
             setOptions(tokenIds);
         } else {
-            router.replace(`/${tokenType}/${chain}/${selectedToken.address}`)
+            router.replace(`/${tokenType}/${chainId}/${selectedToken.address}`)
         }
 
-    }, [chain, router, selectedToken.address, selectedToken.chainId, tokenIds, tokenType]);
+    }, [chainId, router, selectedToken.address, selectedToken.chainId, tokenIds, tokenType]);
 
 
 
     const valueChangeHandler = (event: string) => {
-        router.replace(`/${tokenType}/${chain}/${selectedToken.address}/${event}`)
+        router.replace(`/${tokenType}/${chainId}/${selectedToken.address}/${event}`)
 
     }
 

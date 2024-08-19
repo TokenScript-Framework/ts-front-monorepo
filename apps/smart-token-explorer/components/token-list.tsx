@@ -1,11 +1,10 @@
 "use client";
-import { getDevModeAtom, getTokenAtom, getTokenTypeAtom, setTokenAtom, tokenListAtom } from "@/lib/store";
-import { Token, TokenCollection, TokenType } from "@/lib/tokenStorage";
+import { getDevModeAtom, getTokenAtom, setTokenAtom, tokenListAtom } from "@/lib/store";
+import { TokenCollection, TokenType } from "@/lib/tokenStorage";
 import { useAtomValue, useSetAtom } from "jotai";
 import { query } from "smart-token-list";
 import TokenCard from "./token-card";
 import { cn } from "@/lib/utils";
-import ImportToken from "@/components/import-token"
 import { ScrollArea } from "./shadcn/ui/scroll-area";
 import { useAccount, useChainId } from "wagmi";
 import { useRouter } from "next/navigation";
@@ -20,7 +19,7 @@ export default function MyTokenList({ type }: TokenProps) {
 
 
     const tokenListMap = useAtomValue(tokenListAtom);
-    const chain = useChainId()
+    const chainId = useChainId()
     const devMode = useAtomValue(getDevModeAtom);
     const router = useRouter()
     const setToken = useSetAtom(setTokenAtom);
@@ -28,7 +27,7 @@ export default function MyTokenList({ type }: TokenProps) {
     const { connector: activeConnector } = useAccount()
 
 
-    let tokenList: TokenCollection[] = tokenListMap[type]?.filter((token: any) => Number(token.chainId) === (chain));
+    let tokenList: TokenCollection[] = tokenListMap[type]?.filter((token: any) => Number(token.chainId) === (chainId));
 
 
     if (!devMode) {
@@ -46,32 +45,32 @@ export default function MyTokenList({ type }: TokenProps) {
     const redirectToToken = useCallback((token: TokenCollection | null) => {
         if (token) {
             setToken(token)
-            router.replace(`/${type}/${chain}/${token.address}${token.tokenIds ? '/' + token.tokenIds[0] : ""}`)
+            router.replace(`/${type}/${chainId}/${token.address}${token.tokenIds ? '/' + token.tokenIds[0] : ""}`)
         } else {
-            console.log('2')
-            router.replace(`/${type}/${chain}`)
+            router.replace(`/${type}/${chainId}`)
         }
 
-    }, [setToken, router, type, chain])
+    }, [setToken, router, type, chainId])
 
     useEffect(() => {
-        if (tokenList.length > 0 && !selectedToken.address) {
-            console.log('1')
-            redirectToToken(tokenList[0])
+        if (tokenData.length > 0 && !selectedToken.address) {
+            redirectToToken(tokenData[0])
+        } else {
+            if (tokenData.length === 0) {
+                redirectToToken(null)
+            }
         }
-
-    }, [redirectToToken, router, selectedToken, setToken, tokenList])
+    }, [redirectToToken, router, selectedToken, setToken, tokenData])
 
     const selectHanlder = (event: TokenCollection) => {
         redirectToToken(event)
     }
 
-
     return (
         <ScrollArea className="h-full">
             <div className="flex flex-col">
                 {tokenData.length === 0 && (
-                    <EmptyListToken type={type} chain={chain} />
+                    <EmptyListToken type={type} chainId={chainId} />
                 )}
                 {tokenData.map((token) => (
                     < div className={

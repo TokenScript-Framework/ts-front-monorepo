@@ -61,12 +61,12 @@ const ThemeSwitch = ({ position }: ThemeProps) => {
             onClick={updateTheme}
             className={cn(
                 position === 'left' ? "h-4 w-4" : "h-6 w-6",
-                "flex cursor-pointer gap-2 items-center"
+                "flex cursor-pointer gap-2 items-center mb-1"
             )}
         >
             {currentTheme === "dark" ? (
                 <motion.div
-                    {...animation}
+                    // {...animation}
                     key="dark"
                     className={cn(
                         position === 'left' ? "h-4 w-4" : "h-6 w-6",
@@ -78,7 +78,7 @@ const ThemeSwitch = ({ position }: ThemeProps) => {
                 </motion.div>
             ) : (
                 <motion.div
-                    {...animation}
+                    // {...animation}
                     key="light"
                     className={cn(
                         position === 'left' ? "h-4 w-4" : "h-6 w-6",

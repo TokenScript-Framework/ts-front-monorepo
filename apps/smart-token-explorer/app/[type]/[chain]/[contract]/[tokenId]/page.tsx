@@ -5,7 +5,7 @@ import { Separator } from "@/components/shadcn/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/shadcn/ui/avatar";
 import { addressPipe } from "@/lib/utils";
 import { useAtomValue, useSetAtom } from "jotai";
-import { getTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom } from "@/lib/store";
+import { getTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom, getDevModeAtom } from "@/lib/store";
 import { useEffect } from "react";
 import { TokenIdSwitcher } from "@/components/tokenid-switcher";
 import { TabsList, TabsTrigger, Tabs, TabsContent } from "@/components/shadcn/ui/tabs";
@@ -29,13 +29,14 @@ export default function TokenIdPage({
     const setToken = useSetAtom(setTokenAtom);
     const chainId = useChainId();
     const router = useRouter()
+    let devMode = useAtomValue(getDevModeAtom);
 
     useEffect(() => {
         if (tokenType) {
             let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType];
             if (tokenList.length > 0) {
                 if (address && (!selectedToken || selectedToken.address !== contract)) {
-                    const filterResult = tokenList.filter((token) => token.signed);
+                    const filterResult = tokenList.filter((token) => Number(token.chainId) === (chainId) && token.signed === !devMode);
                     if (filterResult.length === 1) {
                         setToken(filterResult[0])
                     }
@@ -43,7 +44,7 @@ export default function TokenIdPage({
             }
 
         }
-    }, [address, contract, router, selectedToken, setToken, tokenListMap, tokenType])
+    }, [address, chainId, contract, devMode, router, selectedToken, setToken, tokenListMap, tokenType])
 
 
     if (!address || !selectedToken.address) {

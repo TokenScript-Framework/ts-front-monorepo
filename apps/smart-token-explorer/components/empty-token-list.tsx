@@ -11,15 +11,13 @@ import { useChainId } from "wagmi";
 
 interface TokenProps {
     type: TokenType;
-    chain: number
+    chainId: number
 }
-export default function EmptyListToken({ type, chain
+export default function EmptyListToken({ type, chainId
 }: TokenProps) {
     const router = useRouter()
     let tokenType = useAtomValue(getTokenTypeAtom);
 
-    useEffect(() => {
-    }, [router, tokenType, type, chain])
 
     return (<>
         <div className="text-center mt-8">

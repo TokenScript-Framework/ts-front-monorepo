@@ -13,18 +13,17 @@ export default function DevMode() {
     let devMode = useAtomValue(getDevModeAtom);
     const tokenListMap = useAtomValue(tokenListAtom);
     const setToken = useSetAtom(setTokenAtom);
-    const chain = useChainId()
+    const chainId = useChainId()
     const router = useRouter()
 
     let tokenType = useAtomValue(getTokenTypeAtom);
 
     const changeHandler = (mode: boolean) => {
         setDevMode(mode);
-        let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType]?.filter((token: any) => Number(token.chainId) === (chain) && token.signed === !mode);
+        let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType]?.filter((token: any) => Number(token.chainId) === (chainId) && token.signed === !mode);
         if (tokenList.length === 0) {
             setToken(EMPTY_TOKEN)
-            console.log('#####$$')
-            router.replace(`/${tokenType}/${chain}`)
+            router.replace(`/${tokenType}/${chainId}`)
         }
     };
     return (
