@@ -20,6 +20,7 @@ export const ERC721_ABI = [
   "function tokenOfOwnerByIndex(address, uint256) external view returns (uint256)",
   "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
   "function tokenURI(uint256) external view returns (string)",
+  "function contractURI() public view returns (string)",
 ];
 export const ERC1155_ABI = [
   "function balanceOf(address account, uint256 id) external view returns (uint256)",
@@ -28,6 +29,7 @@ export const ERC1155_ABI = [
   "function setApprovalForAll(address operator, bool approved) external",
   "function supportsInterface(bytes4 interfaceId) view returns (bool)",
   "function uri(uint256 id) view returns (string)",
+  "function contractURI() public view returns (string)",
 ];
 
 export const erc1155Abi = [
@@ -345,4 +347,7 @@ export const erc1155Abi = [
   },
 ];
 
-export const ERC5169_ABI = ["function scriptURI() view returns (string[])"];
+export const ERC5169_ABI = [
+  "function scriptURI() view returns (string[])",
+  "function contractURI() public view returns (string)",
+];

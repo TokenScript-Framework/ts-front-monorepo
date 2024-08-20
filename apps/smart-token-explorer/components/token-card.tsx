@@ -14,10 +14,10 @@ import { TokenCollection, TokenType } from "@/lib/tokenStorage";
 import { addressPipe } from "@/lib/utils";
 import { ShieldCheck, ShieldX } from "lucide-react";
 import { Badge } from "./shadcn/ui/badge";
-import { getTokenAtom, setTokenAtom } from "@/lib/store";
-import { useAtomValue, useSetAtom } from "jotai";
+import { getTokenAtom } from "@/lib/store";
+import { useAtomValue } from "jotai";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import Image from 'next/image';
 
 interface TokenCardProps {
     type: TokenType;
@@ -35,14 +35,17 @@ export default function TokenCard({ type, token, onSelect }: TokenCardProps) {
         >
             <CardContent>
                 <div className="flex justify-between items-center m-0">
-                    <div>
-                        <div className="font-bold">
-                            <span>{token.name}</span>
-                        </div>
-                        <div className="mt-2">
-                            <a className="hover:text-primary-500 text-[12px] text-gray-500 underline ">
-                                {addressPipe(token.address)}
-                            </a>
+                    <div className="flex justify-start items-center">
+                        {token.logoURI && (<Image src={token.logoURI} alt={token.name} width={48} height={48} />)}
+                        <div className="ml-4">
+                            <div className="font-bold">
+                                <span>{token.name}</span>
+                            </div>
+                            <div className="mt-2">
+                                <a className="hover:text-primary-500 text-[12px] text-gray-500 underline ">
+                                    {addressPipe(token.address)}
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <div>

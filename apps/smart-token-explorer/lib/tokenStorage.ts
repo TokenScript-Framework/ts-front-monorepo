@@ -4,6 +4,7 @@ export function addToken(
   type: TokenType,
   tokenInfo: Token,
 ) {
+  console.log("tokenInfo", tokenInfo);
   const tokenList = loadTokenList(address);
   const collection = tokenList[type].find(
     (c) => c.chainId === tokenInfo.chainId && c.address === tokenInfo.address,
@@ -17,6 +18,7 @@ export function addToken(
     }
   } else {
     const { tokenId, ...rest } = tokenInfo;
+    console.log("rest", rest);
     tokenList[type] = [
       ...tokenList[type],
       { ...rest, tokenIds: tokenId ? [tokenId] : undefined },

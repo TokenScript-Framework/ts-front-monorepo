@@ -254,11 +254,13 @@ export async function validateToken(
     }
   }
 
+  const contractMetadata =
+    type !== "ERC20" ? await getContractMetadata(token, chain) : {};
+
   return {
     error: false,
     signed,
-    name: metadata.name,
-    description: metadata.meta?.description,
+    ...contractMetadata,
   };
 }
 
@@ -294,6 +296,7 @@ export async function validateContract(
       : { name: "", meta: { description: "" }, signed: true };
   const { signed } = metadata;
 
+  console.log("metadata----", metadata);
   if (!devMode && !signed) {
     return {
       error: true,
@@ -336,12 +339,13 @@ export async function validateContract(
       break;
     }
   }
+  const contractMetadata =
+    type !== "ERC20" ? await getContractMetadata(token, chain) : {};
 
   return {
     error: false,
     signed,
-    name: metadata.name,
-    description: metadata.meta?.description,
+    ...contractMetadata,
   };
 }
 
@@ -425,6 +429,14 @@ async function getTokenIdsLogs(contract: ethers.Contract, owner: string) {
   console.log("tokenIds", tokenIds);
 
   return Array.from(tokenIds.values());
+}
+
+async function getContractMetadata(contractAddress: string, chain: number) {
+  const provider = getProvider(chain);
+  const contract = new ethers.Contract(contractAddress, ERC5169_ABI, provider);
+  const contractURI = await contract.contractURI();
+  const res = await axios.get(rewriteUrlIfIFPSUrl(contractURI!));
+  return res.data;
 }
 
 function addressEqual(a: string, b: string) {

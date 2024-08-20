@@ -47,8 +47,9 @@ export default function ImportToken() {
                 return;
             }
 
-            setLoading(true);
+
             if (address) {
+                setLoading(true);
                 const validate: any = await validateToken(
                     devMode,
                     chainId,
@@ -58,6 +59,7 @@ export default function ImportToken() {
                     tokenId,
                     type === "ERC20" ? await isERC20(token, chainId) : false
                 );
+                console.log(validate);
                 if (validate.error) {
                     setLoading(false);
                     setError(validate.message);
@@ -78,7 +80,8 @@ export default function ImportToken() {
                             chainId,
                             address: token,
                             tokenId: tokenId,
-                            name: validate.name
+                            name: validate.name,
+                            logoURI: validate.image
                         });
                     }
 

@@ -41,7 +41,10 @@ export default function TokenIdPage({
                         setToken(filterResult[0])
                     }
                 }
+            } else {
+                //router.replace(`/${tokenType}/${chainId}`)
             }
+            console.log('tokenList-----', tokenList)
 
         }
     }, [address, chainId, contract, devMode, router, selectedToken, setToken, tokenListMap, tokenType])
@@ -57,12 +60,12 @@ export default function TokenIdPage({
             <div className="flex flex-1 flex-col">
                 <div className="flex justify-between px-4 pl-2 h-[52px]">
                     <div className="flex items-center gap-4 text-sm">
-                        <Avatar className="w-8 h-8">
+                        {/* <Avatar className="w-8 h-8">
                             <AvatarImage src={selectedToken.logoURI} alt="token" />
                             <AvatarFallback className="bg-primary-100/20">
                                 T
                             </AvatarFallback>
-                        </Avatar>
+                        </Avatar> */}
                         <div className="grid gap-1">
                             <div className="font-semibold">{selectedToken.name}</div>
                             <div className="font-semibold text-sm opacity-50">{selectedToken?.address ? addressPipe(selectedToken.address) : ''}</div>

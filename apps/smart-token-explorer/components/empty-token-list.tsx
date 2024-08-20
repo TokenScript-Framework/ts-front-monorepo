@@ -2,11 +2,9 @@
 
 import { TokenType } from "@/lib/tokenStorage";
 import ImportToken from "./import-token";
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAtomValue } from "jotai";
 import { getTokenTypeAtom } from "@/lib/store";
-import { useChainId } from "wagmi";
 
 
 interface TokenProps {

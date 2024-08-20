@@ -24,7 +24,6 @@ export default function MyTokenList({ type }: TokenProps) {
     const router = useRouter()
     const setToken = useSetAtom(setTokenAtom);
     let selectedToken = useAtomValue(getTokenAtom);
-    const { connector: activeConnector } = useAccount()
 
 
     let tokenList: TokenCollection[] = tokenListMap[type]?.filter((token: any) => Number(token.chainId) === (chainId));
@@ -47,7 +46,7 @@ export default function MyTokenList({ type }: TokenProps) {
             setToken(token)
             router.replace(`/${type}/${chainId}/${token.address}${token.tokenIds ? '/' + token.tokenIds[0] : ""}`)
         } else {
-            router.replace(`/${type}/${chainId}`)
+            //router.replace(`/${type}/${chainId}`)
         }
 
     }, [setToken, router, type, chainId])
@@ -57,6 +56,7 @@ export default function MyTokenList({ type }: TokenProps) {
             redirectToToken(tokenData[0])
         } else {
             if (tokenData.length === 0) {
+                console.log('tokenList-----22', tokenData)
                 redirectToToken(null)
             }
         }
