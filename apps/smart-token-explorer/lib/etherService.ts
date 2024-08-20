@@ -258,7 +258,7 @@ export async function validateToken(
     error: false,
     signed,
     name: metadata.name,
-    description: metadata.meta.description,
+    description: metadata.meta?.description,
   };
 }
 
@@ -341,7 +341,7 @@ export async function validateContract(
     error: false,
     signed,
     name: metadata.name,
-    description: metadata.meta.description,
+    description: metadata.meta?.description,
   };
 }
 
