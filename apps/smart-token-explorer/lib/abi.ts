@@ -17,6 +17,9 @@ export const ERC721_ABI = [
   "function approve(address, uint256) external returns (bool)",
   "function setApprovalForAll(address, bool) external",
   "function supportsInterface(bytes4 interfaceId) view returns (bool)",
+  "function tokenOfOwnerByIndex(address, uint256) external view returns (uint256)",
+  "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)",
+  "function tokenURI(uint256) external view returns (string)",
 ];
 export const ERC1155_ABI = [
   "function balanceOf(address account, uint256 id) external view returns (uint256)",

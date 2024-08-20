@@ -43,6 +43,7 @@ export default function ImportToken() {
     const confirmHandler = async () => {
         try {
             if (!token || (type !== "ERC20" && !tokenId)) {
+                setError("Please input correct tokenId or token address");
                 return;
             }
 
@@ -94,6 +95,7 @@ export default function ImportToken() {
         } catch (e: any) {
             console.log(e.message)
             setError(e.message);
+        } finally {
             setLoading(false);
         }
     };
@@ -115,8 +117,8 @@ export default function ImportToken() {
     const openHandler = () => {
         setOpen(!open);
         setError("");
-        // setToken("0x0");
-        // setTokenId("");
+        setToken("0x0");
+        setTokenId("");
         setLoading(false);
     };
 
@@ -177,7 +179,7 @@ export default function ImportToken() {
                                         id={tokenId}
                                         defaultValue={tokenId}
                                         onChange={changeTokenIdHandler}
-                                        placeholder="Token Id (optional)"
+                                        placeholder="Token Id"
                                         className="col-span-4"
                                     />
                                 </div>

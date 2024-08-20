@@ -42,7 +42,6 @@ export default function TypeLayout({
 
 
     }, [address, chainId, router, setTokenList]);
-    chainId
     const config = useConfig();
 
     useEffect(() => {

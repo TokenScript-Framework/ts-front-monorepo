@@ -28,9 +28,12 @@ export async function getTokenscriptMetadata(
   index = 0,
 ): Promise<TsMetadata> {
   const scriptURIs = await getERC5169ScriptURISingle(chainId, contract);
+  console.log(scriptURIs);
   const scriptURI = scriptURIs[index];
-  if (scriptURIs === "not implemented" || !scriptURI)
-    throw new Error("Script URI not exist");
+  if (scriptURIs === "not implemented" || !scriptURI) {
+    console.log("Script URI not exist");
+    throw new Error("Some errors for import, please check the server log");
+  }
 
   const tokenscript = await loadTokenscript(scriptURI);
 
