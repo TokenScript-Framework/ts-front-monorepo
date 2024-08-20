@@ -162,9 +162,12 @@ export async function validateToken(
   }
   let scriptMetadata;
   try {
-    scriptMetadata = await getTokenscriptMetadata(chain, token, {
-      checkSignature: true,
-    });
+    scriptMetadata =
+      type !== "ERC20"
+        ? await getTokenscriptMetadata(chain, token, {
+            checkSignature: true,
+          })
+        : { signed: true };
   } catch (e) {
     return {
       error: true,
