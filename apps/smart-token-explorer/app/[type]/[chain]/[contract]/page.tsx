@@ -5,11 +5,12 @@ import { Separator } from "@/components/shadcn/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/shadcn/ui/avatar";
 import { addressPipe } from "@/lib/utils";
 import { useAtomValue, useSetAtom } from "jotai";
-import { getTokenTypeAtom, setTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom, getDevModeAtom } from "@/lib/store";
+import { getTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom, getDevModeAtom } from "@/lib/store";
 import { useEffect, useState } from "react";
 import { SpinIcon } from "@/components/icons/SpinIcon";
 import { erc20Abi } from "viem";
 import BigNumber from "bignumber.js";
+import { useRouter } from "next/navigation";
 
 export default function ContractPage({
     params,
@@ -20,10 +21,10 @@ export default function ContractPage({
     const { contract } = params
 
     let tokenType = useAtomValue(getTokenTypeAtom);
-    const setTokenType = useSetAtom(setTokenTypeAtom);
     let selectedToken = useAtomValue(getTokenAtom);
     const tokenListMap = useAtomValue(tokenListAtom);
     const setToken = useSetAtom(setTokenAtom);
+    const router = useRouter()
     const chainId = useChainId()
     let token: any = { balance: 0, name: '', symbol: "", decimals: 0 }
     let devMode = useAtomValue(getDevModeAtom);
@@ -55,6 +56,9 @@ export default function ContractPage({
             if (filterResult.length === 1) {
                 setToken(filterResult[0])
             }
+        }
+        if (tokenType !== 'ERC20') {
+            router.replace(`/${tokenType}/${chainId}`)
         }
 
     }, [address, chainId, contract, devMode, selectedToken, setToken, tokenListMap, tokenType])

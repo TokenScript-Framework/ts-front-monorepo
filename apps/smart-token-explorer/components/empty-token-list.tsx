@@ -9,7 +9,7 @@ import { getTokenTypeAtom } from "@/lib/store";
 
 interface TokenProps {
     type: TokenType;
-    chainId: number
+    chainId?: number
 }
 export default function EmptyListToken({ type, chainId
 }: TokenProps) {

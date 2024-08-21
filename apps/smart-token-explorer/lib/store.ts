@@ -30,8 +30,17 @@ const TokenList = {
 export const tokenListAtom =
   atom<Record<TokenType, TokenCollection[]>>(TokenList);
 
-export const tokenAtom = atomWithStorage<any>("token", {});
+export const tokenAtom = atomWithStorage<Record<string, any>>("token", {});
 export const getTokenAtom = atom((get) => get(tokenAtom));
 export const setTokenAtom = atom(null, async (get, set, token: Token) => {
   set(tokenAtom, token);
 });
+
+export const importContractAtom = atom<Record<string, any>>({});
+export const getImportContractAtom = atom((get) => get(importContractAtom));
+export const setImportContractAtom = atom(
+  null,
+  async (get, set, importContract: any) => {
+    set(importContractAtom, importContract);
+  },
+);

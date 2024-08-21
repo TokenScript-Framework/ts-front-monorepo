@@ -31,6 +31,7 @@ export function Nav({ links }: NavProps) {
     const childrenClickHandler = (type: string) => {
         setTokenType(type)
         setToken(EMPTY_TOKEN)
+
     }
     return (<>
         <div

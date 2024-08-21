@@ -13,7 +13,7 @@ import {
 import { Nav } from "@/components/nav"
 import DevMode from "@/components/dev-mode"
 import { useAccount, useChainId, useConfig } from "wagmi";
-import { getTokenTypeAtom, tokenListAtom } from "@/lib/store"
+import { getImportContractAtom, getTokenTypeAtom, tokenListAtom } from "@/lib/store"
 import { useAtomValue, useSetAtom } from "jotai"
 import ImportToken from "@/components/import-token"
 import ThemeSwitch from "@/components/shadcn/ThemeSwitch"
@@ -24,32 +24,30 @@ import { useRouter } from "next/navigation";
 import MyTokenList from "@/components/token-list";
 import { useEffect, useMemo } from "react";
 import { WalletButton } from "@/components/wallet-button";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 export default function TypeLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const { address } = useAccount();
-    const setTokenList = useSetAtom(tokenListAtom);
+    const { address, chainId } = useAccount();
     const router = useRouter()
-
-    const chainId = useChainId()
+    const config = useConfig();
     let tokenType = useAtomValue(getTokenTypeAtom);
+    let importContract = useAtomValue(getImportContractAtom);
+    const setTokenList = useSetAtom(tokenListAtom);
     useEffect(() => {
-        if (address) {
+        if (address && chainId) {
             setTokenList(loadTokenList(address));
         }
-
-
     }, [address, chainId, router, setTokenList]);
-    const config = useConfig();
 
     useEffect(() => {
         const unwatch = config.subscribe(
             (state) => state.chainId,
             (chainId) => {
                 console.log('chain changed, router:', chainId, window.location.pathname, window.location.pathname.split('/'));
-                if (chainId !== Number(window.location.pathname.split('/')[2])) {
+                if (chainId !== Number(window.location.pathname.split('/')[2]) && !window.location.pathname.includes('import')) {
                     router.replace(`/${tokenType}/${chainId}`)
                 }
             }
@@ -115,7 +113,7 @@ export default function TypeLayout({
                 <Separator />
                 <footer className="absolute bottom-4 left-0  w-full">
                     <div className="mb-2 px-2">
-                        <ImportToken />
+                        {address && <ImportToken importContract={importContract} />}
                     </div>
 
                     <div className="w-full px-2">

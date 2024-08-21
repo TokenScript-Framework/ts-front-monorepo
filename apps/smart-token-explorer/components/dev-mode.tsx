@@ -4,7 +4,7 @@ import { getDevModeAtom, setDevModeAtom, tokenListAtom, getTokenTypeAtom, setTok
 import { useAtomValue, useSetAtom } from "jotai";
 import { Switch } from "./shadcn/ui/switch";
 import { TokenCollection, TokenType } from "@/lib/tokenStorage";
-import { useChainId } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { useRouter } from "next/navigation";
 import { EMPTY_TOKEN } from "@/lib/constants";
 
@@ -13,7 +13,7 @@ export default function DevMode() {
     let devMode = useAtomValue(getDevModeAtom);
     const tokenListMap = useAtomValue(tokenListAtom);
     const setToken = useSetAtom(setTokenAtom);
-    const chainId = useChainId()
+    const { chainId } = useAccount()
     const router = useRouter()
 
     let tokenType = useAtomValue(getTokenTypeAtom);

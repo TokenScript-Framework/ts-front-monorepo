@@ -9,8 +9,7 @@ import Header from "./Header";
 
 export default function LandingPage() {
 
-    const { address } = useAccount();
-    const chainId = useChainId()
+    const { address, chainId } = useAccount();
     const faqItems = [
         {
             question: "Can I get a refund?",

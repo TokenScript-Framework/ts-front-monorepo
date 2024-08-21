@@ -12,7 +12,7 @@ import {
 } from "@/components/shadcn/ui/select"
 import { getTokenAtom, getTokenTypeAtom } from "@/lib/store"
 import { useAtomValue } from "jotai"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useChainId } from "wagmi"
 
@@ -32,7 +32,7 @@ export function TokenIdSwitcher({
 
     const router = useRouter()
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (tokenIds?.length > 0) {
             setOptions(tokenIds);
         } else {

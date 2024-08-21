@@ -10,6 +10,7 @@ import { useAccount, useChainId } from "wagmi";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import EmptyListToken from "./empty-token-list";
+import { EMPTY_TOKEN } from "@/lib/constants";
 
 interface TokenProps {
     type: TokenType;
@@ -19,7 +20,7 @@ export default function MyTokenList({ type }: TokenProps) {
 
 
     const tokenListMap = useAtomValue(tokenListAtom);
-    const chainId = useChainId()
+    const { chainId } = useAccount()
     const devMode = useAtomValue(getDevModeAtom);
     const router = useRouter()
     const setToken = useSetAtom(setTokenAtom);
@@ -32,7 +33,7 @@ export default function MyTokenList({ type }: TokenProps) {
     if (!devMode) {
         tokenList = tokenList.filter((token) => token.signed);
     }
-
+    console.log(chainId)
     const tokenData: any[] = tokenList.map((token) => {
         const results = query({ chainId: token.chainId, address: token.address, name: token.name });
         return {
@@ -41,26 +42,50 @@ export default function MyTokenList({ type }: TokenProps) {
         };
     });
 
-    const redirectToToken = useCallback((token: TokenCollection | null) => {
+    const redirectToToken = useCallback((token: TokenCollection | null, tokenId?: string) => {
         if (token) {
+            console.log('import--after---', token, token.tokenIds, tokenId)
             setToken(token)
-            router.replace(`/${type}/${chainId}/${token.address}${token.tokenIds ? '/' + token.tokenIds[0] : ""}`)
+            if (token.tokenIds && tokenId) {
+                console.log('import--tokenId', token.tokenIds[0], tokenId, token.tokenIds.includes(tokenId))
+            }
+            const redirectTokenId = token.tokenIds ? (tokenId && token.tokenIds.includes(tokenId) ? tokenId : token.tokenIds[0]) : ''
+
+            console.log('import--redirectTokenId', redirectTokenId)
+            router.replace(`/${type}/${chainId}/${token.address}${redirectTokenId ? '/' + redirectTokenId : ""}`)
         } else {
-            //router.replace(`/${type}/${chainId}`)
+            setToken(EMPTY_TOKEN)
+
+            router.replace(`/${type}/${chainId}`)
         }
 
     }, [setToken, router, type, chainId])
 
     useEffect(() => {
-        if (tokenData.length > 0 && !selectedToken.address) {
-            redirectToToken(tokenData[0])
-        } else {
-            if (tokenData.length === 0) {
-                console.log('tokenList-----22', tokenData)
-                redirectToToken(null)
+        const path = window.location.pathname.split('/')
+        const contract = path[3]
+        const tokenId = path[4]
+        if (tokenId !== 'import') {
+            if (tokenData.length > 0 && !selectedToken.address) {
+                if (contract) {
+                    const token = tokenData.find((token) => token.address === contract)
+                    console.log('import-- find--', token, tokenId)
+                    if (token) {
+                        redirectToToken(token, tokenId)
+                    } else {
+                        redirectToToken(tokenData[0], tokenId)
+                    }
+                } else {
+                    redirectToToken(tokenData[0], tokenId)
+                }
+
+            } else {
+                if (tokenData.length === 0) {
+                    redirectToToken(null)
+                }
             }
         }
-    }, [redirectToToken, router, selectedToken, setToken, tokenData])
+    }, [chainId, redirectToToken, router, selectedToken, setToken, tokenData])
 
     const selectHanlder = (event: TokenCollection) => {
         redirectToToken(event)

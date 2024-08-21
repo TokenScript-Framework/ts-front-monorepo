@@ -5,7 +5,7 @@ import { Separator } from "@/components/shadcn/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/shadcn/ui/avatar";
 import { addressPipe } from "@/lib/utils";
 import { useAtomValue, useSetAtom } from "jotai";
-import { getTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom, getDevModeAtom } from "@/lib/store";
+import { getTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom, getDevModeAtom, setImportContractAtom, setTokenTypeAtom, getImportContractAtom } from "@/lib/store";
 import { useEffect } from "react";
 import { TokenIdSwitcher } from "@/components/tokenid-switcher";
 import { TabsList, TabsTrigger, Tabs, TabsContent } from "@/components/shadcn/ui/tabs";
@@ -18,21 +18,36 @@ import EmptyToken from "@/components/empty-token";
 export default function TokenIdPage({
     params,
 }: {
-    params: { contract: string; tokenId: string };
+    params: { type: string; chain: number, contract: string; tokenId: string };
 }) {
-    const { address } = useAccount();
-    const { contract, tokenId } = params
+    console.log('params', params)
+    const { address, chainId } = useAccount();
+    const { type, contract, tokenId, chain } = params
 
     let tokenType = useAtomValue(getTokenTypeAtom);
+    const setTokenType = useSetAtom(setTokenTypeAtom);
     let selectedToken = useAtomValue(getTokenAtom);
     const tokenListMap = useAtomValue(tokenListAtom);
     const setToken = useSetAtom(setTokenAtom);
-    const chainId = useChainId();
     const router = useRouter()
     let devMode = useAtomValue(getDevModeAtom);
+    const setImportContract = useSetAtom(setImportContractAtom);
 
     useEffect(() => {
-        if (tokenType) {
+        if (chainId !== undefined && tokenId === 'import') {
+            console.log('import--write', new Date().getTime())
+            setTokenType(type)
+            setImportContract({
+                chain,
+                contract,
+                tokenId,
+                type: type
+            })
+        }
+    }, [chain, chainId, contract, setImportContract, setTokenType, tokenId, type])
+
+    useEffect(() => {
+        if (tokenType && tokenId !== 'import') {
             let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType];
             if (tokenList.length > 0) {
                 if (address && (!selectedToken || selectedToken.address !== contract)) {
@@ -42,12 +57,12 @@ export default function TokenIdPage({
                     }
                 }
             } else {
-                //router.replace(`/${tokenType}/${chainId}`)
+                router.replace(`/${tokenType}/${chainId}`)
             }
             console.log('tokenList-----', tokenList)
 
         }
-    }, [address, chainId, contract, devMode, router, selectedToken, setToken, tokenListMap, tokenType])
+    }, [address, chainId, contract, devMode, router, selectedToken, setToken, tokenId, tokenListMap, tokenType])
 
 
     if (!address || !selectedToken.address) {
@@ -55,7 +70,7 @@ export default function TokenIdPage({
             <EmptyToken />
         )
     }
-    return (selectedToken && selectedToken.address && <>
+    return (selectedToken && selectedToken.address && tokenId !== 'import' && <>
         <div className="flex h-full flex-col">
             <div className="flex flex-1 flex-col">
                 <div className="flex justify-between px-4 pl-2 h-[52px]">
