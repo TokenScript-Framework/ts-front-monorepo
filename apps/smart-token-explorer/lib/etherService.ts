@@ -288,11 +288,23 @@ export async function validateContract(
     }
   }
   console.log("####", chain, token);
+  let scriptMetadata;
+  try {
+    scriptMetadata =
+      type !== "ERC20"
+        ? await getTokenscriptMetadata(chain, token, {
+            checkSignature: true,
+          })
+        : { signed: true };
+  } catch (e) {
+    return {
+      error: true,
+      message: "Script URI not exist",
+    };
+  }
   const metadata =
     type !== "ERC20"
-      ? await getTokenscriptMetadata(chain, token, {
-          checkSignature: true,
-        })
+      ? scriptMetadata
       : { name: "", meta: { description: "" }, signed: true };
   const { signed } = metadata;
 
@@ -356,29 +368,35 @@ export async function fetchTokenIds(
   type: string,
 ) {
   console.log(new Date());
-  let provider = getProvider(chain);
-  const contract = new ethers.Contract(
-    contractAddress,
-    type === "ERC721" ? ERC721_ABI : ERC1155_ABI,
-    provider,
-  );
-  let tokenIds: any[] = [];
   try {
-    tokenIds = await getTokenIdsLogs(contract, owner);
-  } catch (e) {
-    console.log(e);
-    tokenIds = await getTokenIdsEnumerable(contract, owner);
+    let provider = getProvider(chain);
+    const contract = new ethers.Contract(
+      contractAddress,
+      type === "ERC721" ? ERC721_ABI : ERC1155_ABI,
+      provider,
+    );
+    let tokenIds: any[] = [];
+    try {
+      tokenIds = await getTokenIdsLogs(contract, owner);
+    } catch (e) {
+      console.log("$$$$");
+      console.log(e);
+      tokenIds = await getTokenIdsEnumerable(contract, owner);
+    }
+    const tokenIdsWithMetadata = [];
+    for (const tokenId of tokenIds) {
+      const uri =
+        type === "ERC721"
+          ? await contract.tokenURI(tokenId)
+          : await contract.uri(tokenId);
+      const metadata = await getMetadata(uri);
+      tokenIdsWithMetadata.push({ tokenId, metadata });
+    }
+    return tokenIdsWithMetadata;
+  } catch (error) {
+    console.log(error);
+    return [];
   }
-  const tokenIdsWithMetadata = [];
-  for (const tokenId of tokenIds) {
-    const uri =
-      type === "ERC721"
-        ? await contract.tokenURI(tokenId)
-        : await contract.uri(tokenId);
-    const metadata = await getMetadata(uri);
-    tokenIdsWithMetadata.push({ tokenId, metadata });
-  }
-  return tokenIdsWithMetadata;
 }
 
 async function getMetadata(tokenURI: string) {

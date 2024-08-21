@@ -10,6 +10,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "www.smartlayer.network",
       },
+      {
+        protocol: "https",
+        hostname: "resources.smarttokenlabs.com",
+      },
     ],
   },
   distDir: "dist",

@@ -50,8 +50,9 @@ export default function ImportPage({
         console.log("tokenList", tokenList, type, owner, loadTokenList(owner))
         const filterResult = tokenList.filter((token) => Number(token.chainId) === Number(chain)
             && token.address === contract
-            && tokenId ? token.tokenIds?.includes(tokenId) : true
+            && (tokenId ? token.tokenIds?.includes(tokenId) : true)
         );
+        console.log('filterResult', contract, filterResult)
         return filterResult.length > 0;
     }, [chain, contract, type])
 
@@ -79,14 +80,19 @@ export default function ImportPage({
                 setError(validate.message);
             } else {
                 setContractMetada(validate)
+                try {
 
-                fetchTokenIds(contract, address, chain, type).then(async (list) => {
-                    const results = list.map((token: any) => ({ ...token, imported: isImported(address, token.tokenId) }));
-                    console.log("tokenIdsWithMetadata", results)
+                    fetchTokenIds(contract, address, chain, type).then(async (list) => {
+                        const results = list.map((token: any) => ({ ...token, imported: isImported(address, token.tokenId) }));
+                        console.log("tokenIdsWithMetadata", results)
 
-                    setTokenIdsWithMetadata(results);
+                        setTokenIdsWithMetadata(results);
+                        setFetching(false);
+                    })
+                } catch (error) {
+                    console.log('error', error)
                     setFetching(false);
-                })
+                }
             }
 
         }
@@ -191,7 +197,7 @@ export default function ImportPage({
                     <div className="ml-2">
                         <div><b>Contract:</b> {addressPipe(contract)}</div>
                         <div><b>Name: </b> {contractMetada?.name}</div>
-                        {!fetching && tokenIdsWithMetadata.length > 0 &&
+                        {!fetching &&
                             <div><b>Tokens: </b> {tokenIdsWithMetadata.length}</div>
                         }
                     </div>
@@ -236,6 +242,7 @@ export default function ImportPage({
 
                             </div>
                         ))}
+
                     </div>
                     {type === 'ERC20' && !fetching && (<>
                         <div className="text-center">
