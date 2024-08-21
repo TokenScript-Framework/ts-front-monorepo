@@ -113,7 +113,7 @@ export default function TypeLayout({
                 <Separator />
                 <footer className="absolute bottom-4 left-0  w-full">
                     <div className="mb-2 px-2">
-                        {address && <ImportToken importContract={importContract} />}
+                        <ImportToken importContract={importContract} />
                     </div>
 
                     <div className="w-full px-2">

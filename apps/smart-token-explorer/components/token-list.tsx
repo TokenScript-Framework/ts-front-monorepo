@@ -33,7 +33,7 @@ export default function MyTokenList({ type }: TokenProps) {
     if (!devMode) {
         tokenList = tokenList.filter((token) => token.signed);
     }
-    console.log(chainId)
+
     const tokenData: any[] = tokenList.map((token) => {
         const results = query({ chainId: token.chainId, address: token.address, name: token.name });
         return {

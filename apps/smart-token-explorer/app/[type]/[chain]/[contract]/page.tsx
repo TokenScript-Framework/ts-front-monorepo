@@ -61,7 +61,7 @@ export default function ContractPage({
             router.replace(`/${tokenType}/${chainId}`)
         }
 
-    }, [address, chainId, contract, devMode, selectedToken, setToken, tokenListMap, tokenType])
+    }, [address, chainId, contract, devMode, router, selectedToken, setToken, tokenListMap, tokenType])
 
     return (selectedToken && selectedToken.address && <>
         <div className="flex h-full flex-col">

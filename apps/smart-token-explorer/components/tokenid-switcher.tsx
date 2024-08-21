@@ -36,10 +36,11 @@ export function TokenIdSwitcher({
         if (tokenIds?.length > 0) {
             setOptions(tokenIds);
         } else {
-            router.replace(`/${tokenType}/${chainId}/${selectedToken.address}`)
+            console.log('import-- TokenIdSwitcher', selectedToken)
+            //router.replace(`/${tokenType}/${chainId}/${selectedToken.address}`)
         }
 
-    }, [chainId, router, selectedToken.address, selectedToken.chainId, tokenIds, tokenType]);
+    }, [chainId, router, selectedToken, selectedToken.address, selectedToken.chainId, tokenIds, tokenType]);
 
 
 

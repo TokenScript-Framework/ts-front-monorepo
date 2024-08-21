@@ -33,10 +33,11 @@ export function rewriteUrlIfIFPSUrl(url: string) {
   return url;
 }
 
+// TODO: add new networks
 export function chainPipe(chain: number) {
   switch (chain) {
     case 1:
-      return "Ethereum Mainnet";
+      return "Ethereum";
     case 137:
       return "Polygon";
     case 10:
@@ -76,4 +77,3 @@ export function firstUppercasePipe(value: string | undefined) {
     ? value.replace(/(^\w{1})|(\s+\w{1})/g, (letter) => letter.toUpperCase())
     : "";
 }
-

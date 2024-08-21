@@ -28,6 +28,7 @@ import { Plus } from "lucide-react";
 import { useChainModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { WalletButton } from "./wallet-button";
 import { useRouter } from "next/navigation";
+import { chainPipe } from "@/lib/utils";
 
 interface ImportProps {
     importContract?: Record<string, any>;
@@ -35,7 +36,7 @@ interface ImportProps {
 
 export default function ImportToken({ importContract }: ImportProps) {
     const [token, setToken] = useState<`0x${string}`>("0x0");
-    const [tokenId, setTokenId] = useState<string | undefined>('');
+    const [tokenId, setTokenId] = useState<string | undefined>('2665409553');
     const [open, setOpen] = React.useState(false);
     const devMode = useAtomValue(getDevModeAtom);
     const [loading, setLoading] = React.useState(false);
@@ -53,23 +54,24 @@ export default function ImportToken({ importContract }: ImportProps) {
 
 
     useEffect(() => {
-        if (importContract?.contract && chainId !== undefined) {
-            console.log('import---', new Date().getTime())
-            const isCorrectChain = importContract.chain.toString() === chainId.toString()
-            if (!isCorrectChain) {
-                if (openChainModal && !chainModalOpen) {
-                    openChainModal()
-                }
-            } else {
-                setToken(importContract.contract)
-                setType(importContract.type)
-                setOpen(true)
-            }
+        if (importContract?.contract) {
+            setToken(importContract.contract)
+            setType(importContract.type)
+            setOpen(true)
         }
 
+    }, [importContract])
 
+    const checkIfCorrectChain = () => {
+        return importContract?.chain?.toString() === chainId?.toString()
+    }
 
-    }, [chainId, chainModalOpen, importContract?.chain, importContract?.contract, importContract?.type, openChainModal])
+    const switchChainHandler = () => {
+        if (openChainModal) {
+            setOpen(false);
+            openChainModal()
+        }
+    }
 
     const confirmHandler = async () => {
         try {
@@ -117,8 +119,9 @@ export default function ImportToken({ importContract }: ImportProps) {
                             name: validate.name,
                             logoURI: validate.image
                         }
-                        addToken(address, type, newToken);
-                        setSelectedToken(newToken)
+                        const tokenIds = addToken(address, type, newToken);
+                        delete newToken.tokenId;
+                        setSelectedToken({ ...newToken, tokenIds: tokenIds?.filter((id): id is string => id !== undefined) })
                     }
 
 
@@ -158,7 +161,8 @@ export default function ImportToken({ importContract }: ImportProps) {
         setType(type);
         setError("");
     };
-    const openHandler = () => {
+
+    const openHandler = (): void => {
         console.log('openHandler', open)
         setOpen(!open);
         setToken("0x0");
@@ -166,8 +170,8 @@ export default function ImportToken({ importContract }: ImportProps) {
         setError("");
         setLoading(false);
         if (open && importContract?.contract) {
+            router.replace(`/${tokenType}/${importContract.chain}`)
             setImportContract({})
-            router.replace(`/${tokenType}/${chainId}`)
         }
     };
 
@@ -191,7 +195,7 @@ export default function ImportToken({ importContract }: ImportProps) {
                     <DialogHeader>
                         <DialogTitle>Import token</DialogTitle>
                         <DialogDescription>
-                            Input token address. Click save when done.
+                            Input token address. Click confirm when done.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
@@ -246,17 +250,24 @@ export default function ImportToken({ importContract }: ImportProps) {
                         {error && <div className="text-center text-red-500">{error}</div>}
                     </div>
                     <DialogFooter>
-                        {address ? (<Button
-                            className="bg-primary-500 font-bold text-white"
-                            onClick={confirmHandler}
-                        >
-                            {loading && (
-                                <SpinIcon className="mr-2 h-5 w-5 animate-spin text-white" />
-                            )}
-                            Confirm
-                        </Button>) : (<Button onClick={connectHandler} className="text-white font-bold  p-2 text-base bg-primary-500 hover:bg-primary-300">
+                        {address ? (<>
+                            {!checkIfCorrectChain() ? (<Button onClick={switchChainHandler} className="text-white font-bold  p-2 text-base bg-primary-500 hover:bg-primary-300">
+                                Switch Network to {chainPipe(Number(importContract?.chain))}
+                            </Button>) : (<> <Button
+                                className="bg-primary-500 font-bold text-white"
+                                onClick={confirmHandler}
+                            >
+                                {loading && (
+                                    <SpinIcon className="mr-2 h-5 w-5 animate-spin text-white" />
+                                )}
+                                Confirm
+                            </Button></>)}
+                        </>
+                        ) : (<Button onClick={connectHandler} className="text-white font-bold  p-2 text-base bg-primary-500 hover:bg-primary-300">
                             Connect Wallet
                         </Button>)}
+
+
 
                     </DialogFooter>
                 </DialogContent>

@@ -34,8 +34,7 @@ export default function TokenIdPage({
     const setImportContract = useSetAtom(setImportContractAtom);
 
     useEffect(() => {
-        if (chainId !== undefined && tokenId === 'import') {
-            console.log('import--write', new Date().getTime())
+        if (tokenId === 'import') {
             setTokenType(type)
             setImportContract({
                 chain,
@@ -44,7 +43,12 @@ export default function TokenIdPage({
                 type: type
             })
         }
-    }, [chain, chainId, contract, setImportContract, setTokenType, tokenId, type])
+
+        if (type === 'ERC20') {
+            console.log('import-- replace', tokenType, chainId, contract)
+            router.replace(`/${tokenType}/${chainId}/${contract}`)
+        }
+    }, [chain, chainId, contract, router, setImportContract, setTokenType, tokenId, tokenType, type])
 
     useEffect(() => {
         if (tokenType && tokenId !== 'import') {
@@ -57,6 +61,7 @@ export default function TokenIdPage({
                     }
                 }
             } else {
+                console.log('replace-- tokenidtpage', tokenType, chainId)
                 router.replace(`/${tokenType}/${chainId}`)
             }
             console.log('tokenList-----', tokenList)

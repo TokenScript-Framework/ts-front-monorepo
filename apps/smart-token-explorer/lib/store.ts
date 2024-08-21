@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { Token, TokenCollection, TokenType } from "./tokenStorage";
+import { TokenCollection, TokenType } from "./tokenStorage";
 export const chainsAtom = atom<any>([]);
 export const getChainsAtom = atom((get) => get(chainsAtom));
 
@@ -32,9 +32,12 @@ export const tokenListAtom =
 
 export const tokenAtom = atomWithStorage<Record<string, any>>("token", {});
 export const getTokenAtom = atom((get) => get(tokenAtom));
-export const setTokenAtom = atom(null, async (get, set, token: Token) => {
-  set(tokenAtom, token);
-});
+export const setTokenAtom = atom(
+  null,
+  async (get, set, token: TokenCollection) => {
+    set(tokenAtom, token);
+  },
+);
 
 export const importContractAtom = atom<Record<string, any>>({});
 export const getImportContractAtom = atom((get) => get(importContractAtom));
