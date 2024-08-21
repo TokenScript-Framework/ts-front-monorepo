@@ -36,7 +36,7 @@ interface ImportProps {
 
 export default function ImportToken({ importContract }: ImportProps) {
     const [token, setToken] = useState<`0x${string}`>("0x0");
-    const [tokenId, setTokenId] = useState<string | undefined>('2665409553');
+    const [tokenId, setTokenId] = useState<string | undefined>('');
     const [open, setOpen] = React.useState(false);
     const devMode = useAtomValue(getDevModeAtom);
     const [loading, setLoading] = React.useState(false);
