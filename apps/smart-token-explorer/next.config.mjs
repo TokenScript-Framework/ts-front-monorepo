@@ -4,15 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "resources.smartlayer.network",
-      },
-      {
-        protocol: "https",
-        hostname: "www.smartlayer.network",
-      },
-      {
-        protocol: "https",
-        hostname: "resources.smarttokenlabs.com",
+        hostname: "**",
       },
     ],
   },
