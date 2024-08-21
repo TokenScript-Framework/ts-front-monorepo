@@ -14,6 +14,7 @@ import { NEXT_PUBLIC_VIEWER_ROOT } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import { ScriptIframe } from "@/components/script-Iframe";
 import EmptyToken from "@/components/empty-token";
+import { ShareToTg } from '@/components/share-to-tg';
 
 export default function TokenIdPage({
     params,
@@ -68,7 +69,8 @@ export default function TokenIdPage({
                         </div>
 
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-2">
+                        <ShareToTg />
                         <TokenIdSwitcher tokenIds={selectedToken.tokenIds} tokenId={tokenId} />
                     </div>
                 </div>
