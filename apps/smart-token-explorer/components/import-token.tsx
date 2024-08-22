@@ -170,7 +170,7 @@ export default function ImportToken({ importContract }: ImportProps) {
         setError("");
         setLoading(false);
         if (open && importContract?.contract) {
-            router.replace(`/${tokenType}/${importContract.chain}`)
+            router.replace(`/${tokenType}/${chainId}`)
             setImportContract({})
         }
     };
