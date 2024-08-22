@@ -77,3 +77,13 @@ export function firstUppercasePipe(value: string | undefined) {
     ? value.replace(/(^\w{1})|(\s+\w{1})/g, (letter) => letter.toUpperCase())
     : "";
 }
+
+export function splitPath(path: string) {
+  const pathArray = path.split("/");
+  return {
+    type: pathArray[1],
+    chainId: pathArray[2],
+    contract: pathArray[3],
+    tokenId: pathArray[4],
+  };
+}

@@ -28,7 +28,7 @@ import { Plus } from "lucide-react";
 import { useChainModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { WalletButton } from "./wallet-button";
 import { useRouter } from "next/navigation";
-import { chainPipe } from "@/lib/utils";
+import { chainPipe, splitPath } from "@/lib/utils";
 
 interface ImportProps {
     importContract?: Record<string, any>;
@@ -63,7 +63,7 @@ export default function ImportToken({ importContract }: ImportProps) {
     }, [importContract])
 
     const checkIfCorrectChain = () => {
-        return importContract?.chain?.toString() === chainId?.toString()
+        return !window.location.pathname.includes('import') ? true : importContract?.chain?.toString() === chainId?.toString()
     }
 
     const switchChainHandler = () => {
@@ -128,14 +128,13 @@ export default function ImportToken({ importContract }: ImportProps) {
                     setTokenList(loadTokenList(address));
 
                     router.replace(`/${tokenType}/${chainId}/${token}${tokenId ? `/${tokenId}` : ''}`)
+                    setImportContract({})
+                    setOpen(false)
                     toast({
                         title: "Import token",
                         description: "you've import token successfully!",
                         className: "bg-secondary-500 text-black",
                     });
-
-                    setImportContract({})
-                    setOpen(false)
                 }
             }
         } catch (e: any) {
@@ -164,16 +163,39 @@ export default function ImportToken({ importContract }: ImportProps) {
 
     const openHandler = (): void => {
         console.log('openHandler', open)
+        if (window.location.pathname.includes('import')) {
+            //setOpen(!open);
+            console.log('openHandler--', open)
+            if (!open) {
+                const { type, chainId, contract, tokenId } = splitPath(window.location.pathname)
+                setImportContract({
+                    chain: chainId,
+                    contract: contract,
+                    tokenId: tokenId,
+                    type: type
+                })
+            } else {
+                restDialog()
+            }
+            console.log('######', splitPath(window.location.pathname))
+
+        } else {
+            restDialog()
+        }
+    };
+
+    const restDialog = () => {
         setOpen(!open);
         setToken("0x0");
         setTokenId("");
         setError("");
         setLoading(false);
+        setImportContract({})
         if (open && importContract?.contract) {
             router.replace(`/${tokenType}/${chainId}`)
-            setImportContract({})
+
         }
-    };
+    }
 
     const connectHandler = () => {
         console.log('connectHandler', openConnectModal)
