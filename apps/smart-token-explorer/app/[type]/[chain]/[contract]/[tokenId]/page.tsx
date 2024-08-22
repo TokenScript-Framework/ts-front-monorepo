@@ -44,10 +44,10 @@ export default function TokenIdPage({
             })
         }
 
-        if (type === 'ERC20') {
-            console.log('import-- replace', tokenType, chainId, contract)
-            router.replace(`/${tokenType}/${chainId}/${contract}`)
-        }
+        // if (type === 'ERC20' && tokenId !== 'import') {
+        //     console.log('import-- replace', tokenType, chainId, contract)
+        //     router.replace(`/${tokenType}/${chainId}/${contract}`)
+        // }
     }, [chain, chainId, contract, router, setImportContract, setTokenType, tokenId, tokenType, type])
 
     useEffect(() => {

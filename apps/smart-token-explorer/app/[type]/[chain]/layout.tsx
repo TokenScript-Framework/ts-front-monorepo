@@ -75,9 +75,11 @@ export default function TypeLayout({
                 minSize={20}
                 maxSize={20} className="relative"
             >
-                <a href="/" className="w-full px-2 font-bold text-lg my-3">
-                    Smart Token Explorer
-                </a>
+                <div className="h-[52px]  flex items-center">
+                    <a href="/" className="w-full px-2 font-bold text-lg my-3">
+                        Smart Token Explorer
+                    </a>
+                </div>
 
                 <Separator />
                 <Nav

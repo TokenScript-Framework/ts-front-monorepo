@@ -57,16 +57,16 @@ export default function ContractPage({
                 setToken(filterResult[0])
             }
         }
-        if (tokenType !== 'ERC20') {
-            router.replace(`/${tokenType}/${chainId}`)
-        }
+        // if (tokenType !== 'ERC20') {
+        //     router.replace(`/${tokenType}/${chainId}`)
+        // }
 
     }, [address, chainId, contract, devMode, router, selectedToken, setToken, tokenListMap, tokenType])
 
     return (selectedToken && selectedToken.address && <>
         <div className="flex h-full flex-col">
             <div className="flex flex-1 flex-col">
-                <div className="flex justify-between px-3flex-1 whitespace-pre-wrap text-sm p-3 py-2">
+                <div className="flex justify-between px-3flex-1 whitespace-pre-wrap text-sm p-3 py-2 h-[52px]">
                     <div className="flex items-center gap-4 text-sm">
                         <Avatar className="w-8 h-8">
                             <AvatarImage src={selectedToken.logoURI} alt="token" />
