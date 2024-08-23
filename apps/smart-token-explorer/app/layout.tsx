@@ -4,6 +4,8 @@ import { Toaster } from "@/components/shadcn/ui/toaster";
 import { ThemeProviders } from "@/components/theme-providers";
 import type { Metadata } from "next";
 import "./globals.css";
+import { RedirectInTg } from '@/components/redirect-in-tg';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
     title: "Smart Token Explorer",
@@ -33,6 +35,9 @@ export default function RootLayout({
             <body className="flex min-h-screen flex-col bg-white text-black antialiased dark:bg-gray-950 dark:text-white">
                 <ThemeProviders>
                     <Providers>
+                        <Suspense>
+                            <RedirectInTg />
+                        </Suspense>
 
                         {children}
 

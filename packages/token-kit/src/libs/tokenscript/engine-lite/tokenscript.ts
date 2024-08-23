@@ -236,8 +236,21 @@ export class TokenScript {
    * Currently it is only used for ethereum event decoding, but it will be used later for attestations (off-chain tokens)
    * @param name
    */
-  public getAsnModuleDefinition(name: any) {
+  public getAsnModuleDefinition(name: string) {
     const modules = this.tokenDef.getElementsByTagName("asnx:module")[0];
     return modules.querySelector("[name=" + name + "]");
+  }
+
+  /**
+   * Returns the CSS string for the TokenScript
+   * This value is extracted from the <ts:style> tag in the XML
+   * We don't parse the CSS, but rather return the raw string
+   */
+  public getCssStr(): string {
+    return Array.from(
+      this.tokenDef.documentElement.getElementsByTagName("ts:style"),
+    )
+      .map((style) => style.textContent)
+      .join("\n");
   }
 }

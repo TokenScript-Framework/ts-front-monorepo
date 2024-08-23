@@ -1,10 +1,54 @@
-import { createPublicClient, extractChain, http, PublicClient } from "viem";
+import {
+  Chain,
+  createPublicClient,
+  defineChain,
+  extractChain,
+  http,
+  PublicClient,
+} from "viem";
 import * as chains from "viem/chains";
 import { erc5169ABI } from "./abi/erc5169";
 import {
   getERC5169ScriptURICache,
   setERC5169ScriptURICache,
 } from "./erc5169-scriptURI-cache";
+
+const customChains: Chain[] = [
+  defineChain({
+    id: 185,
+    name: "Mint Mainnet",
+    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+    rpcUrls: {
+      default: {
+        http: ["https://rpc.mintchain.io"],
+      },
+    },
+    blockExplorers: {
+      default: {
+        name: "Mint Mainnet blockchain explorer",
+        url: "https://explorer.mintchain.io",
+      },
+    },
+    testnet: false,
+  }),
+  defineChain({
+    id: 1687,
+    name: "Mint Sepolia Testnet",
+    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+    rpcUrls: {
+      default: {
+        http: ["https://sepolia-testnet-rpc.mintchain.io"],
+      },
+    },
+    blockExplorers: {
+      default: {
+        name: "Mint Sepolia Testnet blockchain explorer",
+        url: "https://sepolia-testnet-explorer.mintchain.io",
+      },
+    },
+    testnet: true,
+  }),
+];
 
 export async function getERC5169ScriptURISingle(
   chainId: number,
@@ -95,7 +139,7 @@ function getBatchClient(chainId: any) {
   if (!clientCache[chainId]) {
     clientCache[chainId] = createPublicClient({
       chain: extractChain({
-        chains: Object.values(chains),
+        chains: [...Object.values(chains), ...customChains],
         id: chainId,
       }),
       transport: http(),

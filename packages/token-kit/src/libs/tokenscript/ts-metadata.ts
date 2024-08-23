@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getERC5169ScriptURISingle } from "../ethereum";
 import { TokenScript } from "./engine-lite/tokenscript";
+import { Card } from "./engine-lite/tokenScript/Card";
 import { Meta } from "./engine-lite/tokenScript/Meta";
 import { getTsCache, setTsCache } from "./ts-cache";
 
@@ -10,10 +11,12 @@ export type MetdataOptions = {
 };
 
 export type TsMetadata = {
-  actions?: string[];
-  signed?: boolean;
+  cards: Card[];
   meta: Meta;
   name: string;
+  cssStr: string;
+  actions?: string[];
+  signed?: boolean;
 };
 
 const defaultOptions = {
@@ -37,10 +40,12 @@ export async function getTokenscriptMetadata(
 
   const tokenscript = await loadTokenscript(scriptURI);
 
-  const result: any = {};
+  const result = {} as TsMetadata;
 
+  result.cards = tokenscript.getCards();
+  result.cssStr = tokenscript.getCssStr();
   if (options.actions) {
-    result.actions = tokenscript.getCards().map((card) => card.name);
+    result.actions = tokenscript.getCards().map((card) => card.name ?? "");
   }
 
   if (options.checkSignature) {
@@ -49,7 +54,7 @@ export async function getTokenscriptMetadata(
   }
 
   result.meta = tokenscript.getMetadata();
-  result.name = tokenscript.getName();
+  result.name = tokenscript.getName() ?? "";
 
   return result;
 }
@@ -59,7 +64,7 @@ async function loadTokenscript(scriptURI: string) {
   if (!tokenscript) {
     const xmlStr = (await axios.get(scriptURI)).data;
 
-    let parser;
+    let parser: DOMParser;
     if (typeof process !== "undefined" && process.release.name === "node") {
       const { JSDOM } = await import("jsdom");
       const jsdom = new JSDOM();
