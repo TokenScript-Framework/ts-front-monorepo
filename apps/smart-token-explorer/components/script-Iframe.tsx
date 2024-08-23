@@ -16,7 +16,7 @@ export const ScriptIframe = ({ url }: ScriptFrameProps) => {
         <iframe
             ref={iframeRef}
             src={url}
-            className="mx-auto h-[100vh] max-w-[500px] w-full iframe-placeholder"
+            className="mx-auto h-[650px] max-w-[500px] w-full iframe-placeholder"
         ></iframe>
 
     )

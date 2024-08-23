@@ -1,16 +1,16 @@
 "use client";
-import { getDevModeAtom, getTokenAtom, getTokenTypeAtom, setTokenAtom, tokenListAtom } from "@/lib/store";
-import { Token, TokenCollection, TokenType } from "@/lib/tokenStorage";
+import { getDevModeAtom, getTokenAtom, setTokenAtom, tokenListAtom } from "@/lib/store";
+import { TokenCollection, TokenType } from "@/lib/tokenStorage";
 import { useAtomValue, useSetAtom } from "jotai";
 import { query } from "smart-token-list";
 import TokenCard from "./token-card";
 import { cn } from "@/lib/utils";
-import ImportToken from "@/components/import-token"
 import { ScrollArea } from "./shadcn/ui/scroll-area";
 import { useAccount, useChainId } from "wagmi";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import EmptyListToken from "./empty-token-list";
+import { EMPTY_TOKEN } from "@/lib/constants";
 
 interface TokenProps {
     type: TokenType;
@@ -20,15 +20,14 @@ export default function MyTokenList({ type }: TokenProps) {
 
 
     const tokenListMap = useAtomValue(tokenListAtom);
-    const chain = useChainId()
+    const { chainId } = useAccount()
     const devMode = useAtomValue(getDevModeAtom);
     const router = useRouter()
     const setToken = useSetAtom(setTokenAtom);
     let selectedToken = useAtomValue(getTokenAtom);
-    const { connector: activeConnector } = useAccount()
 
 
-    let tokenList: TokenCollection[] = tokenListMap[type]?.filter((token: any) => Number(token.chainId) === (chain));
+    let tokenList: TokenCollection[] = tokenListMap[type]?.filter((token: any) => Number(token.chainId) === (chainId));
 
 
     if (!devMode) {
@@ -43,33 +42,60 @@ export default function MyTokenList({ type }: TokenProps) {
         };
     });
 
-    const redirectToToken = useCallback((token: TokenCollection | null) => {
+    const redirectToToken = useCallback((token: TokenCollection | null, tokenId?: string) => {
         if (token) {
+            console.log('import--after---', token, token.tokenIds, tokenId)
             setToken(token)
-            router.replace(`/home/${token.address}${token.tokenIds ? '/' + token.tokenIds[0] : ""}`)
+            if (token.tokenIds && tokenId) {
+                console.log('import--tokenId', token.tokenIds[0], tokenId, token.tokenIds.includes(tokenId))
+            }
+            const redirectTokenId = token.tokenIds ? (tokenId && token.tokenIds.includes(tokenId) ? tokenId : token.tokenIds[0]) : ''
+
+            console.log('import--redirectTokenId', redirectTokenId)
+            router.replace(`/${type}/${chainId}/${token.address}${redirectTokenId ? '/' + redirectTokenId : ""}`)
         } else {
-            router.replace('/home')
+            setToken(EMPTY_TOKEN)
+
+            router.replace(`/${type}/${chainId}`)
         }
 
-    }, [setToken, router])
+    }, [setToken, router, type, chainId])
 
     useEffect(() => {
-        if (tokenList.length > 0 && !selectedToken.address) {
-            redirectToToken(tokenList[0])
-        }
+        const path = window.location.pathname.split('/')
+        const contract = path[3]
+        const tokenId = path[4]
+        if (tokenId !== 'import') {
+            if (tokenData.length > 0 && !selectedToken.address) {
+                if (contract) {
+                    const token = tokenData.find((token) => token.address === contract)
+                    console.log('import-- find--', token, tokenId)
+                    if (token) {
+                        redirectToToken(token, tokenId)
+                    } else {
+                        redirectToToken(tokenData[0], tokenId)
+                    }
+                } else {
+                    redirectToToken(tokenData[0], tokenId)
+                }
 
-    }, [redirectToToken, router, selectedToken, setToken, tokenList])
+            } else {
+                if (tokenData.length === 0) {
+                    redirectToToken(null)
+                }
+            }
+        }
+    }, [chainId, redirectToToken, router, selectedToken, setToken, tokenData])
 
     const selectHanlder = (event: TokenCollection) => {
         redirectToToken(event)
     }
 
-
     return (
         <ScrollArea className="h-full">
             <div className="flex flex-col">
                 {tokenData.length === 0 && (
-                    <EmptyListToken type={type} />
+                    <EmptyListToken type={type} chainId={chainId} />
                 )}
                 {tokenData.map((token) => (
                     < div className={

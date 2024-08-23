@@ -10,10 +10,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/shadcn/ui/select"
-import { getTokenAtom, getTokenIdAtom, setTokenIdAtom } from "@/lib/store"
-import { useAtomValue, useSetAtom } from "jotai"
-import { useState } from "react"
+import { getTokenAtom, getTokenTypeAtom } from "@/lib/store"
+import { useAtomValue } from "jotai"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useChainId } from "wagmi"
 
 interface TokenIdSwitcherProps {
     tokenIds: string[]
@@ -26,23 +27,25 @@ export function TokenIdSwitcher({
 
     const [options, setOptions] = useState<string[]>([]);
     let selectedToken = useAtomValue(getTokenAtom);
+    let tokenType = useAtomValue(getTokenTypeAtom);
+    const chainId = useChainId()
 
     const router = useRouter()
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (tokenIds?.length > 0) {
             setOptions(tokenIds);
         } else {
-            router.replace(`/home/${selectedToken.address}`)
+            console.log('import-- TokenIdSwitcher', selectedToken)
+            //router.replace(`/${tokenType}/${chainId}/${selectedToken.address}`)
         }
 
-    }, [router, selectedToken.address, selectedToken.chainId, tokenIds]);
+    }, [chainId, router, selectedToken, selectedToken.address, selectedToken.chainId, tokenIds, tokenType]);
 
 
 
     const valueChangeHandler = (event: string) => {
-        // setTokenId(event)
-        router.replace(`/home/${selectedToken.address}/${event}`)
+        router.replace(`/${tokenType}/${chainId}/${selectedToken.address}/${event}`)
 
     }
 

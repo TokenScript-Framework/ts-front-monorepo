@@ -24,6 +24,7 @@ export function addToken(
   }
 
   localStorage.setItem(`ste_tokenList_${address}`, JSON.stringify(tokenList));
+  return collection ? collection.tokenIds : [tokenInfo.tokenId];
 }
 
 export function loadTokenList(

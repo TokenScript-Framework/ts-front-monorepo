@@ -3,14 +3,15 @@
 import { SpinIcon } from "@/components/icons/SpinIcon";
 import { TOKENTYPE_LIST } from "@/lib/constants";
 import { validateToken } from "@/lib/etherService";
-import { getDevModeAtom, getTokenTypeAtom, tokenListAtom } from "@/lib/store";
+import { getDevModeAtom, getTokenTypeAtom, setImportContractAtom, setTokenAtom, tokenListAtom } from "@/lib/store";
 import { addToken, loadTokenList, TokenType } from "@/lib/tokenStorage";
 import { useAtomValue, useSetAtom } from "jotai";
-import React, { useState } from "react";
-import { useAccount, useChainId } from "wagmi";
+import React, { useEffect, useState } from "react";
+import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { Button } from "./shadcn/ui/button";
 import {
     Dialog,
+    DialogClose,
     DialogContent,
     DialogDescription,
     DialogFooter,
@@ -24,9 +25,16 @@ import { RadioGroup, RadioGroupItem } from "./shadcn/ui/radio-group";
 import { useToast } from "./shadcn/ui/use-toast";
 import { isERC20, getSymbol } from "@/lib/erc20Service";
 import { Plus } from "lucide-react";
+import { useChainModal, useConnectModal } from "@rainbow-me/rainbowkit";
+import { WalletButton } from "./wallet-button";
+import { useRouter } from "next/navigation";
+import { chainPipe, splitPath } from "@/lib/utils";
 
+interface ImportProps {
+    importContract?: Record<string, any>;
+}
 
-export default function ImportToken() {
+export default function ImportToken({ importContract }: ImportProps) {
     const [token, setToken] = useState<`0x${string}`>("0x0");
     const [tokenId, setTokenId] = useState<string | undefined>('');
     const [open, setOpen] = React.useState(false);
@@ -35,19 +43,45 @@ export default function ImportToken() {
     const tokenType = useAtomValue(getTokenTypeAtom);
     const [type, setType] = useState<TokenType>(tokenType as TokenType);
     const [error, setError] = useState("");
-    const { address } = useAccount();
-    const chainId = useChainId();
+    const { address, chainId } = useAccount();
     const { toast } = useToast();
     const setTokenList = useSetAtom(tokenListAtom);
+    const setImportContract = useSetAtom(setImportContractAtom);
+    const setSelectedToken = useSetAtom(setTokenAtom);
+    const { chainModalOpen, openChainModal } = useChainModal();
+    const { openConnectModal } = useConnectModal();
+    const router = useRouter()
+
+
+    useEffect(() => {
+        if (importContract?.contract) {
+            setToken(importContract.contract)
+            setType(importContract.type)
+            setOpen(true)
+        }
+
+    }, [importContract])
+
+    const checkIfCorrectChain = () => {
+        return !window.location.pathname.includes('import') ? true : importContract?.chain?.toString() === chainId?.toString()
+    }
+
+    const switchChainHandler = () => {
+        if (openChainModal) {
+            setOpen(false);
+            openChainModal()
+        }
+    }
 
     const confirmHandler = async () => {
         try {
             if (!token || (type !== "ERC20" && !tokenId)) {
+                setError("Please input correct tokenId or token address");
                 return;
             }
 
-            setLoading(true);
-            if (address) {
+            if (address && chainId) {
+                setLoading(true);
                 const validate: any = await validateToken(
                     devMode,
                     chainId,
@@ -57,33 +91,45 @@ export default function ImportToken() {
                     tokenId,
                     type === "ERC20" ? await isERC20(token, chainId) : false
                 );
+                console.log(validate);
                 if (validate.error) {
                     setLoading(false);
                     setError(validate.message);
                 } else {
-                    setOpen(false);
                     if (!address) return;
 
                     if (type === "ERC20") {
-                        addToken(address, type, {
-                            signed: validate.signed,
-                            chainId,
-                            address: token,
-                            name: await getSymbol(token, chainId.toString())
-                        });
-                    } else {
-                        addToken(address, type, {
+                        const newToken = {
                             signed: validate.signed,
                             chainId,
                             address: token,
                             tokenId: tokenId,
-                            name: validate.name
-                        });
+                            name: validate.name,
+                            logoURI: validate.image
+                        }
+                        addToken(address, type, newToken);
+                        setSelectedToken(newToken)
+
+                    } else {
+                        const newToken = {
+                            signed: validate.signed,
+                            chainId,
+                            address: token,
+                            tokenId: tokenId,
+                            name: validate.name,
+                            logoURI: validate.image
+                        }
+                        const tokenIds = addToken(address, type, newToken);
+                        delete newToken.tokenId;
+                        setSelectedToken({ ...newToken, tokenIds: tokenIds?.filter((id): id is string => id !== undefined) })
                     }
 
 
                     setTokenList(loadTokenList(address));
 
+                    router.replace(`/${tokenType}/${chainId}/${token}${tokenId ? `/${tokenId}` : ''}`)
+                    setImportContract({})
+                    setOpen(false)
                     toast({
                         title: "Import token",
                         description: "you've import token successfully!",
@@ -94,8 +140,10 @@ export default function ImportToken() {
         } catch (e: any) {
             console.log(e.message)
             setError(e.message);
+        } finally {
             setLoading(false);
         }
+
     };
 
     const changeTokenHandler = (e: any) => {
@@ -112,17 +160,54 @@ export default function ImportToken() {
         setType(type);
         setError("");
     };
-    const openHandler = () => {
-        setOpen(!open);
-        setError("");
-        // setToken("0x0");
-        // setTokenId("");
-        setLoading(false);
+
+    const openHandler = (): void => {
+        console.log('openHandler', open)
+        if (window.location.pathname.includes('import')) {
+            //setOpen(!open);
+            console.log('openHandler--', open)
+            if (!open) {
+                const { type, chainId, contract, tokenId } = splitPath(window.location.pathname)
+                setImportContract({
+                    chain: chainId,
+                    contract: contract,
+                    tokenId: tokenId,
+                    type: type
+                })
+            } else {
+                restDialog()
+            }
+            console.log('######', splitPath(window.location.pathname))
+
+        } else {
+            restDialog()
+        }
     };
+
+    const restDialog = () => {
+        setOpen(!open);
+        setToken("0x0");
+        setTokenId("");
+        setError("");
+        setLoading(false);
+        setImportContract({})
+        if (open && importContract?.contract) {
+            router.replace(`/${tokenType}/${chainId}`)
+
+        }
+    }
+
+    const connectHandler = () => {
+        console.log('connectHandler', openConnectModal)
+        if (openConnectModal) {
+            setOpen(false);
+            openConnectModal();
+        }
+    }
 
     return (
         <>
-            <Dialog open={open} onOpenChange={openHandler}>
+            <Dialog open={open} onOpenChange={openHandler} >
                 <DialogTrigger asChild>
                     <Button className="bg-secondary-500 hover:bg-secondary-300 font-bold text-white w-full text-base gap-1">
                         <div><Plus className="w-5 h-5" /></div> Import
@@ -132,7 +217,7 @@ export default function ImportToken() {
                     <DialogHeader>
                         <DialogTitle>Import token</DialogTitle>
                         <DialogDescription>
-                            Input token address. Click save when done.
+                            Input token address. Click confirm when done.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
@@ -177,7 +262,7 @@ export default function ImportToken() {
                                         id={tokenId}
                                         defaultValue={tokenId}
                                         onChange={changeTokenIdHandler}
-                                        placeholder="Token Id (optional)"
+                                        placeholder="Token Id"
                                         className="col-span-4"
                                     />
                                 </div>
@@ -187,19 +272,28 @@ export default function ImportToken() {
                         {error && <div className="text-center text-red-500">{error}</div>}
                     </div>
                     <DialogFooter>
-                        {address && (<Button
-                            className="bg-primary-500 font-bold text-white"
-                            onClick={confirmHandler}
-                        >
-                            {loading && (
-                                <SpinIcon className="mr-2 h-5 w-5 animate-spin text-white" />
-                            )}
-                            Confirm
+                        {address ? (<>
+                            {!checkIfCorrectChain() ? (<Button onClick={switchChainHandler} className="text-white font-bold  p-2 text-base bg-primary-500 hover:bg-primary-300">
+                                Switch Network to {chainPipe(Number(importContract?.chain))}
+                            </Button>) : (<> <Button
+                                className="bg-primary-500 font-bold text-white"
+                                onClick={confirmHandler}
+                            >
+                                {loading && (
+                                    <SpinIcon className="mr-2 h-5 w-5 animate-spin text-white" />
+                                )}
+                                Confirm
+                            </Button></>)}
+                        </>
+                        ) : (<Button onClick={connectHandler} className="text-white font-bold  p-2 text-base bg-primary-500 hover:bg-primary-300">
+                            Connect Wallet
                         </Button>)}
+
+
 
                     </DialogFooter>
                 </DialogContent>
-            </Dialog>
+            </Dialog >
         </>
     );
 }

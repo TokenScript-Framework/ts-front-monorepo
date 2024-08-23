@@ -33,10 +33,11 @@ export function rewriteUrlIfIFPSUrl(url: string) {
   return url;
 }
 
+// TODO: add new networks
 export function chainPipe(chain: number) {
   switch (chain) {
     case 1:
-      return "Ethereum Mainnet";
+      return "Ethereum";
     case 137:
       return "Polygon";
     case 10:
@@ -77,3 +78,12 @@ export function firstUppercasePipe(value: string | undefined) {
     : "";
 }
 
+export function splitPath(path: string) {
+  const pathArray = path.split("/");
+  return {
+    type: pathArray[1],
+    chainId: pathArray[2],
+    contract: pathArray[3],
+    tokenId: pathArray[4],
+  };
+}

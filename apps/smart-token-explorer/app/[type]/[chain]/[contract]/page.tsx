@@ -5,11 +5,12 @@ import { Separator } from "@/components/shadcn/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/shadcn/ui/avatar";
 import { addressPipe } from "@/lib/utils";
 import { useAtomValue, useSetAtom } from "jotai";
-import { getTokenTypeAtom, setTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom } from "@/lib/store";
+import { getTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom, getDevModeAtom } from "@/lib/store";
 import { useEffect, useState } from "react";
 import { SpinIcon } from "@/components/icons/SpinIcon";
 import { erc20Abi } from "viem";
 import BigNumber from "bignumber.js";
+import { useRouter } from "next/navigation";
 
 export default function ContractPage({
     params,
@@ -20,15 +21,16 @@ export default function ContractPage({
     const { contract } = params
 
     let tokenType = useAtomValue(getTokenTypeAtom);
-    const setTokenType = useSetAtom(setTokenTypeAtom);
     let selectedToken = useAtomValue(getTokenAtom);
     const tokenListMap = useAtomValue(tokenListAtom);
     const setToken = useSetAtom(setTokenAtom);
-    const chain = useChainId()
+    const router = useRouter()
+    const chainId = useChainId()
     let token: any = { balance: 0, name: '', symbol: "", decimals: 0 }
+    let devMode = useAtomValue(getDevModeAtom);
     const { data: erc20Data, isFetching: isFetchingERC20Info } = useReadContracts(
         {
-            contracts: contractsForErc20(chain, contract, address!),
+            contracts: contractsForErc20(chainId, contract, address!),
             query: {
                 enabled: !!address,
             },
@@ -43,23 +45,28 @@ export default function ContractPage({
         .dividedBy(new BigNumber(10 ** Number(token.decimals)))
         .toString() : 0
 
+
+
     useEffect(() => {
 
         if (address && (!selectedToken || selectedToken.address !== contract)) {
 
             let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType];
-            const filterResult = tokenList.filter((token) => token.signed);
+            const filterResult = tokenList.filter((token) => Number(token.chainId) === (chainId) && token.signed === !devMode);
             if (filterResult.length === 1) {
                 setToken(filterResult[0])
             }
         }
+        // if (tokenType !== 'ERC20') {
+        //     router.replace(`/${tokenType}/${chainId}`)
+        // }
 
-    }, [address, chain, contract, selectedToken, setToken, tokenListMap, tokenType])
+    }, [address, chainId, contract, devMode, router, selectedToken, setToken, tokenListMap, tokenType])
 
     return (selectedToken && selectedToken.address && <>
         <div className="flex h-full flex-col">
             <div className="flex flex-1 flex-col">
-                <div className="flex justify-between px-3flex-1 whitespace-pre-wrap text-sm p-3 py-2">
+                <div className="flex justify-between px-3flex-1 whitespace-pre-wrap text-sm p-3 py-2 h-[52px]">
                     <div className="flex items-center gap-4 text-sm">
                         <Avatar className="w-8 h-8">
                             <AvatarImage src={selectedToken.logoURI} alt="token" />

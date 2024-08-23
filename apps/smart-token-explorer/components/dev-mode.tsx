@@ -4,7 +4,7 @@ import { getDevModeAtom, setDevModeAtom, tokenListAtom, getTokenTypeAtom, setTok
 import { useAtomValue, useSetAtom } from "jotai";
 import { Switch } from "./shadcn/ui/switch";
 import { TokenCollection, TokenType } from "@/lib/tokenStorage";
-import { useChainId } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { useRouter } from "next/navigation";
 import { EMPTY_TOKEN } from "@/lib/constants";
 
@@ -13,22 +13,18 @@ export default function DevMode() {
     let devMode = useAtomValue(getDevModeAtom);
     const tokenListMap = useAtomValue(tokenListAtom);
     const setToken = useSetAtom(setTokenAtom);
-    const chain = useChainId()
+    const { chainId } = useAccount()
     const router = useRouter()
 
     let tokenType = useAtomValue(getTokenTypeAtom);
 
     const changeHandler = (mode: boolean) => {
         setDevMode(mode);
-
-        let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType]?.filter((token: any) => Number(token.chainId) === (chain) && token.signed === !mode);
+        let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType]?.filter((token: any) => Number(token.chainId) === (chainId) && token.signed === !mode);
         if (tokenList.length === 0) {
             setToken(EMPTY_TOKEN)
-            router.replace('/home')
+            router.replace(`/${tokenType}/${chainId}`)
         }
-
-
-
     };
     return (
         <>

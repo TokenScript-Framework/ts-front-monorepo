@@ -13,55 +13,50 @@ import {
 import { Nav } from "@/components/nav"
 import DevMode from "@/components/dev-mode"
 import { useAccount, useChainId, useConfig } from "wagmi";
-import { getDevModeAtom, getTokenAtom, getTokenTypeAtom, setTokenAtom, tokenListAtom } from "@/lib/store"
+import { getImportContractAtom, getTokenTypeAtom, tokenListAtom } from "@/lib/store"
 import { useAtomValue, useSetAtom } from "jotai"
 import ImportToken from "@/components/import-token"
 import ThemeSwitch from "@/components/shadcn/ThemeSwitch"
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { defaultLayout, getTokenListRoot } from "@/lib/constants"
-import { loadTokenList, TokenCollection, TokenType } from "@/lib/tokenStorage"
+import { defaultLayout } from "@/lib/constants"
+import { loadTokenList, TokenType } from "@/lib/tokenStorage"
 import { Separator } from "@/components/shadcn//ui/separator";
 import { useRouter } from "next/navigation";
 import MyTokenList from "@/components/token-list";
 import { useEffect, useMemo } from "react";
 import { WalletButton } from "@/components/wallet-button";
-export default function HomeLayout({
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+export default function TypeLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const { address } = useAccount();
-    const setTokenList = useSetAtom(tokenListAtom);
+    const { address, chainId } = useAccount();
     const router = useRouter()
-
-    const chain = useChainId()
+    const config = useConfig();
     let tokenType = useAtomValue(getTokenTypeAtom);
+    let importContract = useAtomValue(getImportContractAtom);
+    const setTokenList = useSetAtom(tokenListAtom);
     useEffect(() => {
-        if (address) {
+        if (address && chainId) {
             setTokenList(loadTokenList(address));
         }
-
-
-    }, [address, chain, router, setTokenList]);
-
-    const config = useConfig();
+    }, [address, chainId, router, setTokenList]);
 
     useEffect(() => {
         const unwatch = config.subscribe(
             (state) => state.chainId,
             (chainId) => {
-                console.log('chain changed, router:', chainId);
-                // 在这里处理链变更逻辑
-                router.replace('/home')
+                console.log('chain changed, router:', chainId, window.location.pathname, window.location.pathname.split('/'));
+                if (chainId !== Number(window.location.pathname.split('/')[2]) && !window.location.pathname.includes('import')) {
+                    router.replace(`/${tokenType}/${chainId}`)
+                }
             }
         );
 
         return () => {
             unwatch();
         };
-    }, [config, router]);
-
-
+    }, [config, router, tokenType]);
 
 
     return (
@@ -80,8 +75,10 @@ export default function HomeLayout({
                 minSize={20}
                 maxSize={20} className="relative"
             >
-                <div className="w-full px-2 font-bold text-lg my-3">
-                    Smart Token Explorer
+                <div className="h-[52px]  flex items-center">
+                    <a href="/" className="w-full px-2 font-bold text-lg my-3">
+                        Smart Token Explorer
+                    </a>
                 </div>
 
                 <Separator />
@@ -118,7 +115,7 @@ export default function HomeLayout({
                 <Separator />
                 <footer className="absolute bottom-4 left-0  w-full">
                     <div className="mb-2 px-2">
-                        <ImportToken />
+                        <ImportToken importContract={importContract} />
                     </div>
 
                     <div className="w-full px-2">

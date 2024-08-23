@@ -1,10 +1,11 @@
 "use server";
 //import BigNumber from "bignumber.js";
+import axios from "axios";
 import { ethers, formatEther, InfuraProvider } from "ethers";
 import * as sha3 from "js-sha3";
 import { getTokenscriptMetadata } from "token-kit";
 import { ERC1155_ABI, ERC20_ABI, ERC5169_ABI, ERC721_ABI } from "./abi";
-import { chainPipe, networkPipe } from "./utils";
+import { chainPipe, networkPipe, rewriteUrlIfIFPSUrl } from "./utils";
 
 const ERC721_INTERFACE_ID = "0x80ac58cd";
 const ERC1155_INTERFACE_ID = "0xd9b67a26";
@@ -159,11 +160,24 @@ export async function validateToken(
       };
     }
   }
+  let scriptMetadata;
+  try {
+    scriptMetadata =
+      type !== "ERC20"
+        ? await getTokenscriptMetadata(chain, token, {
+            checkSignature: true,
+          })
+        : { signed: true };
+  } catch (e) {
+    return {
+      error: true,
+      message: "Script URI not exist",
+    };
+  }
+
   const metadata =
     type !== "ERC20"
-      ? await getTokenscriptMetadata(chain, token, {
-          checkSignature: true,
-        })
+      ? scriptMetadata
       : { name: "", meta: { description: "" }, signed: true };
   const { signed } = type !== "ERC20" ? metadata : { signed: true };
 
@@ -177,7 +191,6 @@ export async function validateToken(
 
   switch (type) {
     case "ERC20": {
-      // const result = await isERC20(token, provider);
       if (!isERC20) {
         return {
           error: true,
@@ -188,9 +201,9 @@ export async function validateToken(
       break;
     }
     case "ERC721": {
-      if (!(await isValidInteger(tokenId!))) {
-        return { error: true, message: "Please input correct tokenId" };
-      }
+      //   if (!(await isValidInteger(tokenId!))) {
+      //     return { error: true, message: "Please input correct tokenId" };
+      //   }
 
       const result = await isERC721(token, provider);
       if (!result) {
@@ -212,9 +225,9 @@ export async function validateToken(
     }
     default: {
       //1155
-      if (!(await isValidTokenId(tokenId!))) {
-        return { error: true, message: "Please input correct tokenId" };
-      }
+      //   if (!(await isValidTokenId(tokenId!))) {
+      //     return { error: true, message: "Please input correct tokenId" };
+      //   }
 
       const result = await isERC1155(token, provider);
       if (!result) {
@@ -241,10 +254,117 @@ export async function validateToken(
     }
   }
 
+  const contractMetadata =
+    type !== "ERC20" ? await getContractMetadata(token, chain) : {};
+
   return {
     error: false,
     signed,
-    name: metadata.name,
-    description: metadata.meta.description,
+    ...contractMetadata,
   };
+}
+
+export async function validateContract(
+  devMode: boolean,
+  chain: number,
+  type: string,
+  token: `0x${string}`,
+  isERC20?: boolean,
+) {
+  console.log("isERC20", isERC20);
+
+  let provider = getProvider(chain);
+  if (!(await isValidAddress(token))) {
+    return { error: true, message: "Please input correct address" };
+  }
+  if (type !== "ERC20") {
+    const result = await isERC5169(token, provider);
+
+    if (!result) {
+      return {
+        error: true,
+        message: `This token on ${chainPipe(chain)} is not a valid ERC5169 token.`,
+      };
+    }
+  }
+  console.log("####", chain, token);
+  let scriptMetadata;
+  try {
+    scriptMetadata =
+      type !== "ERC20"
+        ? await getTokenscriptMetadata(chain, token, {
+            checkSignature: true,
+          })
+        : { signed: true };
+  } catch (e) {
+    return {
+      error: true,
+      message: "Script URI not exist",
+    };
+  }
+  const metadata =
+    type !== "ERC20"
+      ? scriptMetadata
+      : { name: "", meta: { description: "" }, signed: true };
+  const { signed } = metadata;
+
+  console.log("metadata----", metadata);
+  if (!devMode && !signed) {
+    return {
+      error: true,
+      message:
+        "Tokenscript is not signed by a trusted party. Please open dev mode to import.",
+    };
+  }
+
+  switch (type) {
+    case "ERC20": {
+      if (!isERC20) {
+        return {
+          error: true,
+          message: `This token on ${chainPipe(chain)} is not a valid ERC20 token.`,
+        };
+      }
+
+      break;
+    }
+    case "ERC721": {
+      const result = await isERC721(token, provider);
+      if (!result) {
+        return {
+          error: true,
+          message: `This token on ${chainPipe(chain)} is not a valid ERC721 token.`,
+        };
+      }
+
+      break;
+    }
+    default: {
+      const result = await isERC1155(token, provider);
+      if (!result) {
+        return {
+          error: true,
+          message: `This token on ${chainPipe(chain)} is not a valid ERC1155 token.`,
+        };
+      }
+
+      break;
+    }
+  }
+  const contractMetadata =
+    type !== "ERC20" ? await getContractMetadata(token, chain) : {};
+
+  return {
+    error: false,
+    signed,
+    ...contractMetadata,
+  };
+}
+
+async function getContractMetadata(contractAddress: string, chain: number) {
+  const provider = getProvider(chain);
+  const contract = new ethers.Contract(contractAddress, ERC5169_ABI, provider);
+  const contractURI = await contract.contractURI();
+  const res = await axios.get(rewriteUrlIfIFPSUrl(contractURI!));
+  return res.data;
 }
