@@ -1,8 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/shadcn/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/shadcn/ui/scroll-area";
 import { Skeleton } from "@/components/shadcn/ui/skeleton";
-import { rewriteUrlIfIFPSUrl, urlPipe, valuePipe } from "@/utils/crypto";
-import { erc1155ABI } from "@/libs"
+import { erc1155ABI, rewriteUrlIfIFPSUrl, urlPipe, valuePipe } from "@/libs"
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
