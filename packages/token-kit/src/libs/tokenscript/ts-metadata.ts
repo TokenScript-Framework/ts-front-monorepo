@@ -5,7 +5,7 @@ import { Card } from "./engine-lite/tokenScript/Card";
 import { Meta } from "./engine-lite/tokenScript/Meta";
 import { getTsCache, setTsCache } from "./ts-cache";
 
-export type MetdataOptions = {
+export type TsOptions = {
   actions?: boolean;
   checkSignature?: boolean;
   css?: boolean;
@@ -21,7 +21,7 @@ export type TsMetadata = {
   cards?: Card[];
 };
 
-const defaultOptions = {
+export const defaultTsOptions = {
   actions: false,
   checkSignature: false,
   css: false,
@@ -31,7 +31,7 @@ const defaultOptions = {
 export async function getTokenscriptMetadata(
   chainId: number,
   contract: `0x${string}`,
-  options: MetdataOptions = defaultOptions,
+  options: TsOptions = defaultTsOptions,
   index = 0,
 ): Promise<TsMetadata> {
   const scriptURIs = await getERC5169ScriptURISingle(chainId, contract);

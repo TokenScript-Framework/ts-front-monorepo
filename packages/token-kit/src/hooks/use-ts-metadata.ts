@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { getTokenscriptMetadata, MetdataOptions, TsMetadata } from "../libs";
+import { getTokenscriptMetadata, TsOptions, TsMetadata } from "../libs";
 
 export const useTsMetadata = (v: {
   chainId: number;
   contract: `0x${string}`;
-  options?: MetdataOptions;
+  options?: TsOptions;
 }) => {
   const { chainId, contract, options } = v;
 
