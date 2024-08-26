@@ -1,2 +1,2 @@
 export * from "./smartrating";
-export * from "./nft-card";
+export * from "./token-card";

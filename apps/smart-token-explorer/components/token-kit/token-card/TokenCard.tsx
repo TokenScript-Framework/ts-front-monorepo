@@ -6,17 +6,33 @@ import { rewriteUrlIfIFPSUrl, urlPipe, valuePipe } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
-import { erc721Abi } from "viem";
-import { useReadContract } from "wagmi";
-import { NFTCardProps } from "./NFTCard.types";
+import { erc721Abi, erc20Abi } from "viem";
+import { useReadContract, useReadContracts } from "wagmi";
 
-export const NFTCard: React.FC<NFTCardProps> = ({
+export interface TokenCardProps {
+    type: "ERC20" | "ERC721" | "ERC1155";
+    chainId: number;
+    contract: `0x${string}`;
+    tokenId?: string;
+    wallet?: `0x${string}`;
+    onClick?: () => void;
+  }
+  
+
+export const TokenCard: React.FC<TokenCardProps> = ({
     type,
     chainId,
     contract,
-    tokenId,
+    tokenId = "0",
+    wallet,
     onClick,
 }) => {
+    const { data: erc20Data } = useReadContracts({
+        contracts: contractsForErc20(chainId, contract, wallet),
+        query: {
+            enabled: type === "ERC20",
+        },
+    });
 
     const { data: erc721TokenURI } = useReadContract({
         chainId: chainId,
@@ -72,7 +88,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({
             value,
         }));
 
-    if (!metadata) {
+    if (!metadata && !erc20Data) {
         return (
             <Card>
                 <CardHeader className="relative space-y-0 p-0">
@@ -90,6 +106,45 @@ export const NFTCard: React.FC<NFTCardProps> = ({
             </Card>
         );
     }
+
+    if (type === "ERC20") {
+        return (
+          <Card>
+            <CardContent className="p-4 cursor-pointer" onClick={onClick}>
+              <div className="flex flex-col gap-4">
+                <div className="relative w-full">
+                  <h3 className="mb-2 text-lg font-semibold leading-none">
+                    Name
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    {erc20Data?.[0]?.result?.toString()}
+                  </p>
+                </div>
+                <div className="relative w-full">
+                  <h3 className="mb-2 text-lg font-semibold leading-none">
+                    Symbol
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    {erc20Data?.[1]?.result?.toString()}
+                  </p>
+                </div>
+                {
+                  erc20Data?.[3]?.result && (
+                    <div className="relative w-full">
+                      <h3 className="mb-2 text-lg font-semibold leading-none">
+                        Balance
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        {erc20Data?.[3]?.result.toString()}
+                      </p>
+                    </div>
+                  )
+                }
+              </div>
+            </CardContent>
+          </Card>
+        )
+      }
 
     return (
         <Card>
@@ -142,3 +197,35 @@ export const NFTCard: React.FC<NFTCardProps> = ({
         </Card>
     );
 };
+
+function contractsForErc20(chainId: number, constract: `0x${string}`, walletAddress?: string) {
+    const contractInfo = [
+        {
+            chainId: chainId,
+            address: constract,
+            abi: erc20Abi,
+            functionName: "name",
+        },
+        {
+            chainId: chainId,
+            address: constract,
+            abi: erc20Abi,
+            functionName: "symbol",
+        },
+        {
+            chainId: chainId,
+            address: constract,
+            abi: erc20Abi,
+            functionName: "decimals",
+        },
+    ];
+    const balanceInfo = {
+        chainId: chainId,
+        address: constract,
+        abi: erc20Abi,
+        functionName: "balanceOf",
+        args: [walletAddress],
+    };
+  
+    return walletAddress ? [...contractInfo, balanceInfo] : contractInfo
+  }

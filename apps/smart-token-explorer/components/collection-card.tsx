@@ -19,13 +19,13 @@ import { useAtomValue } from "jotai";
 import { cn } from "@/lib/utils";
 import Image from 'next/image';
 
-interface TokenCardProps {
+interface CollectionCardProps {
     type: TokenType;
     token: TokenCollection;
     onSelect: (token: TokenCollection) => void;
 }
 
-export default function TokenCard({ type, token, onSelect }: TokenCardProps) {
+export default function CollectionCard({ type, token, onSelect }: CollectionCardProps) {
     let selectedToken = useAtomValue(getTokenAtom);
     return (
         <Card

@@ -8,12 +8,23 @@ npm run rollup
 
 ## Components
 
-### NFT Card
+### Token Card
 
 ```jsx
-import { NFTCard } from "token-kit";
+import { TokenCard } from "token-kit";
 
-<NFTCard
+// ERC 20
+<TokenCard
+  type="ERC20"
+  chainId={1}
+  contract="0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+  wallet="0x0000000000000000000000000000000000000000"
+  onClick={() => void}
+/>;
+
+// ERC 721/1155
+<TokenCard
+  type="ERC721"
   chainId={137}
   contract="0xd5ca946ac1c1f24eb26dae9e1a53ba6a02bd97fe"
   tokenId="1202370524"

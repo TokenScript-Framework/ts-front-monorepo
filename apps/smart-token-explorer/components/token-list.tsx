@@ -3,7 +3,7 @@ import { getDevModeAtom, getTokenAtom, setTokenAtom, tokenListAtom } from "@/lib
 import { TokenCollection, TokenType } from "@/lib/tokenStorage";
 import { useAtomValue, useSetAtom } from "jotai";
 import { query } from "smart-token-list";
-import TokenCard from "./token-card";
+import CollectionCard from "./collection-card";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "./shadcn/ui/scroll-area";
 import { useAccount, useChainId } from "wagmi";
@@ -102,7 +102,7 @@ export default function MyTokenList({ type }: TokenProps) {
                         cn(
                             "p-3 text-left text-sm transition-all",
                         )} key={`${type}-${token.chainId}-${token.address}`}>
-                        <TokenCard
+                        <CollectionCard
                             key={`${type}-${token.chainId}-${token.address}`}
                             type={type}
                             token={token}

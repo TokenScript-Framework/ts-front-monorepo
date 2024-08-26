@@ -9,7 +9,7 @@ import { getTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom, getDevMode
 import { useEffect } from "react";
 import { TokenIdSwitcher } from "@/components/tokenid-switcher";
 import { TabsList, TabsTrigger, Tabs, TabsContent } from "@/components/shadcn/ui/tabs";
-import { NFTCard } from "@/components/token-kit/nft-card";
+import { TokenCard } from "@/components/token-kit/token-card";
 import { NEXT_PUBLIC_VIEWER_ROOT } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import { ScriptIframe } from "@/components/script-Iframe";
@@ -108,7 +108,7 @@ export default function TokenIdPage({
                         <TabsContent value="token">
                             {tokenId != null && (
                                 <div className="w-full mx-auto p-2 max-w-[500px]">
-                                    <NFTCard
+                                    <TokenCard
                                         type={tokenType as any}
                                         chainId={selectedToken.chainId}
                                         contract={selectedToken.address}
