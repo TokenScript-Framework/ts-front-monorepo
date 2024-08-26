@@ -8,20 +8,24 @@ import { getTsCache, setTsCache } from "./ts-cache";
 export type MetdataOptions = {
   actions?: boolean;
   checkSignature?: boolean;
+  css?: boolean;
+  cards?: boolean;
 };
 
 export type TsMetadata = {
-  cards: Card[];
   meta: Meta;
   name: string;
-  cssStr: string;
   actions?: string[];
   signed?: boolean;
+  cssStr?: string;
+  cards?: Card[];
 };
 
 const defaultOptions = {
-  actions: true,
-  checkSignature: true,
+  actions: false,
+  checkSignature: false,
+  css: false,
+  cards: false,
 };
 
 export async function getTokenscriptMetadata(
@@ -42,8 +46,6 @@ export async function getTokenscriptMetadata(
 
   const result = {} as TsMetadata;
 
-  result.cards = tokenscript.getCards();
-  result.cssStr = tokenscript.getCssStr();
   if (options.actions) {
     result.actions = tokenscript.getCards().map((card) => card.name ?? "");
   }
@@ -51,6 +53,14 @@ export async function getTokenscriptMetadata(
   if (options.checkSignature) {
     result.signed = !!(await tokenscript.getSecurityInfo().getInfo())
       .trustedKey;
+  }
+
+  if (options.css) {
+    result.cssStr = tokenscript.getCssStr();
+  }
+
+  if (options.cards) {
+    result.cards = tokenscript.getCards();
   }
 
   result.meta = tokenscript.getMetadata();
@@ -65,7 +75,7 @@ async function loadTokenscript(scriptURI: string) {
     const xmlStr = (await axios.get(scriptURI)).data;
 
     let parser: DOMParser;
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       const { JSDOM } = await import("jsdom");
       const jsdom = new JSDOM();
       parser = new jsdom.window.DOMParser();
