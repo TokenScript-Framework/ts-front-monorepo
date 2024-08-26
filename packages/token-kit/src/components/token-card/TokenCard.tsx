@@ -8,6 +8,7 @@ import axios from "axios";
 import React from "react";
 import { erc721Abi, erc20Abi } from "viem";
 import { useReadContract, useReadContracts } from "wagmi";
+import BigNumber from "bignumber.js";
 
 export interface TokenCardProps {
   type: "ERC20" | "ERC721" | "ERC1155";
@@ -112,7 +113,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
                 Name
               </h3>
               <p className="text-muted-foreground text-sm">
-                {erc20Data?.[0]?.result}
+                {erc20Data?.[0]?.result?.toString()}
               </p>
             </div>
             <div className="relative w-full">
@@ -120,17 +121,21 @@ export const TokenCard: React.FC<TokenCardProps> = ({
                 Symbol
               </h3>
               <p className="text-muted-foreground text-sm">
-                {erc20Data?.[1]?.result}
+                {erc20Data?.[1]?.result?.toString()}
               </p>
             </div>
             {
-              erc20Data?.[3]?.result && (
+              (!!erc20Data?.[2]?.result && !!erc20Data?.[3]?.result) && (
                 <div className="relative w-full">
                   <h3 className="mb-2 text-lg font-semibold leading-none">
                     Balance
                   </h3>
                   <p className="text-muted-foreground text-sm">
-                    {erc20Data?.[3]?.result.toString()}
+                    {
+                        new BigNumber(erc20Data?.[3]?.result.toString())
+                            .dividedBy(new BigNumber(10 ** Number(erc20Data?.[2]?.result)))
+                            .toString()
+                    }
                   </p>
                 </div>
               )
