@@ -1,8 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/shadcn/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/shadcn/ui/scroll-area";
 import { Skeleton } from "@/components/shadcn/ui/skeleton";
-import { erc1155Abi } from "@/lib/abi";
-import { rewriteUrlIfIFPSUrl, urlPipe, valuePipe } from "@/lib/utils";
+import { erc1155ABI, rewriteUrlIfIFPSUrl, urlPipe, valuePipe } from "token-kit";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
@@ -17,8 +16,7 @@ export interface TokenCardProps {
     tokenId?: string;
     wallet?: `0x${string}`;
     onClick?: () => void;
-  }
-  
+}
 
 export const TokenCard: React.FC<TokenCardProps> = ({
     type,
@@ -58,7 +56,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
     const { data: erc1155TokenURI } = useReadContract({
         chainId: chainId,
         address: contract,
-        abi: erc1155Abi,
+        abi: erc1155ABI,
         functionName: "uri",
         args: [BigInt(tokenId)],
         query: {

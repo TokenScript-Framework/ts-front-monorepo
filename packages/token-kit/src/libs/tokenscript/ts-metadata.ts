@@ -65,7 +65,7 @@ async function loadTokenscript(scriptURI: string) {
     const xmlStr = (await axios.get(scriptURI)).data;
 
     let parser: DOMParser;
-    if (typeof process !== "undefined" && process.release.name === "node") {
+    if (typeof window === 'undefined') {
       const { JSDOM } = await import("jsdom");
       const jsdom = new JSDOM();
       parser = new jsdom.window.DOMParser();
