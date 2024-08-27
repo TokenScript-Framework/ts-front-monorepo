@@ -1,0 +1,24 @@
+{
+  "name": "multiple-chains-render",
+  "version": "1.0.0",
+  "description": "",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "SLN",
+  "license": "MIT",
+  "dependencies": {
+    "file-type": "^19.4.1",
+    "jsdom": "^22.1.0",
+    "satori": "^0.10.14",
+    "token-kit": "workspace:^"
+  },
+  "devDependencies": {
+    "tsup": "^8.1.0"
+  }
+}
