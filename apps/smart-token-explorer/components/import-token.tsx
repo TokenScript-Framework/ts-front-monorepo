@@ -41,7 +41,7 @@ export default function ImportToken({ importContract }: ImportProps) {
     const devMode = useAtomValue(getDevModeAtom);
     const [loading, setLoading] = React.useState(false);
     const tokenType = useAtomValue(getTokenTypeAtom);
-    const [type, setType] = useState<TokenType>(tokenType as TokenType);
+    const [type, setType] = useState<TokenType>();
     const [error, setError] = useState("");
     const { address, chainId } = useAccount();
     const { toast } = useToast();
@@ -54,13 +54,17 @@ export default function ImportToken({ importContract }: ImportProps) {
 
 
     useEffect(() => {
-        if (importContract?.contract) {
-            setToken(importContract.contract)
-            setType(importContract.type)
-            setOpen(true)
+        if (tokenType) {
+            if (importContract?.contract) {
+                setToken(importContract.contract)
+                setType(importContract.type)
+                setOpen(true)
+            } else {
+                setType(tokenType as TokenType)
+            }
         }
 
-    }, [importContract])
+    }, [importContract, tokenType])
 
     const checkIfCorrectChain = () => {
         return !window.location.pathname.includes('import') ? true : importContract?.chain?.toString() === chainId?.toString()

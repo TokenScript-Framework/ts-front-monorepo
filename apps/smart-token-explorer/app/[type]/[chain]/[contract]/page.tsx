@@ -53,8 +53,8 @@ export default function ContractPage({
         if (address && (!selectedToken || selectedToken.address !== contract)) {
 
             let tokenList: TokenCollection[] = tokenListMap[tokenType as TokenType];
-            const filterResult = tokenList.filter((token) => Number(token.chainId) === (chainId) && token.signed === !devMode);
-            if (filterResult.length === 1) {
+            const filterResult = tokenList?.filter((token) => Number(token.chainId) === (chainId) && token.signed === !devMode);
+            if (filterResult?.length === 1) {
                 setToken(filterResult[0])
             }
         }
