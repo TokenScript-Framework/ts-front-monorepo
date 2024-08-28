@@ -11,6 +11,7 @@ import { SpinIcon } from "@/components/icons/SpinIcon";
 import { erc20Abi } from "viem";
 import BigNumber from "bignumber.js";
 import { useRouter } from "next/navigation";
+import { TokenCard } from "@/components/token-kit/token-card";
 
 export default function ContractPage({
     params,
@@ -28,22 +29,22 @@ export default function ContractPage({
     const chainId = useChainId()
     let token: any = { balance: 0, name: '', symbol: "", decimals: 0 }
     let devMode = useAtomValue(getDevModeAtom);
-    const { data: erc20Data, isFetching: isFetchingERC20Info } = useReadContracts(
-        {
-            contracts: contractsForErc20(chainId, contract, address!),
-            query: {
-                enabled: !!address,
-            },
-        },
-    );
+    // const { data: erc20Data, isFetching: isFetchingERC20Info } = useReadContracts(
+    //         {
+    //             contracts: contractsForErc20(chainId, contract, address!),
+    //             query: {
+    //                 enabled: !!address,
+    //             },
+    //         },
+    //     );
 
-    token.name = erc20Data?.[1]?.result;
-    token.symbol = erc20Data?.[2]?.result;
-    token.decimals = erc20Data?.[3]?.result;
+    //     token.name = erc20Data?.[1]?.result;
+    //     token.symbol = erc20Data?.[2]?.result;
+    //     token.decimals = erc20Data?.[3]?.result;
 
-    token.balance = erc20Data?.[0]?.result && token.decimals ? new BigNumber(erc20Data?.[0]?.result.toString())
-        .dividedBy(new BigNumber(10 ** Number(token.decimals)))
-        .toString() : 0
+    //     token.balance = erc20Data?.[0]?.result && token.decimals ? new BigNumber(erc20Data?.[0]?.result.toString())
+    //         .dividedBy(new BigNumber(10 ** Number(token.decimals)))
+    //         .toString() : 0
 
 
 
@@ -83,12 +84,12 @@ export default function ContractPage({
                 </div>
                 <Separator />
                 <div className="flex-1 whitespace-pre-wrap text-sm p-3">
-                    {isFetchingERC20Info ? (<>
-                        <SpinIcon className="mr-2 h-5 w-5 animate-spin text-black" />
-                    </>) : (<><div>Balance: {token.balance}</div>
-                        <div>Decimals: {token.decimals}</div></>)}
-
-                </div>
+                    <TokenCard
+                        type={tokenType as any}
+                        chainId={selectedToken.chainId}
+                        contract={selectedToken.address}
+                        wallet={address}
+                    />                </div>
             </div>
 
         </div>
