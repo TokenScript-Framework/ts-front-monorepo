@@ -3,7 +3,6 @@ import { getDevModeAtom, getTokenAtom, setTokenAtom, tokenListAtom } from "@/lib
 import { TokenCollection, TokenType } from "@/lib/tokenStorage";
 import { useAtomValue, useSetAtom } from "jotai";
 import { query } from "smart-token-list";
-import CollectionCard from "./collection-card";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "./shadcn/ui/scroll-area";
 import { useAccount, useChainId } from "wagmi";
@@ -11,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import EmptyListToken from "./empty-token-list";
 import { EMPTY_TOKEN } from "@/lib/constants";
+import { TokenThumbnail } from "./token-kit/token-thumbnail";
 
 interface TokenProps {
     type: TokenType;
@@ -102,12 +102,16 @@ export default function MyTokenList({ type }: TokenProps) {
                         cn(
                             "p-3 text-left text-sm transition-all",
                         )} key={`${type}-${token.chainId}-${token.address}`}>
-                        <CollectionCard
+
+                        {/* <CollectionCard
                             key={`${type}-${token.chainId}-${token.address}`}
                             type={type}
                             token={token}
                             onSelect={selectHanlder}
-                        />
+                        /> */}
+
+                        <TokenThumbnail type={type} selected={selectedToken.address === token.address}
+                            token={token} onClick={() => selectHanlder(token)} />
                     </div>
                 ))
                 }

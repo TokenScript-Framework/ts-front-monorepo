@@ -1,42 +1,48 @@
-"use client";
-
-import {
-    Card,
-    CardContent,
-} from "@/components/shadcn/ui/card"
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/shadcn/ui/tooltip";
-import { TokenCollection, TokenType } from "@/lib/tokenStorage";
-import { addressPipe } from "@/lib/utils";
+import { Card, CardContent } from "@/components/shadcn/ui/card";
+import React from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/shadcn/ui/tooltip";
+import { Badge } from "@/components/shadcn/ui/badge";
 import { ShieldCheck, ShieldX } from "lucide-react";
-import { Badge } from "./shadcn/ui/badge";
-import { getTokenAtom } from "@/lib/store";
-import { useAtomValue } from "jotai";
-import { cn } from "@/lib/utils";
-import Image from 'next/image';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/ui/avatar";
+import { addressPipe } from "token-kit";
 
-interface CollectionCardProps {
-    type: TokenType;
-    token: TokenCollection;
-    onSelect: (token: TokenCollection) => void;
+type TokenCollection = {
+    signed: boolean;
+    chainId: number;
+    address: `0x${string}`;
+    name: string;
+    tokenIds?: string[];
+    logoURI?: string;
+};
+
+export interface TokenThumbnailProps {
+    type: "ERC20" | "ERC721" | "ERC1155";
+    token: TokenCollection,
+    selected: boolean,
+    onClick?: () => void;
 }
 
-export default function CollectionCard({ type, token, onSelect }: CollectionCardProps) {
-    let selectedToken = useAtomValue(getTokenAtom);
+export const TokenThumbnail: React.FC<TokenThumbnailProps> = ({
+    type,
+    token,
+    selected,
+    onClick,
+}) => {
     return (
         <Card
-            className={cn(
-                selectedToken.address === token.address && "bg-accent", "cursor-pointer text-left dark:bg-gray-900  hover:bg-accent w-full")}
-            onClick={() => onSelect(token)}
+            className={`${selected ? 'bg-accent' : ''} cursor-pointer text-left dark:bg-gray-900  hover:bg-accent w-full`}
+            onClick={onClick}
         >
             <CardContent>
                 <div className="flex justify-between items-center m-0">
                     <div className="flex justify-start items-center">
-                        {token.logoURI && (<Image src={token.logoURI} alt={token.name} width={48} height={48} />)}
+                        <Avatar className="w-10 h-10">
+                            <AvatarImage src={token.logoURI} alt="token" />
+                            <AvatarFallback className="bg-primary-100/20">
+                                T
+                            </AvatarFallback>
+                        </Avatar>
+
                         <div className="ml-4">
                             <div className="font-bold">
                                 <span>{token.name}</span>
@@ -52,12 +58,13 @@ export default function CollectionCard({ type, token, onSelect }: CollectionCard
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <div>
+                                    <div className="flex justify-end">
                                         {token.signed ? (
                                             <ShieldCheck color="#16a34a" />
                                         ) : (
                                             <ShieldX color="#aa3131" />
                                         )}
+
                                     </div>
                                 </TooltipTrigger>
                                 <TooltipContent>
@@ -66,7 +73,7 @@ export default function CollectionCard({ type, token, onSelect }: CollectionCard
                             </Tooltip>
                         </TooltipProvider>
                         {token.tokenIds && (
-                            <Badge variant="outline" className="text-primary-500 border-primary-500 mt-2">
+                            <Badge variant="outline" className="text-primary-500 border-primary-500 mt-2 rounded-full">
                                 {token.tokenIds.length}
                             </Badge>
                         )}
@@ -75,5 +82,5 @@ export default function CollectionCard({ type, token, onSelect }: CollectionCard
             </CardContent>
         </Card>
     );
-}
 
+};

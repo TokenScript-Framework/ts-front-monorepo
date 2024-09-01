@@ -86,11 +86,12 @@ export default function ImportToken({ importContract }: ImportProps) {
 
             if (address && chainId) {
                 setLoading(true);
+                setError("")
                 const validate: any = await validateToken(
                     devMode,
                     chainId,
                     address,
-                    type,
+                    type!,
                     token,
                     tokenId,
                     type === "ERC20" ? await isERC20(token, chainId) : false
@@ -123,7 +124,7 @@ export default function ImportToken({ importContract }: ImportProps) {
                             name: validate.name,
                             logoURI: validate.image
                         }
-                        const tokenIds = addToken(address, type, newToken);
+                        const tokenIds = addToken(address, type!, newToken);
                         delete newToken.tokenId;
                         setSelectedToken({ ...newToken, tokenIds: tokenIds?.filter((id): id is string => id !== undefined) })
                     }
