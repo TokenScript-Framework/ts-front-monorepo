@@ -1,11 +1,10 @@
 "use client"
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { TokenCollection, TokenType } from "@/lib/tokenStorage"
 import { Separator } from "@/components/shadcn/ui/separator";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/shadcn/ui/avatar";
 import { addressPipe } from "@/lib/utils";
 import { useAtomValue, useSetAtom } from "jotai";
-import { getTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom, getDevModeAtom, setImportContractAtom, setTokenTypeAtom, getImportContractAtom } from "@/lib/store";
+import { getTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom, getDevModeAtom, setImportContractAtom, setTokenTypeAtom } from "@/lib/store";
 import { useEffect } from "react";
 import { TokenIdSwitcher } from "@/components/tokenid-switcher";
 import { TabsList, TabsTrigger, Tabs, TabsContent } from "@/components/shadcn/ui/tabs";

@@ -1,5 +1,5 @@
 "use client"
-import { useAccount, useChainId, useReadContracts } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { TokenCollection, TokenType } from "@/lib/tokenStorage"
 import { Separator } from "@/components/shadcn/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/shadcn/ui/avatar";
@@ -7,11 +7,12 @@ import { addressPipe } from "@/lib/utils";
 import { useAtomValue, useSetAtom } from "jotai";
 import { getTokenTypeAtom, getTokenAtom, tokenListAtom, setTokenAtom, getDevModeAtom } from "@/lib/store";
 import { useEffect, useState } from "react";
-import { SpinIcon } from "@/components/icons/SpinIcon";
 import { erc20Abi } from "viem";
-import BigNumber from "bignumber.js";
 import { useRouter } from "next/navigation";
 import { TokenCard } from "@/components/token-kit/token-card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/shadcn/ui/tabs";
+import { ScriptIframe } from "@/components/script-Iframe";
+import { NEXT_PUBLIC_VIEWER_ROOT } from "@/lib/constants";
 
 export default function ContractPage({
     params,
@@ -27,24 +28,8 @@ export default function ContractPage({
     const setToken = useSetAtom(setTokenAtom);
     const router = useRouter()
     const chainId = useChainId()
-    let token: any = { balance: 0, name: '', symbol: "", decimals: 0 }
     let devMode = useAtomValue(getDevModeAtom);
-    // const { data: erc20Data, isFetching: isFetchingERC20Info } = useReadContracts(
-    //         {
-    //             contracts: contractsForErc20(chainId, contract, address!),
-    //             query: {
-    //                 enabled: !!address,
-    //             },
-    //         },
-    //     );
 
-    //     token.name = erc20Data?.[1]?.result;
-    //     token.symbol = erc20Data?.[2]?.result;
-    //     token.decimals = erc20Data?.[3]?.result;
-
-    //     token.balance = erc20Data?.[0]?.result && token.decimals ? new BigNumber(erc20Data?.[0]?.result.toString())
-    //         .dividedBy(new BigNumber(10 ** Number(token.decimals)))
-    //         .toString() : 0
 
 
 
@@ -84,12 +69,27 @@ export default function ContractPage({
                 </div>
                 <Separator />
                 <div className="flex-1 whitespace-pre-wrap text-sm p-3">
-                    <TokenCard
-                        type={tokenType as any}
-                        chainId={selectedToken.chainId}
-                        contract={selectedToken.address}
-                        wallet={address}
-                    />                </div>
+                    <Tabs defaultValue="token" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 dark:bg-transparent">
+                            <TabsTrigger value="token">Token</TabsTrigger>
+                            <TabsTrigger value="script">Script</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="token">
+                            <div className="w-full mx-auto p-2 max-w-[500px]">
+                                <TokenCard
+                                    type={tokenType as any}
+                                    chainId={selectedToken.chainId}
+                                    contract={selectedToken.address}
+                                    wallet={address}
+                                />
+                            </div>
+                        </TabsContent>
+                        <TabsContent value="script">
+                            <ScriptIframe url={`${NEXT_PUBLIC_VIEWER_ROOT}/?viewType=sts-token&chain=${chainId}&contract=${selectedToken.address}`} />
+                        </TabsContent>
+                    </Tabs>
+
+                </div>
             </div>
 
         </div>

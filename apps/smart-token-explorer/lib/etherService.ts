@@ -40,7 +40,6 @@ export async function isERC5169(address: string, provider: InfuraProvider) {
     await contract.scriptURI();
     return true;
   } catch (err: unknown) {
-    console.log(err);
     return false;
   }
 }
@@ -150,24 +149,21 @@ export async function validateToken(
   if (!(await isValidAddress(token))) {
     return { error: true, message: "Please input correct address" };
   }
-  if (type !== "ERC20") {
-    const result = await isERC5169(token, provider);
 
-    if (!result) {
-      return {
-        error: true,
-        message: `This token on ${chainPipe(chain)} is not a valid ERC5169 token.`,
-      };
-    }
+  const result = await isERC5169(token, provider);
+
+  if (!result) {
+    return {
+      error: true,
+      message: `This token on ${chainPipe(chain)} is not a valid ERC5169 token.`,
+    };
   }
+
   let scriptMetadata;
   try {
-    scriptMetadata =
-      type !== "ERC20"
-        ? await getTokenscriptMetadata(chain, token, {
-            checkSignature: true,
-          })
-        : { signed: true };
+    scriptMetadata = await getTokenscriptMetadata(chain, token, {
+      checkSignature: true,
+    });
   } catch (e) {
     return {
       error: true,
@@ -175,11 +171,7 @@ export async function validateToken(
     };
   }
 
-  const metadata =
-    type !== "ERC20"
-      ? scriptMetadata
-      : { name: "", meta: { description: "" }, signed: true };
-  const { signed } = type !== "ERC20" ? metadata : { signed: true };
+  const { signed } = scriptMetadata;
 
   if (!devMode && !signed) {
     return {
@@ -254,8 +246,7 @@ export async function validateToken(
     }
   }
 
-  const contractMetadata =
-    type !== "ERC20" ? await getContractMetadata(token, chain) : {};
+  const contractMetadata = await getContractMetadata(token, chain);
 
   return {
     error: false,
@@ -277,38 +268,31 @@ export async function validateContract(
   if (!(await isValidAddress(token))) {
     return { error: true, message: "Please input correct address" };
   }
-  if (type !== "ERC20") {
-    const result = await isERC5169(token, provider);
 
-    if (!result) {
-      return {
-        error: true,
-        message: `This token on ${chainPipe(chain)} is not a valid ERC5169 token.`,
-      };
-    }
+  const result = await isERC5169(token, provider);
+
+  if (!result) {
+    return {
+      error: true,
+      message: `This token on ${chainPipe(chain)} is not a valid ERC5169 token.`,
+    };
   }
+
   console.log("####", chain, token);
   let scriptMetadata;
   try {
-    scriptMetadata =
-      type !== "ERC20"
-        ? await getTokenscriptMetadata(chain, token, {
-            checkSignature: true,
-          })
-        : { signed: true };
+    scriptMetadata = await getTokenscriptMetadata(chain, token, {
+      checkSignature: true,
+    });
   } catch (e) {
     return {
       error: true,
       message: "Script URI not exist",
     };
   }
-  const metadata =
-    type !== "ERC20"
-      ? scriptMetadata
-      : { name: "", meta: { description: "" }, signed: true };
-  const { signed } = metadata;
+  const { signed } = scriptMetadata;
 
-  console.log("metadata----", metadata);
+  console.log("metadata----", scriptMetadata);
   if (!devMode && !signed) {
     return {
       error: true,
@@ -351,8 +335,7 @@ export async function validateContract(
       break;
     }
   }
-  const contractMetadata =
-    type !== "ERC20" ? await getContractMetadata(token, chain) : {};
+  const contractMetadata = await getContractMetadata(token, chain);
 
   return {
     error: false,
