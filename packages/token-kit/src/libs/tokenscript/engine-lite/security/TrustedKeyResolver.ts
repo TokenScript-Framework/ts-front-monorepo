@@ -42,12 +42,11 @@ export class TrustedKeyResolver {
           signerEthAddress.toLowerCase() === trustedKey.value.toLowerCase()
         )
           return trustedKey;
-      } else {
-        if (
-          authPubKey.toLowerCase() === trustedKey.value.toLowerCase() ||
-          signerPubKey.toLowerCase() === trustedKey.value.toLowerCase()
-        )
-          return trustedKey;
+      } else if (
+        authPubKey.toLowerCase() === trustedKey.value.toLowerCase() ||
+        signerPubKey.toLowerCase() === trustedKey.value.toLowerCase()
+      ) {
+        return trustedKey;
       }
     }
 

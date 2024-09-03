@@ -28,10 +28,10 @@ export class Argument extends AbstractDependencyBranch implements IArgument {
     localAttrContext?: any, // TODO: import { Attributes } from "../../Attributes";
   ) {
     super(tokenScript, localAttrContext);
-    this.type = type ? type : argDef.tagName.split(":")[1];
-    this.content = argDef.textContent;
-    this.ref = argDef.getAttribute("ref");
-    this.localRef = argDef.getAttribute("local-ref");
+    this.type = type ?? argDef.tagName.split(":")[1];
+    this.content = argDef.textContent ?? undefined;
+    this.ref = argDef.getAttribute("ref") ?? undefined;
+    this.localRef = argDef.getAttribute("local-ref") ?? undefined;
   }
 
   /**
@@ -49,12 +49,13 @@ export class Argument extends AbstractDependencyBranch implements IArgument {
     if (this.type === "struct") {
       switch (this.ref) {
         case "attestation":
-          const data = await this.tokenScript.getTokenContextData(tokenContext);
+          const data: any =
+            await this.tokenScript.getTokenContextData(tokenContext);
 
           arg.type = "tuple";
           arg.internalType = "struct EasTicketVerify.AttestationCoreData";
           arg.components = data.tokenInfo.data.decodedToken.types.Attest.map(
-            (field) => {
+            (field: { name: any; type: any }) => {
               return {
                 name: field.name,
                 type: field.type,

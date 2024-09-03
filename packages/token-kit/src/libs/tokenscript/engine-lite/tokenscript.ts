@@ -27,6 +27,12 @@ export interface ITokenIdContext {
  * executing transactions
  */
 export class TokenScript {
+  getTokenContextData(tokenContext: ITokenIdContext) {
+    throw new Error("Method not implemented.");
+  }
+  getViewController() {
+    throw new Error("Method not implemented.");
+  }
   private label?: Label;
 
   private meta?: Meta;
