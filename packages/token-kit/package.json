@@ -2,31 +2,23 @@
   "name": "token-kit",
   "version": "1.0.0",
   "description": "kit for smart token",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": "./src/index.ts"
-  },
   "scripts": {
-    "rollup": "rollup -c --bundleConfigAsCjs"
+    "build": "tsup"
   },
+  "files": [
+    "dist/"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "keywords": [],
   "author": "SLN",
   "license": "MIT",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^26.0.1",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^11.1.6",
     "@types/jsdom": "^21.1.7",
     "@types/react": "^18",
     "react": "^18",
-    "rollup": "^4.18.1",
-    "rollup-plugin-dts": "^6.1.1",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-postcss": "^4.0.2",
     "tslib": "^2.6.3",
+    "tsup": "^8.1.0",
     "typescript": "^5"
   },
   "dependencies": {

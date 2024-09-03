@@ -13,3 +13,5 @@ pruned/
 db-data/
 cache
 .vercel
+*.tgz
+

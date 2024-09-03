@@ -1,7 +1,5 @@
 // @ts-nocheck
 import { ITokenIdContext, TokenScript } from "../../tokenscript";
-import { Attribute } from "../Attribute";
-import { Attributes } from "../Attributes";
 
 export interface IArgument {
   type: string;
@@ -23,7 +21,7 @@ export abstract class AbstractDependencyBranch implements IArgument {
 
   protected constructor(
     protected tokenScript: TokenScript,
-    protected localAttrContext?: Attributes,
+    protected localAttrContext?: any, // TODO: import { Attributes } from "../Attributes";
   ) {}
 
   public async getValue(tokenContext?: ITokenIdContext) {
@@ -121,7 +119,8 @@ export abstract class AbstractDependencyBranch implements IArgument {
     return !(!this.ref && !this.localRef);
   }
 
-  protected getBackingAttribute(): Attribute | undefined {
+  // TODO: import { Attribute } from "../Attribute";
+  protected getBackingAttribute(): any | undefined {
     let attr;
 
     if (this.localRef) {
