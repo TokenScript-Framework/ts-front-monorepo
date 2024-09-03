@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "kit for smart token",
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "prepare": "npm run build"
   },
   "files": [
     "dist/"
