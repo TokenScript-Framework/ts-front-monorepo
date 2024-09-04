@@ -39,6 +39,7 @@
     "jsdom": "^22.1.0",
     "lucide-react": "^0.401.0",
     "viem": "2.x",
-    "wagmi": "^2.10.9"
+    "wagmi": "^2.10.9",
+    "webcrypto-liner": "^1.4.3"
   }
 }
