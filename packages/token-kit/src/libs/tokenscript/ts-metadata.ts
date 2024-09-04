@@ -71,7 +71,11 @@ export async function getTokenscriptMetadata(
 async function loadTokenscript(scriptURI: string) {
   let tokenscript = getTsCache(scriptURI);
   if (!tokenscript) {
-    const xmlStr = (await axios.get(scriptURI)).data;
+    const httpUrl = scriptURI.startsWith("ipfs://")
+      ? `https://ipfs.io/ipfs/${scriptURI.slice(7)}`
+      : scriptURI;
+
+    const xmlStr = (await axios.get(httpUrl)).data;
 
     let parser: DOMParser;
     if (typeof window === "undefined") {
