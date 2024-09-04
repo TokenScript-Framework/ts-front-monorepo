@@ -9,7 +9,7 @@ import { Crypto, CryptoKey } from "webcrypto-liner";
 import { uint8tohex } from "../../../../utils/crypto";
 import { TokenScript } from "../tokenscript";
 
-const crypto = new Crypto();
+const crypto: Crypto = new Crypto();
 xmldsigjs.Application.setEngine("WebCryptoLiner", crypto);
 x509.cryptoProvider.set(crypto);
 
