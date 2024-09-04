@@ -2,6 +2,7 @@
   "name": "token-kit",
   "version": "1.0.0",
   "description": "kit for smart token",
+  "type": "module",
   "scripts": {
     "build": "tsup",
     "prepare": "npm run build"
@@ -9,8 +10,8 @@
   "files": [
     "dist/"
   ],
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
   "keywords": [],
   "author": "SLN",
   "license": "MIT",
@@ -38,7 +39,6 @@
     "jsdom": "^22.1.0",
     "lucide-react": "^0.401.0",
     "viem": "2.x",
-    "wagmi": "^2.10.9",
-    "webcrypto-liner": "^1.4.3"
+    "wagmi": "^2.10.9"
   }
 }
