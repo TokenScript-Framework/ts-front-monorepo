@@ -4,14 +4,23 @@
   "description": "kit for smart token",
   "type": "module",
   "scripts": {
+    "dev": "tsup --watch",
     "build": "tsup",
     "prepare": "npm run build"
   },
   "files": [
     "dist/"
   ],
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "keywords": [],
   "author": "SLN",
   "license": "MIT",

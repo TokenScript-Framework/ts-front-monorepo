@@ -1,7 +1,9 @@
+import axios from "axios";
 import {
   Chain,
   createPublicClient,
   defineChain,
+  erc721Abi,
   extractChain,
   http,
   PublicClient,
@@ -154,4 +156,26 @@ function getBatchClient(chainId: any) {
   }
 
   return clientCache[chainId];
+}
+
+export async function getERC721Metadata(
+  chainId: number,
+  contract: `0x${string}`,
+  tokenId: bigint,
+) {
+  try {
+    const client = getBatchClient(chainId);
+
+    const tokenURI = await client.readContract({
+      address: contract,
+      abi: erc721Abi,
+      functionName: "tokenURI",
+      args: [BigInt(tokenId)],
+    });
+
+    return (await axios.get(tokenURI)).data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
 }
