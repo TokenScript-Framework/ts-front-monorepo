@@ -1,9 +1,8 @@
-import axios from "axios";
+import { Card } from "@tokenscript/engine-js/dist/lib.esm/tokenScript/Card";
+import { Meta } from "@tokenscript/engine-js/dist/lib.esm/tokenScript/Meta";
+import { Eip1193Provider } from "ethers";
 import { getERC5169ScriptURISingle } from "../ethereum";
-import { TokenScript } from "./engine-lite/tokenscript";
-import { Card } from "./engine-lite/tokenScript/Card";
-import { Meta } from "./engine-lite/tokenScript/Meta";
-import { getTsCache, setTsCache } from "./ts-cache";
+import { getTokenScriptEngine } from "./tokenscript";
 
 export type TsOptions = {
   actions?: boolean;
@@ -29,8 +28,10 @@ export const defaultTsOptions = {
 };
 
 export async function getTokenscriptMetadata(
+  provider: Eip1193Provider,
   chainId: number,
   contract: `0x${string}`,
+  context?: { tokenId: string; originIndex?: number },
   options: TsOptions = defaultTsOptions,
   index = 0,
 ): Promise<TsMetadata> {
@@ -41,12 +42,28 @@ export async function getTokenscriptMetadata(
     throw new Error("Some errors for import, please check the server log");
   }
 
-  const tokenscript = await loadTokenscript(scriptURI);
-
+  const tokenscript =
+    await getTokenScriptEngine(provider).getTokenScriptFromUrl(scriptURI);
   const result = {} as TsMetadata;
 
   if (options.actions) {
-    result.actions = tokenscript.getCards().map((card) => card.name ?? "");
+    if (!context) throw new Error("context is required for parsing actions");
+
+    tokenscript.setCurrentTokenContext(
+      Object.keys(tokenscript.getOrigins())[context.originIndex ?? 0],
+      null,
+      context.tokenId,
+    );
+    result.actions = (
+      await Promise.all(
+        tokenscript
+          .getCards()
+          .getAllCards()
+          .map(async (card: Card) =>
+            (await card.isEnabledOrReason() === true) ? card.name : "",
+          ),
+      )
+    ).filter(Boolean);
   }
 
   if (options.checkSignature) {
@@ -66,29 +83,4 @@ export async function getTokenscriptMetadata(
   result.name = tokenscript.getName() ?? "";
 
   return result;
-}
-
-async function loadTokenscript(scriptURI: string) {
-  let tokenscript = getTsCache(scriptURI);
-  if (!tokenscript) {
-    const httpUrl = scriptURI.startsWith("ipfs://")
-      ? `https://ipfs.io/ipfs/${scriptURI.slice(7)}`
-      : scriptURI;
-
-    const xmlStr = (await axios.get(httpUrl)).data;
-
-    let parser: DOMParser;
-    if (typeof window === "undefined") {
-      const { JSDOM } = await import("jsdom");
-      const jsdom = new JSDOM();
-      parser = new jsdom.window.DOMParser();
-    } else {
-      parser = new DOMParser();
-    }
-    const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
-    tokenscript = new TokenScript(xmlStr, xmlDoc);
-    setTsCache(scriptURI, tokenscript);
-  }
-
-  return tokenscript;
 }
