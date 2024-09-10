@@ -1,5 +1,4 @@
-import { Card } from "@tokenscript/engine-js/dist/lib.esm/tokenScript/Card";
-import { Meta } from "@tokenscript/engine-js/dist/lib.esm/tokenScript/Meta";
+import { Card, Meta } from "@tokenscript/engine-js/lite";
 import { Eip1193Provider } from "ethers";
 import { getERC5169ScriptURISingle } from "../ethereum";
 import { getTokenScriptEngine } from "./tokenscript";

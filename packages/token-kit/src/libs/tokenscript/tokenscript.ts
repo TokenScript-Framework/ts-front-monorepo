@@ -1,6 +1,4 @@
-import { TrustedKey } from "@tokenscript/engine-js/dist/lib.esm/security/TrustedKeyResolver";
-import { EthersAdapter } from "@tokenscript/engine-js/dist/lib.esm/wallet/EthersAdapter";
-import { LiteTokenScriptEngine } from "@tokenscript/engine-js/lite";
+import { LiteTokenScriptEngine, TrustedKey, EthersAdapter } from "@tokenscript/engine-js/lite";
 import { BrowserProvider, Eip1193Provider } from "ethers";
 import { getChainConfig } from "../ethereum/chain-config";
 
@@ -30,7 +28,7 @@ export function getTokenScriptEngine(provider: Eip1193Provider) {
     engine = new LiteTokenScriptEngine(
       async () =>
         new EthersAdapter(
-          () => new BrowserProvider(provider),
+          () => Promise.resolve(new BrowserProvider(provider)),
           getChainConfig(),
         ),
       {
