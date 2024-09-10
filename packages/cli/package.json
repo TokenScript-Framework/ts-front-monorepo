@@ -1,18 +1,17 @@
 {
-  "name": "token-kit-ui-cli",
-  "version": "0.0.1-dev",
+  "name": "@token-kit/cli",
+  "version": "0.0.1",
   "description": "Add components to your apps.",
   "publishConfig": {
     "access": "public"
   },
   "license": "MIT",
   "author": {
-    "name": "shadcn",
-    "url": "https://twitter.com/shadcn"
+    "name": "Smart Token Labs"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/shadcn/ui.git",
+    "url": "https://github.com/TokenScript-Framework/ts-front-monorepo.git",
     "directory": "packages/cli"
   },
   "files": [
