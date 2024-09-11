@@ -1,5 +1,5 @@
 import { Card, Meta } from "@tokenscript/engine-js/lite";
-import { Eip1193Provider, Provider } from "ethers";
+import { Eip1193Provider, JsonRpcApiProvider } from "ethers";
 import { getERC5169ScriptURISingle } from "../ethereum";
 import { getTokenScriptEngine } from "./tokenscript";
 
@@ -27,7 +27,7 @@ export const defaultTsOptions = {
 };
 
 export async function getTokenscriptMetadata(
-  provider: Eip1193Provider | Provider,
+  provider: Eip1193Provider | JsonRpcApiProvider,
   chainId: number,
   contract: `0x${string}`,
   context?: { tokenId: string; originIndex?: number },
