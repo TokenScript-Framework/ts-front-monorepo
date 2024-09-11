@@ -1,4 +1,4 @@
-import { Card, Meta } from "@tokenscript/engine-js/lite";
+import { Card, Cards, Meta } from "@tokenscript/engine-js/lite";
 import { Eip1193Provider, JsonRpcApiProvider } from "ethers";
 import { getERC5169ScriptURISingle } from "../ethereum";
 import { getTokenScriptEngine } from "./tokenscript";
@@ -16,7 +16,7 @@ export type TsMetadata = {
   actions?: string[];
   signed?: boolean;
   cssStr?: string;
-  cards?: Card[];
+  cards?: Cards;
 };
 
 export const defaultTsOptions = {
@@ -59,7 +59,7 @@ export async function getTokenscriptMetadata(
           .getCards()
           .getAllCards()
           .map(async (card: Card) =>
-            (await card.isEnabledOrReason() === true) ? card.name : "",
+            (await card.isEnabledOrReason()) === true ? card.name : "",
           ),
       )
     ).filter(Boolean);
