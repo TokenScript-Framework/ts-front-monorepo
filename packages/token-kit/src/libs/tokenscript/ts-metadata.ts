@@ -1,5 +1,5 @@
 import { Card, Meta } from "@tokenscript/engine-js/lite";
-import { Eip1193Provider } from "ethers";
+import { Eip1193Provider, Provider } from "ethers";
 import { getERC5169ScriptURISingle } from "../ethereum";
 import { getTokenScriptEngine } from "./tokenscript";
 
@@ -27,7 +27,7 @@ export const defaultTsOptions = {
 };
 
 export async function getTokenscriptMetadata(
-  provider: Eip1193Provider,
+  provider: Eip1193Provider | Provider,
   chainId: number,
   contract: `0x${string}`,
   context?: { tokenId: string; originIndex?: number },
@@ -71,7 +71,7 @@ export async function getTokenscriptMetadata(
   }
 
   if (options.css) {
-    result.cssStr = tokenscript.getCssStr();
+    result.cssStr = tokenscript.viewStyles.getViewCss();
   }
 
   if (options.cards) {

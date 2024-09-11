@@ -1,6 +1,11 @@
-import { LiteTokenScriptEngine, TrustedKey, EthersAdapter } from "@tokenscript/engine-js/lite";
-import { BrowserProvider, Eip1193Provider } from "ethers";
+import {
+  EthersAdapter,
+  LiteTokenScriptEngine,
+  TrustedKey,
+} from "@tokenscript/engine-js/lite";
+import { BrowserProvider, Eip1193Provider, JsonRpcApiProvider } from "ethers";
 import { getChainConfig } from "../ethereum/chain-config";
+import { EIP1193ProviderWrapper } from "./eip1193-provider-wrapper";
 
 const trustedKeys = [
   {
@@ -22,13 +27,18 @@ const trustedKeys = [
 
 let engine: LiteTokenScriptEngine;
 let providerInUse: Eip1193Provider;
-export function getTokenScriptEngine(provider: Eip1193Provider) {
+export function getTokenScriptEngine(
+  provider: Eip1193Provider | JsonRpcApiProvider,
+) {
   if (!engine || providerInUse !== provider) {
-    providerInUse = provider;
+    providerInUse =
+      provider instanceof JsonRpcApiProvider
+        ? new EIP1193ProviderWrapper(provider)
+        : provider;
     engine = new LiteTokenScriptEngine(
       async () =>
         new EthersAdapter(
-          () => Promise.resolve(new BrowserProvider(provider)),
+          () => Promise.resolve(new BrowserProvider(providerInUse)),
           getChainConfig(),
         ),
       {
