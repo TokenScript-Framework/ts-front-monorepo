@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { ScriptIframe } from "@/components/script-Iframe";
 import EmptyToken from "@/components/empty-token";
 import { ShareToTg } from '@/components/share-to-tg';
+import { ImportButton } from "@/components/import-button";
 
 export default function TokenIdPage({
     params,
@@ -93,6 +94,7 @@ export default function TokenIdPage({
 
                     </div>
                     <div className="flex items-center gap-2">
+                        <ImportButton contract={selectedToken.address} tokenId={tokenId} chain={chainId?.toString() ?? ''} title={'S'}  cssClass={'rounded-full min-w-6 h-6 p-0'} />
                         <ShareToTg />
                         <TokenIdSwitcher tokenIds={selectedToken.tokenIds} tokenId={tokenId} />
                     </div>

@@ -13,6 +13,7 @@ import { TokenCard } from "@/components/token-kit/token-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/shadcn/ui/tabs";
 import { ScriptIframe } from "@/components/script-Iframe";
 import { NEXT_PUBLIC_VIEWER_ROOT } from "@/lib/constants";
+import { ImportButton } from "@/components/import-button";
 
 export default function ContractPage({
     params,
@@ -64,6 +65,9 @@ export default function ContractPage({
                             <div className="font-semibold">{selectedToken.name}</div>
                             <div className="font-semibold text-sm opacity-50">{selectedToken?.address ? addressPipe(selectedToken.address) : ''}</div>
                         </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <ImportButton contract={selectedToken.address} chain={chainId?.toString()} title={'S'}  cssClass={'rounded-full min-w-6 h-6 p-0'} />
                     </div>
 
                 </div>
