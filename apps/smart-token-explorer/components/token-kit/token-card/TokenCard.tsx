@@ -1,13 +1,15 @@
 import { Card, CardContent, CardHeader } from "@/components/shadcn/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/shadcn/ui/scroll-area";
 import { Skeleton } from "@/components/shadcn/ui/skeleton";
-import { erc1155ABI, rewriteUrlIfIFPSUrl, urlPipe, valuePipe } from "token-kit";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
 import { erc721Abi, erc20Abi } from "viem";
 import { useReadContract, useReadContracts } from "wagmi";
 import BigNumber from "bignumber.js";
+import { ERC1155_ABI } from "@/lib/abi";
+import { rewriteUrlIfIFPSUrl } from "@token-kit/onchain";
+import { urlPipe, valuePipe } from "@/lib/utils";
 
 export interface TokenCardProps {
     type: "ERC20" | "ERC721" | "ERC1155";
@@ -56,7 +58,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({
     const { data: erc1155TokenURI } = useReadContract({
         chainId: chainId,
         address: contract,
-        abi: erc1155ABI,
+        abi: ERC1155_ABI,
         functionName: "uri",
         args: [BigInt(tokenId)],
         query: {

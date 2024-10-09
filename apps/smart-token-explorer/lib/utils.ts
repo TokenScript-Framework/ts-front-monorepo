@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { API_KEY, COMMON_API_ROOT } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -87,3 +88,34 @@ export function splitPath(path: string) {
     tokenId: pathArray[4],
   };
 }
+
+export async function getTokenscriptMetadata(
+    chain: string,
+    contract: `0x${string}`,
+    tokenId?: string,
+  ) {
+    const response = await fetch(
+      `${COMMON_API_ROOT}/token-view/${chain}/${contract}${tokenId ? "?tokenId=" + tokenId : ""}`,
+      {
+        headers: {
+          "x-stl-key": API_KEY,
+        },
+      },
+    );
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch token metadata: ${response.status} ${response.statusText}`,
+      );
+    }
+    const { tokenMetadata, tsMetadata, explorerUrl } = await response.json();
+
+    console.log(JSON.stringify({ tokenMetadata, tsMetadata, explorerUrl }))
+    return {
+      actions: tsMetadata.actions,
+      name: tsMetadata.name,
+      description: tsMetadata.meta.description,
+      aboutUrl: tsMetadata.meta.aboutUrl || explorerUrl,
+      tokenMetadata: tokenMetadata || {},
+      signed: tsMetadata.signed,
+    };
+  }

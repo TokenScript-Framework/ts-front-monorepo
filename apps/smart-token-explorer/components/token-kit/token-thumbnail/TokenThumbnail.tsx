@@ -4,7 +4,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Badge } from "@/components/shadcn/ui/badge";
 import { ShieldCheck, ShieldX } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/shadcn/ui/avatar";
-import { addressPipe } from "token-kit";
+import { addressPipe } from "@/lib/utils";
 
 type TokenCollection = {
     signed: boolean;

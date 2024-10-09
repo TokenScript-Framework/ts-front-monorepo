@@ -58,3 +58,8 @@ export const EMPTY_TOKEN: TokenCollection = {
   chainId: 0,
   name: "",
 };
+
+export const COMMON_API_ROOT = "https://doobtvjcpb8dc.cloudfront.net";
+
+export const API_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0IjoibXVsdGktY2hhbm5lbC1yZW5kZXJpbmctc3RlIiwiaWF0IjoxNzI4NDU3MjI4fQ.yFZbfqBkmO6Gt0yq0L5Ci2iw5x45CJOKN1rSj9lc4ro";
