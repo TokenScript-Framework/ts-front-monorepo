@@ -28,23 +28,20 @@ export const ImportButton: React.FC<TappSnapButtonProps> = ({
   onSuccess,
   onError,
 }) => {
-  const { isMetaMaskInstalled, isFlask, isSnapInstalled } =
+  const { isMetaMaskInstalled, isSnapInstalled } =
     useMetaMaskStatus(TAPP_SNAP_ID);
   const [metadata, setMetadata] = useState<Token>({} as Token);
 
   useEffect(() => {
     const fetchMetadata = async () => {
-      if (isMetaMaskInstalled && isFlask) {
-        if (isSnapInstalled) {
+      if (isMetaMaskInstalled && isSnapInstalled) {
           setMetadata(await getMetadata(chain, contract, tokenId));
         }
-      }
     };
     fetchMetadata();
   }, [
     chain,
     contract,
-    isFlask,
     isMetaMaskInstalled,
     isSnapInstalled,
     setMetadata,
@@ -54,8 +51,8 @@ export const ImportButton: React.FC<TappSnapButtonProps> = ({
   const handleSnapInstalled = useCallback(async () => {
     if (chain && contract) {
       const tokenData = await getMetadata(chain, contract, tokenId);
-
       setMetadata(tokenData);
+
     }
   }, [chain, contract, tokenId]);
 

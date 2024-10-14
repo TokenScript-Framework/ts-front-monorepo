@@ -24,7 +24,7 @@ export const MetaMaskSnapButton: React.FC<MetaMaskSnapButtonProps> = ({
   onSuccess,
   onError,
 }) => {
-  const { isMetaMaskInstalled, isFlask, isSnapInstalled, refreshSnapStatus } =
+  const { isMetaMaskInstalled, isSnapInstalled, refreshSnapStatus } =
     useMetaMaskStatus(snapId);
   const [isLoading, setIsLoading] = useState(false);
   const snapParamsRef = useRef(snapParams);
@@ -72,8 +72,6 @@ export const MetaMaskSnapButton: React.FC<MetaMaskSnapButtonProps> = ({
     try {
       if (!isMetaMaskInstalled) {
         window.open("https://metamask.io/download/", "_blank");
-      } else if (!isFlask) {
-        window.open("https://metamask.io/flask/", "_blank");
       } else {
         if (!isSnapInstalled) {
           const installed = await installSnap();
@@ -85,6 +83,7 @@ export const MetaMaskSnapButton: React.FC<MetaMaskSnapButtonProps> = ({
             }
           }
         }
+
         await invokeSnap();
       }
     } catch (error) {
@@ -97,7 +96,6 @@ export const MetaMaskSnapButton: React.FC<MetaMaskSnapButtonProps> = ({
     }
   }, [
     isMetaMaskInstalled,
-    isFlask,
     isSnapInstalled,
     invokeSnap,
     installSnap,
@@ -109,8 +107,6 @@ export const MetaMaskSnapButton: React.FC<MetaMaskSnapButtonProps> = ({
   let buttonText = title;
   if (!isMetaMaskInstalled) {
     buttonText = "Install MetaMask";
-  } else if (!isFlask) {
-    buttonText = "Install MetaMask Flask";
   } else if (isSnapInstalled) {
     buttonText = title;
   }
